@@ -266,6 +266,7 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
   listen(window, 'keydown', (ev) => {
     const e = ev as KeyboardEvent
     if (e.altKey || e.ctrlKey || e.metaKey) return
+    if (document.documentElement.classList.contains('cv-open')) return // the CV viewer is on top
     if (e.key === 'ArrowRight') { e.preventDefault(); next() }
     if (e.key === 'ArrowLeft') { e.preventDefault(); prev() }
     if (e.key === 'Escape') clearFocus()

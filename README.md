@@ -19,6 +19,9 @@ or drag to look around.
 - **Other work**, **How I work** (including the Claude Code skills I've built, read live from
   [my skills repo](https://github.com/MattKay02/skills)), **About** and **Contact**.
 - The hero carries my **GitHub contribution graph**, refreshed daily.
+- My **CV** is generated from the same repo: [`src/data/cv.ts`](src/data/cv.ts) renders
+  [`/cv`](https://mattkay02.github.io/cv/), and every deploy prints it to `/cv.pdf`, dated by
+  when the CV last changed.
 
 ## Design
 
@@ -38,6 +41,7 @@ data work.
 npm install
 npm run dev       # http://localhost:3000
 npm run build     # static site in out/
+npm run cv        # print the CV to out/cv.pdf (after build)
 npm run github    # refresh the contribution graph and the skills snapshot
 npm run preview   # serve out/ locally
 ```

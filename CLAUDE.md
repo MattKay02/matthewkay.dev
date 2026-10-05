@@ -72,16 +72,41 @@ src/workbench/
   controller.ts        the camera and everything per-frame (imperative; returns destroy())
   Workbench.tsx        React shell: top bar, guide panel, minimap, stage
   icons.tsx            link icons and the MGKCodes monogram
+app/cv/page.tsx        the standalone CV page
+src/cv/                CvSheet (the A4 CV), CvViewer (viewer over the board + page shell),
+                       updated.ts (git date of cv.ts), cv.css
 src/data/
+  cv.ts                Matthew's CV as data: the single source for /cv and /cv.pdf
   github.json          contribution calendar (generated)
   skills.json          skills manifest snapshot (generated; the live fetch overrides it)
 scripts/fetch-github.mjs   refreshes both snapshots: `npm run github`
+scripts/build-cv.mjs       prints /cv to out/cv.pdf after a build: `npm run cv`
 public/work/           every image on the board, plus the Apple frames
 docs/                  architecture, design system, screens-feed spec, storyboard history
 ```
 
 **Commands**: `npm run dev` (dev server, http://localhost:3000) · `npm run build` (static site in
-`out/`) · `npm run github` (refresh contribution graph + skills snapshot) · `npm run preview`.
+`out/`) · `npm run cv` (print the CV PDF; run after build) · `npm run cv:private` (copy with phone
+number, see below) · `npm run github` (refresh contribution graph + skills snapshot) ·
+`npm run preview`.
+
+### The CV is code
+
+`src/data/cv.ts` is the **only** source of Matthew's CV. `/cv` renders it as an A4 page and
+`scripts/build-cv.mjs` prints that page to `/cv.pdf` on every deploy, stamped "Updated" with the
+date `cv.ts` last changed in git (not the build date). To update the CV: edit `cv.ts`, commit,
+push. Rules:
+
+- **One A4 page.** The CV build fails, with how many pixels it's over, if it overflows. Trim
+  content rather than shrinking type.
+- **Never commit a phone number.** The public PDF has none. `CV_PHONE="…" npm run cv:private`
+  writes a copy with it to `private/` (gitignored) for sending directly.
+- Same copy rules as the site: true statuses, no em dashes, specific results. Links come from
+  `LINKS` in `stops.ts`, so they can't drift from the site.
+- **View, then download.** Every CV button on the site says "View CV" and opens the viewer
+  (`src/cv/CvViewer.tsx`) over the board: the CV on the site's own desk, with Download PDF in its
+  bar. `/#cv` opens it directly; `/cv` is the same design as a standalone page. The sheet itself
+  is `src/cv/CvSheet.tsx`, shared by the viewer, the page and the PDF.
 
 **Adding a stop**: add it to `stops.ts` (cluster, `r`, `m`, `nav`, copy). **Adding a project
 part**: add it to `FRUNT_PARTS` / `MGK_PARTS` in `Board.tsx`. **Moving things**: everything on the
@@ -119,13 +144,18 @@ board is in board pixels; the world is 4760 × 4900.
 ## Open decisions
 
 - **Positioning line**: the hero's "Product engineer. I design and build polished apps, end to
-  end." is a draft. The target role isn't settled.
+  end." is still a draft. Titles are settled by purpose: the **CV** (and this site, which is
+  also for getting hired) leads with the role he's applying for, **Product Engineer** (swap to
+  "Software Developer" for general junior roles); **LinkedIn** stays "Founder of MGKCodes",
+  because that's what he does now. Don't try to make them match.
 - **Domain**: held until positioning settles. `.design` only if design is the headline;
   otherwise matthewkay.dev or .me (matthewkay.com and .co.uk are taken).
 - **Case studies**: the dashed "Case study" and "What I learnt" slots. Agreed format: what I made
   → why → what I aimed for → challenges and decisions → where it landed → what I learnt.
 - **How I work** and **About** are first ideas.
-- **CV**: the buttons say "CV coming soon" until a PDF is added.
+- **CV numbers**: deliberately none for now (Matthew, 5 Oct: "nothing yet worth putting on").
+  Don't push for metrics; suggest them only when a real milestone lands (e.g. Run's first month
+  in the stores, several restaurants on frunt), as totals only.
 - **Accessibility / SEO**: consider a plain list view of the work alongside the board.
 
 ## Developer

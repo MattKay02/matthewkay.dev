@@ -12,3 +12,7 @@ next-env.d.ts
 
 # Browser-automation scratch output
 .playwright-mcp
+
+# The CV PDF: generated (npm run cv), never hand-edited. private/ holds the copy with a phone number.
+public/cv.pdf
+private/

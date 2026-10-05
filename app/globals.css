@@ -270,7 +270,7 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 .icon-link svg.mgk { width: 28px; }
 .icon-links.lg .icon-link svg.mgk { width: 58px; }
 .hero-links { z-index: 3; }
-.hcv { z-index: 3; display: inline-flex; align-items: center; gap: 10px; height: 64px; padding: 0 28px; border: 1.5px solid var(--strong); border-radius: var(--r-btn); background: var(--strong); color: var(--bg); white-space: nowrap; font: 500 calc(19px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); }
+.hcv { z-index: 3; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; height: 64px; padding: 0 28px; border: 1.5px solid var(--strong); border-radius: var(--r-btn); background: var(--strong); color: var(--bg); white-space: nowrap; font: 500 calc(19px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); }
 .hcv svg { width: 22px; height: 22px; }
 .hcv:hover { background: transparent; color: var(--strong); }
 

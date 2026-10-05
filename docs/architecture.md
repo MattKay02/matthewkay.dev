@@ -96,10 +96,26 @@ column stays clear before the photo.
 - **Product screens** are static files for now. `docs/screens-feed.md` specifies how the products
   will publish screens that update themselves.
 
+## The CV
+
+`src/data/cv.ts` holds the CV as typed data. `src/cv/CvSheet.tsx` renders it as an A4 sheet
+(`src/cv/cv.css`). It appears in three places: the viewer over the workbench (`CvViewer`, opened by
+every "View CV" button or `/#cv`, with Download PDF in its bar), the standalone `/cv` page (same
+design), and the PDF. The "Updated" date comes from `git log` for `cv.ts` at build time
+(`src/cv/updated.ts`, server-only, passed down from `app/page.tsx`), so it tracks content changes,
+not daily rebuilds (the deploy checks out full history for this). While the viewer is open,
+`html.cv-open` locks page scroll and the camera ignores the arrow keys. `scripts/build-cv.mjs` then serves `out/`, opens `/cv/` in headless Chromium (Playwright)
+with print styles, checks the content fits one A4 page, and prints `out/cv.pdf`. Locally it also
+copies the PDF to `public/cv.pdf` (gitignored) so the dev server can serve it. With `--private`
+and `CV_PHONE` set, it fills the hidden phone slot and writes `private/Matthew_Kay_CV.pdf`
+instead; that copy is gitignored and never deployed.
+
 ## Build and deploy
 
 - `npm run dev` · `npm run build` (→ `out/`) · `npm run github` · `npm run preview`
 - `deploy.yml` runs on push to `main` and **daily**: `npm ci` → `npm run github` (allowed to
-  fail; the committed snapshots are used) → `npm run build` → upload `out/` → GitHub Pages.
-- `ci.yml` builds every pull request into `main`.
+  fail; the committed snapshots are used) → `npm run build` → install Chromium → `npm run cv` →
+  upload `out/` → GitHub Pages.
+- `ci.yml` builds every pull request into `main` and prints the CV, so an overflowing CV fails
+  the check.
 - **`main` auto-deploys**: do feature work on a branch.

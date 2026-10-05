@@ -2,7 +2,8 @@
 // a 12-column grid (column 103, gutter 24, starting at x 130).
 import type { CSSProperties } from 'react'
 import gh from '@/data/github.json'
-import { FaGithub, FiDownload, IconLinks } from './icons'
+import { FiFileText } from 'react-icons/fi'
+import { FaGithub, IconLinks } from './icons'
 import {
   Browser, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Step, Tile, Title,
 } from './parts'
@@ -82,7 +83,7 @@ function GitHubGraph() {
   )
 }
 
-function Hero({ cvLabel, onCv }: { cvLabel: string; onCv: () => void }) {
+function Hero({ onCv }: { onCv: () => void }) {
   return (
     <>
       <div className="cols hx" data-c="hero" aria-hidden="true" style={{ left: 130, top: 130, width: 1500, height: 970, ...d('0s') }} />
@@ -99,7 +100,7 @@ function Hero({ cvLabel, onCv }: { cvLabel: string; onCv: () => void }) {
       </figure>
       <GitHubGraph />
       <div className="hero-links hx" data-c="hero" style={{ left: 130, top: 990, ...d('.55s') }}><IconLinks size="lg" /></div>
-      <button className="hcv hx" data-c="hero" type="button" onClick={onCv} style={{ left: 1273, top: 990, ...d('.6s') }}>{cvLabel}<FiDownload aria-hidden="true" /></button>
+      <button type="button" className="hcv hx" data-c="hero" onClick={onCv} style={{ left: 1273, top: 990, ...d('.6s') }}>View CV<FiFileText aria-hidden="true" /></button>
       <div className="mcursor" data-c="hero" aria-hidden="true">
         <svg viewBox="0 0 24 24"><path d="M4 2.5 L20 11.2 L12.6 13.1 L9.2 20.8 Z" /></svg><span>Matthew</span>
       </div>
@@ -161,7 +162,7 @@ function OtherWork() {
     <>
       <Title c="other" x={120} y={1370} size={170}>Other</Title>
       <Title c="other" x={420} y={1480} size={260} outline>Work</Title>
-      <Shot c="other" x={130} y={1770} w={470} img="ledger" iw={1000} ih={621} alt="Ledger finance dashboard" nm="Ledger · web app" ln="Personal finance with AI transaction entry." />
+      <Shot c="other" x={130} y={1770} w={470} img="ledger" iw={1000} ih={621} alt="Ledger finance dashboard" nm="Ledger · web app" ln="Business finance dashboard with AI transaction entry." />
       <Shot c="other" x={645} y={1770} w={470} img="msa" iw={1000} ih={625} alt="MSA architecture portfolio" nm="MSA · client site" ln="Portfolio for an architecture student." />
       <Shot c="other" x={1160} y={1770} w={470} img="redcross" iw={1000} ih={625} alt="Red Cross Reigate pub site" nm="Red Cross · client site" ln="Landing page for a pub in Reigate." />
       <Shot c="other" x={130} y={2200} w={470} img="youtube" iw={1000} ih={474} alt="YouTube clone home feed" nm="YouTube clone · practice" ln="Full-stack video platform with auth." />
@@ -244,7 +245,7 @@ function MgkWires() {
   )
 }
 
-export default function Board({ cvLabel, onCv }: { cvLabel: string; onCv: () => void }) {
+export default function Board({ onCv }: { onCv: () => void }) {
   return (
     <>
       <Frame c="hero" x={100} y={120} w={1560} h={1000} label="00 · Hero" />
@@ -254,7 +255,7 @@ export default function Board({ cvLabel, onCv }: { cvLabel: string; onCv: () => 
       <Frame c="about" x={100} y={2880} w={1560} h={900} label="05 · About" />
       <Frame c="how" x={1740} y={4090} w={2920} h={760} label="04 · How I work · first idea" />
       <Frame c="contact" x={100} y={3860} w={1560} h={640} label="06 · Contact" />
-      <Hero cvLabel={cvLabel} onCv={onCv} />
+      <Hero onCv={onCv} />
       <Frunt />
       <MgkFitness />
       <MgkWires />

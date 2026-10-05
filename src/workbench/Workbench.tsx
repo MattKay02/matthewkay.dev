@@ -1,14 +1,14 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { FiFileText } from 'react-icons/fi'
+import { CvViewer } from '@/cv/CvViewer'
 import Board, { PART_IDS } from './Board'
 import { mountWorkbench, LOOKS, type Look, type WorkbenchApi } from './controller'
-import { FaGithub, FaLinkedin, FiDownload, IconLinks } from './icons'
+import { FaGithub, FaLinkedin, IconLinks } from './icons'
 import { CHAPTERS, LINKS, NAV_ITEMS, stops, type Stop } from './stops'
 
-const CV_PENDING = 'CV coming soon'
-
-export default function Workbench() {
+export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
   const world = useRef<HTMLDivElement>(null)
   const stage = useRef<HTMLDivElement>(null)
   const track = useRef<HTMLDivElement>(null)
@@ -23,7 +23,9 @@ export default function Workbench() {
 
   const [shown, setShown] = useState(0)
   const [look, setLook] = useState<Look>('paper')
-  const [cvLabel, setCvLabel] = useState('Download CV')
+  const [cvOpen, setCvOpen] = useState(false)
+  const openCv = useCallback(() => setCvOpen(true), [])
+  const closeCv = useCallback(() => setCvOpen(false), [])
 
   useEffect(() => {
     const els = {
@@ -35,11 +37,10 @@ export default function Workbench() {
     api.current = a
     const current = document.documentElement.dataset.style as Look | undefined
     if (current && LOOKS.includes(current)) setLook(current)
+    if (location.hash === '#cv') setCvOpen(true) // a shareable link straight to the CV
     return () => { a.destroy(); api.current = null }
   }, [])
 
-  // The CV isn't uploaded yet; say so rather than offer a broken download.
-  const onCv = useCallback(() => setCvLabel(CV_PENDING), [])
   const chooseLook = (l: Look) => { setLook(l); api.current?.setLook(l) }
   const stop = stops[shown]
 
@@ -48,7 +49,7 @@ export default function Workbench() {
       <div id="track" ref={track} aria-hidden="true" />
       <div className="stage" ref={stage}>
         <div className="world" ref={world}>
-          <Board cvLabel={cvLabel} onCv={onCv} />
+          <Board onCv={openCv} />
         </div>
       </div>
       <div className="you" ref={you} aria-hidden="true">You</div>
@@ -73,7 +74,7 @@ export default function Workbench() {
             <span className="proto">Draft copy</span>
             <a className="ibtn" href={LINKS.github} target="_blank" rel="noopener" aria-label="GitHub"><FaGithub aria-hidden="true" /></a>
             <a className="ibtn" href={LINKS.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn"><FaLinkedin aria-hidden="true" /></a>
-            <button type="button" className="btn solid" onClick={onCv}>{cvLabel === CV_PENDING ? cvLabel : <>CV <FiDownload aria-hidden="true" /></>}</button>
+            <button type="button" className="btn solid" onClick={openCv}>CV <FiFileText aria-hidden="true" /></button>
           </div>
         </div>
       </header>
@@ -90,7 +91,7 @@ export default function Workbench() {
           ))}
         </div>
         <div className="cap-body swap" key={shown} aria-live="polite">
-          <GuideBody stop={stop} cvLabel={cvLabel} onCv={onCv} onGo={(c) => api.current?.goCluster(c)} onTile={(id) => api.current?.focusTile(id)} />
+          <GuideBody stop={stop} onCv={openCv} onGo={(c) => api.current?.goCluster(c)} onTile={(id) => api.current?.focusTile(id)} />
         </div>
         <div className="cap-nav">
           <button type="button" className="nav-prev" disabled={shown === 0} onClick={() => api.current?.prev()} aria-label="Previous stop">← Back</button>
@@ -102,6 +103,8 @@ export default function Workbench() {
         </div>
         <p className="hint">Scroll, use the ← → keys, or drag to look around</p>
       </aside>
+
+      <CvViewer open={cvOpen} onClose={closeCv} updated={cvUpdated} />
 
       <div className="mini" aria-hidden="true">
         <div className="mini-map" ref={mini} />
@@ -125,8 +128,8 @@ function Proof({ rows }: { rows: [string, string][] }) {
   return <ul className="proof">{rows.map(([b, s]) => <li key={b}><b>{b}</b><span>{s}</span></li>)}</ul>
 }
 
-function GuideBody({ stop, cvLabel, onCv, onGo, onTile }: {
-  stop: Stop; cvLabel: string; onCv: () => void; onGo: (c: Stop['c']) => void; onTile: (id: string) => void
+function GuideBody({ stop, onCv, onGo, onTile }: {
+  stop: Stop; onCv: () => void; onGo: (c: Stop['c']) => void; onTile: (id: string) => void
 }) {
   const [copied, setCopied] = useState('')
   const copy = () => {
@@ -148,7 +151,7 @@ function GuideBody({ stop, cvLabel, onCv, onGo, onTile }: {
         <>
           <Proof rows={[['frunt', 'Live'], ['Run', 'In App Store review'], ['Lift 2.0', 'Next']]} />
           <div className="ctas">
-            <button type="button" className="btn solid" onClick={onCv}>{cvLabel}</button>
+            <button type="button" className="btn solid" onClick={onCv}>View CV</button>
             <button type="button" className="btn ghost" onClick={() => onGo('contact')}>Get in touch</button>
           </div>
           <IconLinks />
@@ -161,7 +164,9 @@ function GuideBody({ stop, cvLabel, onCv, onGo, onTile }: {
         <>
           <div className="mail"><code>{LINKS.email}</code><button type="button" className="btn ghost" onClick={copy}>{copied || 'Copy'}</button></div>
           <IconLinks />
-          <div className="ctas"><button type="button" className="btn solid" onClick={onCv}>{cvLabel}</button></div>
+          <div className="ctas">
+            <button type="button" className="btn solid" onClick={onCv}>View CV</button>
+          </div>
         </>
       )}
     </>

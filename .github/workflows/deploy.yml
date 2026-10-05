@@ -22,6 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history: the CV's "Updated" date is when src/data/cv.ts last changed
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -34,6 +36,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm run build
+      # Print /cv to out/cv.pdf (fails if the CV runs past one A4 page).
+      - run: npx playwright install --with-deps chromium
+      - run: npm run cv
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out
