@@ -189,8 +189,7 @@ Loaded only when someone presses "Try it live", in a full-size overlay.
 | frunt `landing` | The public website | Send `Content-Security-Policy: frame-ancestors 'self' <portfolio origin>` on the landing page only. App routes refuse framing: `frame-ancestors 'self'` (and `X-Frame-Options: SAMEORIGIN`). |
 | `lift-preview`, `run-preview` | The real Flutter apps on fake data | Host each preview build at a stable path on the MGKFitness site (for example `/preview/lift/`), rebuilt on each release. The portfolio picks the screen with `?screen=<name>`. Same `frame-ancestors` rule as above, on those paths only. |
 
-`<portfolio origin>` is not decided yet (see Open decisions). Until then, allow
-the portfolio's preview deployment address.
+`<portfolio origin>` is **`https://matthewkay.dev`** (decided 5 Oct 2026).
 
 ## 6. The portfolio's side
 
@@ -221,8 +220,7 @@ the portfolio's preview deployment address.
 
 ## Open decisions
 
-1. **The portfolio's domain.** Needed for `frame-ancestors`. Held until the
-   positioning is settled.
+1. ~~**The portfolio's domain.**~~ Decided: `https://matthewkay.dev`.
 2. **Where each feed is hosted.** Any public storage with stable URLs works.
    Supabase Storage is the obvious choice, since both products already use
    Supabase; avoid committing screenshots back into a repo, which turns every

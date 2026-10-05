@@ -46,7 +46,8 @@ filter on screens), `--hm0`–`--hm4` (contribution graph levels), `--colfill` (
 
 12 columns, **103px wide with 24px gutters**, starting at x 130 (a 127px pitch). The name takes
 columns 1–8, "Kay" starts on column 4, the photo takes 10–12, the contribution graph spans all 12,
-and the icon links sit one per column (a 96px button plus a 31px gap is one column). Guides,
+and the icon links sit one per column (a 64px icon with no circle plus a 63px gap is one
+column), followed by the "View CV" button. Guides,
 widths and gaps are measured from the rendered type, so the numbers shown are true.
 
 ## Components (`src/workbench/parts.tsx`)
@@ -61,6 +62,7 @@ widths and gaps are measured from the rendered type, so the numbers shown are tr
 | `Browser` | A plain browser window for live websites; `long` scrolls the page on hover. |
 | `Tile` | One part of a product: index, name, status (filled dot = live), one line, tech. Clickable. |
 | `Shot` | A plain 16:10 screenshot card for smaller projects. |
+| `AppRow` (`apps.tsx`) | One app on one line: its icon (32px in the panel), name, status dot, and logo-only buttons for each live store and the website. `.release` is the same row at board scale (64px icon) under each app's phones. |
 | `SlotBox` | A dashed placeholder for content still to be designed (case studies). |
 | `Step`, `PassionCard`, `Spec` | How I work, About, small annotations. |
 
@@ -84,6 +86,9 @@ Screen content can change. Greyscale and dimming are applied to the screen conte
 
 ## Responsive
 
-Below 760px the guide panel becomes a bottom sheet, the minimap and look switch are hidden, and
-each stop's phone rect (`m`) frames a smaller area, usually a phone screen, so it reads on a
-phone.
+| Width | Change |
+|---|---|
+| ≤ 1366px | The guide panel narrows to 380px. |
+| ≤ 1280px | The minimap is hidden. |
+| ≤ 1180px | The top-bar nav is hidden. |
+| ≤ 1024px | The guide becomes a bottom sheet (at most 52% of the height); the look switch, kicker and hint are hidden; each stop's phone rect (`m`) frames a smaller area, usually a phone screen, so it reads on a phone or tablet. |

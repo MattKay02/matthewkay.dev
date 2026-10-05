@@ -71,6 +71,7 @@ src/workbench/
   Skills.tsx           skills shelf, read live from the skills repo's skills.json
   controller.ts        the camera and everything per-frame (imperative; returns destroy())
   Workbench.tsx        React shell: top bar, guide panel, minimap, stage
+  apps.tsx             app statuses and AppRow (icon, name, status, store and website buttons)
   icons.tsx            link icons and the MGKCodes monogram
 app/cv/page.tsx        the standalone CV page
 src/cv/                CvSheet (the A4 CV), CvViewer (viewer over the board + page shell),
@@ -79,16 +80,19 @@ src/data/
   cv.ts                Matthew's CV as data: the single source for /cv and /cv.pdf
   github.json          contribution calendar (generated)
   skills.json          skills manifest snapshot (generated; the live fetch overrides it)
+  apps.json            app facts: names, icons, store ids, websites (edited by hand)
+  stores.json          which store listings are live (generated)
 scripts/fetch-github.mjs   refreshes both snapshots: `npm run github`
+scripts/fetch-stores.mjs   checks the App Store and Google Play: `npm run stores`
 scripts/build-cv.mjs       prints /cv to out/cv.pdf after a build: `npm run cv`
-public/work/           every image on the board, plus the Apple frames
+public/work/           every image on the board, the Apple frames and the app icons
 docs/                  architecture, design system, screens-feed spec, storyboard history
 ```
 
 **Commands**: `npm run dev` (dev server, http://localhost:3000) · `npm run build` (static site in
 `out/`) · `npm run cv` (print the CV PDF; run after build) · `npm run cv:private` (copy with phone
 number, see below) · `npm run github` (refresh contribution graph + skills snapshot) ·
-`npm run preview`.
+`npm run stores` (refresh store statuses) · `npm run preview`.
 
 ### The CV is code
 
@@ -129,13 +133,28 @@ board is in board pixels; the world is 4760 × 4900.
 (phone), with no console errors. Check reduced motion when touching animation. The `run` and
 `lighthouse-audit` skills cover launching and performance checks.
 
+## Statuses are never typed by hand
+
+Nothing on the site or CV may go out of date on its own: no "in review", "next", version numbers
+or release dates in copy. Which apps are **live**, and which store buttons show, comes from
+`src/data/stores.json`, written by `scripts/fetch-stores.mjs` (`npm run stores`) from Apple's
+lookup API and the Google Play listings, on every deploy (daily). App facts (store ids, icons,
+websites) live in `src/data/apps.json`. An app reads "Live · actively updated" once any listing is
+live, otherwise "In development". Lift's App Store page only counts from version 2.0.0, because
+until then it still carries Liftio 1.4. The CV's "Live on …" wording uses the same data
+(`liveOn()` in `src/workbench/apps.tsx`). On the page, each app is one compact `AppRow`: its
+icon, name and status, then logo-only buttons (Apple, Google Play, a globe for the website), each
+with a hover title and an `aria-label`. The dashed case-study placeholders are hidden
+(`SHOW_SLOTS` in `stops.ts`) until the first case study exists.
+
 ## Facts (keep true; re-check before launch)
 
 - **frunt**: live SaaS. Manager web app; staff app on the App Store (June 2026) and Google Play.
   Instagram studio live since 21 Sep 2026. **WhatsApp is built but switched off; never list it as
   live.** Admin console and outreach + analytics are internal: no admin screenshots until they
   can be captured from the demo restaurant, never a real customer's data.
-- **MGKFitness**: Run 1.0 submitted to both stores on 2 Oct 2026 (in review). Lift 2.0 is next:
+- **MGKFitness**: Run is live on Google Play; its App Store listing shows up on the site by itself
+  once Apple approves it (in review on 5 Oct 2026). Lift is in development:
   the Flutter rebuild of Liftio (Liftio 1.4's backend stopped working in Aug 2026, so never
   present Liftio as live). Repo public by 11 Oct 2026. mgkfitness.mgkcodes.com has no tracking.
 - **Other work**: Ledger, MSA (client), Red Cross (client), YouTube clone and Netflix clone
@@ -148,8 +167,10 @@ board is in board pixels; the world is 4760 × 4900.
   also for getting hired) leads with the role he's applying for, **Product Engineer** (swap to
   "Software Developer" for general junior roles); **LinkedIn** stays "Founder of MGKCodes",
   because that's what he does now. Don't try to make them match.
-- **Domain**: held until positioning settles. `.design` only if design is the headline;
-  otherwise matthewkay.dev or .me (matthewkay.com and .co.uk are taken).
+- **Domain: decided.** **matthewkay.dev** (bought 5 Oct 2026, Cloudflare Registrar; DNS in
+  Cloudflare, DNS-only records pointing at GitHub Pages; set as the Pages custom domain, so
+  mattkay02.github.io redirects to it). `.dev` is HTTPS-only, so the Pages certificate must stay
+  valid; never proxy those DNS records.
 - **Case studies**: the dashed "Case study" and "What I learnt" slots. Agreed format: what I made
   → why → what I aimed for → challenges and decisions → where it landed → what I learnt.
 - **How I work** and **About** are first ideas.

@@ -24,9 +24,11 @@ src/workbench/parts.tsx   Frame, Title, Note, SlotBox, MacBook, IPhone, Browser,
 src/workbench/Skills.tsx  skills shelf (live skills.json)
 src/workbench/controller.ts  camera, rotation, focus, minimap, measurements, input
 src/workbench/Workbench.tsx  React shell: top bar, guide panel, minimap, stage
-src/data/                 github.json and skills.json snapshots (generated)
-scripts/fetch-github.mjs  refreshes both snapshots
-public/work/              board images and the Apple frames
+src/workbench/apps.tsx    app statuses (appStatus, liveOn) and the AppRow component
+src/data/                 github.json, skills.json and stores.json (generated); apps.json (by hand)
+scripts/fetch-github.mjs  refreshes the GitHub and skills snapshots
+scripts/fetch-stores.mjs  checks which App Store and Google Play listings are live
+public/work/              board images, the Apple frames and the app icons
 ```
 
 ## The board and the camera
@@ -40,8 +42,9 @@ stop gets `HOLD` (0.6 of a screen) of scroll where the camera rests, then `TRAVE
 the next stop. `pose(scrollY)` returns the current stop and how far along the move is.
 
 **Framing.** Each stop has a rect `r` (desktop) and optionally `m` (phones). `fit()` scales the
-rect into the free area of the screen: right of the guide panel on desktop, above the bottom
-sheet on phones. Moves ease in and out, interpolate zoom in log space, and pull back mid-flight
+rect into the free area of the screen: right of the guide panel (and left of the minimap, when
+it shows) on desktop, above the bottom sheet at 1024px and below (`SHEET_MAX`, kept in sync with
+the CSS breakpoint). Moves ease in and out, interpolate zoom in log space, and pull back mid-flight
 on long moves so the visitor can see where they're going.
 
 **Smoothing.** The rendered camera eases toward the target each frame. While it moves, the board
@@ -93,6 +96,12 @@ column stays clear before the photo.
 - **Skills**: `Skills.tsx` fetches the skills repo's `skills.json` in the browser and falls back
   to the committed snapshot. Adding a skill to the skills repo shows it here with no change to
   this repo; keep that contract.
+- **App statuses**: `scripts/fetch-stores.mjs` asks Apple's lookup API (by app id, UK store) and
+  loads each Google Play listing (a 200 means it's public), then writes `src/data/stores.json`.
+  `src/data/apps.json` holds the hand-written facts (names, icons, store ids, websites, and a
+  minimum version where an old app still occupies the listing, as Liftio does for Lift).
+  `appStatus()` in `apps.tsx` combines the two: an app is live if any listing is, and only live
+  listings get a button. The CV's "Live on …" uses the same function, so the site and CV agree.
 - **Product screens** are static files for now. `docs/screens-feed.md` specifies how the products
   will publish screens that update themselves.
 
@@ -112,10 +121,14 @@ instead; that copy is gitignored and never deployed.
 
 ## Build and deploy
 
-- `npm run dev` · `npm run build` (→ `out/`) · `npm run github` · `npm run preview`
-- `deploy.yml` runs on push to `main` and **daily**: `npm ci` → `npm run github` (allowed to
-  fail; the committed snapshots are used) → `npm run build` → install Chromium → `npm run cv` →
-  upload `out/` → GitHub Pages.
+- `npm run dev` · `npm run build` (→ `out/`) · `npm run github` · `npm run stores` ·
+  `npm run preview`
+- `deploy.yml` runs on push to `main` and **daily**: `npm ci` → `npm run github` → `npm run stores`
+  (both allowed to fail; the committed snapshots are used) → `npm run build` → install Chromium →
+  `npm run cv` → upload `out/` → GitHub Pages.
+- **Domain**: `matthewkay.dev`, the Pages custom domain (Cloudflare DNS: four A and four AAAA
+  records for GitHub Pages, `www` as a CNAME, all DNS-only). `.dev` only works over HTTPS, so the
+  Pages certificate has to stay valid; proxying the records through Cloudflare would break it.
 - `ci.yml` builds every pull request into `main` and prints the CV, so an overflowing CV fails
   the check.
 - **`main` auto-deploys**: do feature work on a branch.

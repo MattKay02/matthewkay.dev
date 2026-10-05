@@ -8,7 +8,7 @@ you scroll. A guide panel tells the story stop by stop, so the page reads well e
 scroll straight through. Click a frame to jump to it, click a part of a product to look closer,
 or drag to look around.
 
-🔗 **Live:** [mattkay02.github.io](https://mattkay02.github.io)
+🔗 **Live:** [matthewkay.dev](https://matthewkay.dev)
 
 ## What's on the board
 
@@ -19,8 +19,10 @@ or drag to look around.
 - **Other work**, **How I work** (including the Claude Code skills I've built, read live from
   [my skills repo](https://github.com/MattKay02/skills)), **About** and **Contact**.
 - The hero carries my **GitHub contribution graph**, refreshed daily.
+- **App statuses are checked, not typed.** Every deploy asks the App Store and Google Play which
+  listings are live, so an app shows as live, with a button for each store, the day it's approved.
 - My **CV** is generated from the same repo: [`src/data/cv.ts`](src/data/cv.ts) renders
-  [`/cv`](https://mattkay02.github.io/cv/), and every deploy prints it to `/cv.pdf`, dated by
+  [`/cv`](https://matthewkay.dev/cv/), and every deploy prints it to `/cv.pdf`, dated by
   when the CV last changed.
 
 ## Design
@@ -43,6 +45,7 @@ npm run dev       # http://localhost:3000
 npm run build     # static site in out/
 npm run cv        # print the CV to out/cv.pdf (after build)
 npm run github    # refresh the contribution graph and the skills snapshot
+npm run stores    # check which App Store and Google Play listings are live
 npm run preview   # serve out/ locally
 ```
 
@@ -50,7 +53,9 @@ npm run preview   # serve out/ locally
 
 Pushes to `main` deploy to GitHub Pages through
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), which also rebuilds once a day
-so the contribution graph stays current. Pull requests run a build check
+so the contribution graph and app statuses stay current. The site is served at
+[matthewkay.dev](https://matthewkay.dev) (a custom domain on GitHub Pages; DNS in Cloudflare).
+Pull requests run a build check
 ([`ci.yml`](.github/workflows/ci.yml)).
 
 ## License
