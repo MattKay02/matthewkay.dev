@@ -8,7 +8,8 @@ import {
   Browser, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Step, Tile, Title,
 } from './parts'
 import SkillsShelf from './Skills'
-import type { Cluster } from './stops'
+import { SHOW_SLOTS, type Cluster } from './stops'
+import { AppRow, appStatus } from './apps'
 
 const d = (delay: string) => ({ '--d': delay }) as CSSProperties
 
@@ -23,12 +24,15 @@ export const FRUNT_PARTS: Part[] = [
   { name: 'Outreach + analytics', status: 'In use', line: 'Sourcing, email, calls and visits, with PostHog and Search Console showing what works.', tech: 'Notion · Gmail · Vercel cron · Search Console', focus: 'self' },
 ]
 
+const run = appStatus('run'), lift = appStatus('lift')
+const appState = (live: boolean) => (live ? 'Live' : 'In development')
+
 export const MGK_PARTS: Part[] = [
-  { name: 'Run', status: 'In review', line: 'Running tracker and training coach. Submitted to both stores on 2 October.', tech: 'Flutter · GPS · shared design system', focus: '3580,2560,580,650' },
-  { name: 'Lift', status: 'In progress', line: 'Strength log with a coach of its own. The rewrite of Liftio.', tech: 'Flutter · shared design system', focus: '2800,2560,580,650' },
-  { name: 'Backend + AI coach', status: 'Built', line: 'One account across both apps. The coach plans around your whole week.', tech: 'Supabase · Edge Functions · OpenRouter · RevenueCat', focus: 'self' },
+  { name: 'Run', status: appState(run.live), live: run.live, line: 'Running tracker with an AI training coach.', tech: 'Flutter · GPS · shared design system', focus: '3580,2560,580,650' },
+  { name: 'Lift', status: appState(lift.live), live: lift.live, line: 'Strength log with a coach of its own. The rebuild of Liftio.', tech: 'Flutter · shared design system', focus: '2800,2560,580,650' },
+  { name: 'Backend + AI coach', status: run.live ? 'Live' : 'Built', live: run.live, line: 'One account across both apps. The coach plans around your whole week.', tech: 'Supabase · Edge Functions · OpenRouter · RevenueCat', focus: 'self' },
   { name: 'Website', status: 'Live', live: true, line: 'Scroll film, waiting list, support and legal pages. No tracking, by design.', tech: 'Next.js 16 · Replicate clips', focus: '3860,2080,660,470' },
-  { name: 'Social', status: 'In progress', line: "Posts drawn in Remotion from the site's own words, published through the Instagram API.", tech: 'Remotion · Instagram API', focus: 'self' },
+  { name: 'Social', status: 'In development', line: "Posts drawn in Remotion from the site's own words, published through the Instagram API.", tech: 'Remotion · Instagram API', focus: 'self' },
   { name: 'Release ops', status: 'In use', line: 'Store listings and submissions run from Claude Code; builds on Codemagic.', tech: 'App Store Connect · Google Play · Codemagic', focus: 'self' },
 ]
 
@@ -126,8 +130,10 @@ function Frunt() {
       <Browser c="frunt" x={3720} y={110} w={700} url="https://frunthospitality.com/" img="site-frunt-long" iw={640} ih={3185}
         alt="frunthospitality.com, the frunt website" caption="Website · hover to scroll" long focus="3700,70,740,560" />
       <Parts c="frunt" prefix="ft" parts={FRUNT_PARTS} x0={1790} y0={1480} />
-      <SlotBox c="frunt" x={3620} y={1480} w={1000} h={200} title="Case study" />
-      <SlotBox c="frunt" x={3620} y={1700} w={1000} h={200} title="What I learnt" />
+      {SHOW_SLOTS && <SlotBox c="frunt" x={3620} y={1480} w={1000} h={200} title="Case study" />}
+      {SHOW_SLOTS && <SlotBox c="frunt" x={3620} y={1700} w={1000} h={200} title="What I learnt" />}
+      <img className="brand-mark" data-c="frunt" src={IMG('frunt-icon')} width={256} height={256} alt="frunt" style={{ left: 1790, top: 110, width: 110, height: 110 }} />
+      <AppRow app="frunt" web={false} c="frunt" className="release" style={{ left: 3720, top: 1372 }} />
     </>
   )
 }
@@ -140,16 +146,19 @@ function MgkFitness() {
       <IPhone c="mgk" x={1780} y={2590} w={260} img="liftio-home" iw={560} ih={1212} alt="Liftio 1.4 home screen" caption="Liftio 1.4 · React Native" />
       <IPhone c="mgk" x={2060} y={2650} w={260} img="liftio-tracking" iw={560} ih={1212} alt="Liftio 1.4 workout tracking" />
       <IPhone c="mgk" x={2340} y={2590} w={260} img="liftio-detail" iw={560} ih={1212} alt="Liftio 1.4 exercise detail with a progress chart" />
-      <IPhone c="mgk" x={2820} y={2590} w={260} img="lift-log" iw={560} ih={1212} alt="Lift 2.0 logging a workout" caption="Lift 2.0 · Flutter" />
+      <IPhone c="mgk" x={2820} y={2590} w={260} img="lift-log" iw={560} ih={1212} alt="Lift 2.0 logging a workout" caption="Lift · Flutter" />
       <IPhone c="mgk" x={3100} y={2650} w={260} img="lift-plan" iw={560} ih={1212} alt="Lift 2.0 plan" />
-      <IPhone c="mgk" x={3600} y={2590} w={260} img="run-record" iw={560} ih={1214} alt="Run recording a run" caption="Run 1.0 · Flutter" />
+      <IPhone c="mgk" x={3600} y={2590} w={260} img="run-record" iw={560} ih={1214} alt="Run recording a run" caption="Run · Flutter" />
       <IPhone c="mgk" x={3880} y={2650} w={260} img="run-plan" iw={560} ih={1214} alt="Run training plan" />
-      <Note c="mgk" x={2820} y={3270} w={780} kicker="Decision 0001 · accepted 17 Aug 2026"
+      <Note c="mgk" x={2820} y={3305} w={780} kicker="Decision 0001 · accepted 17 Aug 2026"
         quote={'"Retiring a live record to avoid an untidy string is paying a real cost for a cosmetic one."'}>
         Liftio is replaced, not relaunched.
       </Note>
-      <SlotBox c="mgk" x={3650} y={3290} w={470} h={200} title="Case study" />
-      <SlotBox c="mgk" x={4150} y={3290} w={470} h={200} title="What I learnt" />
+      {SHOW_SLOTS && <SlotBox c="mgk" x={3650} y={3290} w={470} h={200} title="Case study" />}
+      {SHOW_SLOTS && <SlotBox c="mgk" x={4150} y={3290} w={470} h={200} title="What I learnt" />}
+      <img className="brand-mark" data-c="mgk" src={IMG('mgkfitness-icon')} width={256} height={256} alt="MGKFitness" style={{ left: 2250, top: 2105, width: 110, height: 110 }} />
+      <AppRow app="lift" web={false} c="mgk" className="release" style={{ left: 2820, top: 3200 }} />
+      <AppRow app="run" web={false} c="mgk" className="release" style={{ left: 3600, top: 3215 }} />
       <Browser c="mgk" x={3880} y={2105} w={620} url="https://mgkfitness.mgkcodes.com/" img="site-mgkfitness" iw={1000} ih={625}
         alt="mgkfitness.mgkcodes.com, the MGKFitness website" caption="Website" focus="3860,2080,660,470" />
       <Parts c="mgk" prefix="mt" parts={MGK_PARTS} x0={1790} y0={3560} />
@@ -253,7 +262,7 @@ export default function Board({ onCv }: { onCv: () => void }) {
       <Frame c="other" x={100} y={1320} w={1560} h={1440} label="03 · Other work" />
       <Frame c="mgk" x={1740} y={2070} w={2920} h={1940} label="02 · MGKFitness" />
       <Frame c="about" x={100} y={2880} w={1560} h={900} label="05 · About" />
-      <Frame c="how" x={1740} y={4090} w={2920} h={760} label="04 · How I work · first idea" />
+      <Frame c="how" x={1740} y={4090} w={2920} h={760} label="04 · How I work" />
       <Frame c="contact" x={100} y={3860} w={1560} h={640} label="06 · Contact" />
       <Hero onCv={onCv} />
       <Frunt />

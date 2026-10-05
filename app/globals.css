@@ -207,6 +207,32 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 .step .ev { margin-top: auto; font: 500 calc(14px * var(--ls))/1.3 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--muted); }
 .contactline { white-space: nowrap; font: 500 32px/1.4 var(--mono); color: var(--text2); }
 
+/* Apps and where they're live (statuses from the stores, see src/workbench/apps.tsx). */
+.app-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "ic meta links"; column-gap: 12px; align-items: center; }
+.app-ic { grid-area: ic; width: 32px; height: 32px; border-radius: 22%; box-shadow: var(--ring); }
+.app-meta { grid-area: meta; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; }
+.app-meta b { font: 500 calc(13px * var(--ls))/1.1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--strong); }
+.app-st { display: inline-flex; align-items: center; gap: 6px; font: 500 calc(11px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--muted); white-space: nowrap; }
+.app-st::before { content: ""; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--strong); }
+.app-st.live::before { background: var(--strong); }
+.app-links { grid-area: links; display: flex; gap: 4px; }
+.app-links a { display: inline-grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--line); border-radius: var(--r-btn); color: var(--text2); }
+.app-links a:hover { border-color: var(--strong); background: var(--strong); color: var(--bg); }
+.app-links svg { width: 14px; height: 14px; }
+.apps { display: flex; flex-direction: column; gap: 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+/* The same row on the board, at board scale, under each app's phones. */
+.release { z-index: 3; }
+.release.app-row { column-gap: 20px; }
+.release .app-ic { width: 64px; height: 64px; }
+.release .app-meta { gap: 8px; }
+.release .app-meta b { font-size: calc(24px * var(--ls)); }
+.release .app-st { font-size: calc(17px * var(--ls)); }
+.release .app-st::before { width: 11px; height: 11px; }
+.release .app-links { gap: 8px; margin-left: 12px; }
+.release .app-links a { width: 52px; height: 52px; background: var(--surface); }
+.release .app-links svg { width: 24px; height: 24px; }
+.brand-mark { z-index: 3; border-radius: 22%; box-shadow: var(--ring); }
+
 /* The skills shelf: read live from the skills repo's manifest. */
 .skills { z-index: 2; }
 .sk-head { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font: 500 calc(18px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--text2); }
@@ -383,7 +409,11 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 
 @media (max-width: 1180px) { .nav { display: none; } .bar-right { margin-left: auto; } }
 @media (min-width: 1181px) { .bar-right { margin-left: 0; } }
-@media (max-width: 760px) {
+/* Medium desktops: a narrower panel and no minimap, so the board keeps a usable area. */
+@media (max-width: 1366px) { .cap { width: 380px; } }
+@media (max-width: 1280px) { .mini { display: none; } }
+/* Phones, tablets and narrow windows: the guide becomes a bottom sheet (keep in sync with SHEET_MAX in controller.ts). */
+@media (max-width: 1024px) {
   .who, .proto, .mini, .looks, .cap .hint, .cap .kick, .cap .slots { display: none; }
   .bar-in { gap: 10px; padding-inline: 12px; }
   .bar .btn { padding: 8px 11px; }

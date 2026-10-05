@@ -6,6 +6,9 @@
 // statuses true, no em dashes, and never put a phone number here; the private
 // copy gets it from the CV_PHONE environment variable (npm run cv:private).
 import { LINKS } from '@/workbench/stops'
+import { liveOn } from '@/workbench/apps'
+
+const runLive = liveOn('run')
 
 export interface CvLink { label: string; href: string }
 export interface CvProduct { name: string; tagline: string; link?: CvLink; bullets: string[] }
@@ -21,11 +24,11 @@ export const cv = {
   links: [
     { label: 'github.com/MattKay02', href: LINKS.github },
     { label: 'linkedin.com/in/matthew-kay-', href: LINKS.linkedin },
-    { label: 'mattkay02.github.io', href: 'https://mattkay02.github.io' },
+    { label: 'matthewkay.dev', href: 'https://matthewkay.dev' },
   ] as CvLink[],
 
   profile:
-    'Founder of MGKCodes, my own software studio, where I design, build and ship complete products: frunt, a live SaaS for restaurant teams that grew out of my years working in busy restaurants, and MGKFitness, a suite of Flutter fitness apps now in store review. A computer science foundation from two years of a BSc, and an AI-assisted workflow I build my own tools for. Looking for a junior role in a strong product team.',
+    'Founder of MGKCodes, my own software studio, where I design, build and ship complete products: frunt, a live SaaS for restaurant teams that grew out of my years working in busy restaurants, and MGKFitness, a suite of Flutter fitness apps I\'m actively building. A computer science foundation from two years of a BSc, and an AI-assisted workflow I build my own tools for. Looking for a junior role in a strong product team.',
 
   skills: [
     { group: 'Languages', items: 'TypeScript, JavaScript, Dart, Python, SQL, HTML / CSS (C++, academic)' },
@@ -60,7 +63,7 @@ export const cv = {
           link: { label: 'mgkfitness.mgkcodes.com', href: 'https://mgkfitness.mgkcodes.com' },
           bullets: [
             'Rebuilt my first App Store app, Liftio (React Native, RevenueCat subscriptions, EAS builds), as Lift: one app in a Flutter suite with Run, sharing a design system, a backend and an account.',
-            'Run 1.0 submitted to the App Store and Google Play in October 2026: an AI coach on Supabase Edge Functions and OpenRouter, RevenueCat subscriptions, and releases run from Claude Code and Codemagic.',
+            `Run: a running tracker with an AI coach on Supabase Edge Functions and OpenRouter, RevenueCat subscriptions, and releases run from Claude Code and Codemagic.${runLive ? ` Live on ${runLive}.` : ''}`,
           ],
         },
       ],

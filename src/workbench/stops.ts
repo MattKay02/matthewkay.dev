@@ -4,7 +4,7 @@
 
 export type Cluster = 'hero' | 'all' | 'frunt' | 'mgk' | 'other' | 'how' | 'about' | 'contact'
 export type Rect = [number, number, number, number]
-export type Extra = 'heroProof' | 'slots' | 'slotsOne' | 'mgkProof' | 'contact'
+export type Extra = 'heroProof' | 'slots' | 'slotsOne' | 'fruntApps' | 'mgkApps' | 'contact'
 
 export interface Stop {
   c: Cluster
@@ -13,7 +13,6 @@ export interface Stop {
   nav: string
   kicker?: string
   title: string
-  draft?: boolean
   body?: string
   extra?: Extra
   layers?: boolean
@@ -23,13 +22,16 @@ export interface Stop {
 
 export const WORLD = { w: 4760, h: 4900 }
 
+/** The dashed case-study placeholders. Off until the first case study exists. */
+export const SHOW_SLOTS = false
+
 export const CHAPTERS: Record<Cluster, string> = {
   hero: 'Intro',
   all: 'The whole board',
   frunt: '01 · frunt · main project',
   mgk: '02 · MGKFitness',
   other: '03 · Other work',
-  how: '04 · How I work · first idea',
+  how: '04 · How I work',
   about: '05 · About',
   contact: '06 · Contact',
 }
@@ -47,8 +49,8 @@ export const NAV_ITEMS: { c: Cluster; label: string }[] = [
 export const stops: Stop[] = [
   {
     c: 'hero', r: [100, 120, 1560, 1000], m: [100, 150, 1520, 960], nav: 'Intro',
-    kicker: 'Matthew Kay · Portfolio 2026',
-    title: 'Product engineer. I design and build polished apps, end to end.', draft: true,
+    kicker: 'Matthew Kay · Portfolio',
+    title: 'Product engineer. I design and build polished apps, end to end.',
     extra: 'heroProof',
   },
   {
@@ -69,7 +71,7 @@ export const stops: Stop[] = [
   },
   {
     c: 'frunt', r: [1740, 30, 2920, 1910], m: [1770, 1460, 1180, 460], nav: 'frunt: the whole system',
-    layers: true, extra: 'slots',
+    layers: true, extra: 'fruntApps',
     title: 'More than an app.',
     body: 'frunt is six parts I designed, built and run: two apps, a website, an admin console, an Instagram studio and an outreach engine.',
   },
@@ -85,7 +87,7 @@ export const stops: Stop[] = [
   },
   {
     c: 'mgk', r: [2780, 2520, 1880, 1060], m: [3360, 2530, 800, 700], nav: 'MGKFitness: the suite',
-    extra: 'mgkProof',
+    extra: 'mgkApps',
     title: 'Two apps that know about each other.',
     body: 'Log a run in Run and Lift sees it, so the coach plans around your whole week.',
   },

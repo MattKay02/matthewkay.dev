@@ -37,6 +37,8 @@ type Lap = {
 }
 
 const HOLD = 0.6, TRAVEL = 1.0, MINI_W = 130
+/** At or below this width the guide is a bottom sheet (matches the 1024px breakpoint in globals.css). */
+const SHEET_MAX = 1024
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
 const mix = (a: number, b: number, e: number) => a + (b - a) * e
 const clamp = (v: number, max: number) => Math.max(0, Math.min(max, v))
@@ -58,9 +60,11 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
   }
 
   // ---------- geometry ----------
-  let vw = 0, vh = 0, narrow = false
+  let vw = 0, vh = 0, narrow = false, miniShown = true
   function layout() {
-    vw = innerWidth; vh = innerHeight; narrow = vw < 760
+    vw = innerWidth; vh = innerHeight
+    narrow = matchMedia(`(max-width: ${SHEET_MAX}px)`).matches
+    miniShown = !!mini.parentElement && getComputedStyle(mini.parentElement).display !== 'none'
     track.style.height = ((stops.length * HOLD + (stops.length - 1) * TRAVEL) * vh + vh) + 'px'
   }
   function area() {
@@ -70,7 +74,8 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
       return { x: 10, y: top + 10, w: vw - 20, h: Math.max(120, vh - top - ch - 20) }
     }
     const left = cap.getBoundingClientRect().right + 20
-    return { x: left, y: top + 20, w: Math.max(200, vw - 190 - left), h: vh - top - 40 }
+    // Keep clear of the minimap only when it is showing.
+    return { x: left, y: top + 20, w: Math.max(200, vw - (miniShown ? 190 : 24) - left), h: vh - top - 40 }
   }
   function fitRect(r: Rect, pad = 0.92): Cam {
     const a = area()

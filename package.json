@@ -9,7 +9,8 @@
     "cv": "node scripts/build-cv.mjs",
     "cv:private": "node scripts/build-cv.mjs --private",
     "github": "node scripts/fetch-github.mjs",
-    "preview": "npx --yes serve out"
+    "preview": "npx --yes serve out",
+    "stores": "node scripts/fetch-stores.mjs"
   },
   "repository": {
     "type": "git",

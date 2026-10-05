@@ -35,6 +35,10 @@ jobs:
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Check the App Store and Google Play: decides which apps show as live and
+      # which store buttons appear. Falls back to src/data/stores.json if it fails.
+      - run: npm run stores
+        continue-on-error: true
       - run: npm run build
       # Print /cv to out/cv.pdf (fails if the CV runs past one A4 page).
       - run: npx playwright install --with-deps chromium

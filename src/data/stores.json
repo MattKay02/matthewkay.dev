@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-10-05T22:17:23.566Z",
+  "apps": {
+    "frunt": {
+      "apple": {
+        "live": true,
+        "url": "https://apps.apple.com/gb/app/frunt-restaurant-prep/id6776269289",
+        "version": "1.1.0",
+        "updated": "2026-07-23"
+      },
+      "google": {
+        "live": true,
+        "url": "https://play.google.com/store/apps/details?id=com.frunt.frunt_mobile"
+      }
+    },
+    "run": {
+      "apple": {
+        "live": false
+      },
+      "google": {
+        "live": true,
+        "url": "https://play.google.com/store/apps/details?id=com.mgkcodes.fitness.run"
+      }
+    },
+    "lift": {
+      "apple": {
+        "live": false,
+        "url": "https://apps.apple.com/app/id6759969740",
+        "version": "1.4.0",
+        "updated": "2026-04-30"
+      },
+      "google": {
+        "live": false,
+        "url": "https://play.google.com/store/apps/details?id=com.mgkcodes.liftio"
+      }
+    }
+  }
+}

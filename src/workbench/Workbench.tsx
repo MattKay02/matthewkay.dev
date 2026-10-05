@@ -6,7 +6,8 @@ import { CvViewer } from '@/cv/CvViewer'
 import Board, { PART_IDS } from './Board'
 import { mountWorkbench, LOOKS, type Look, type WorkbenchApi } from './controller'
 import { FaGithub, FaLinkedin, IconLinks } from './icons'
-import { CHAPTERS, LINKS, NAV_ITEMS, stops, type Stop } from './stops'
+import { AppRow } from './apps'
+import { CHAPTERS, LINKS, NAV_ITEMS, SHOW_SLOTS, stops, type Stop } from './stops'
 
 export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
   const world = useRef<HTMLDivElement>(null)
@@ -71,7 +72,6 @@ export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
                 </button>
               ))}
             </div>
-            <span className="proto">Draft copy</span>
             <a className="ibtn" href={LINKS.github} target="_blank" rel="noopener" aria-label="GitHub"><FaGithub aria-hidden="true" /></a>
             <a className="ibtn" href={LINKS.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn"><FaLinkedin aria-hidden="true" /></a>
             <button type="button" className="btn solid" onClick={openCv}>CV <FiFileText aria-hidden="true" /></button>
@@ -115,6 +115,7 @@ export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
 }
 
 function Slots({ one }: { one?: boolean }) {
+  if (!SHOW_SLOTS) return null
   if (one) return <div className="slots one"><div className="slot"><b>What each one taught me</b><em>Slot · designed next</em></div></div>
   return (
     <div className="slots">
@@ -122,10 +123,6 @@ function Slots({ one }: { one?: boolean }) {
       <div className="slot"><b>What I learnt</b><em>Slot · designed next</em></div>
     </div>
   )
-}
-
-function Proof({ rows }: { rows: [string, string][] }) {
-  return <ul className="proof">{rows.map(([b, s]) => <li key={b}><b>{b}</b><span>{s}</span></li>)}</ul>
 }
 
 function GuideBody({ stop, onCv, onGo, onTile }: {
@@ -139,7 +136,7 @@ function GuideBody({ stop, onCv, onGo, onTile }: {
   return (
     <>
       {stop.kicker && <span className="kick">{stop.kicker}</span>}
-      <h2>{stop.title}{stop.draft && <span className="chip">Draft line</span>}</h2>
+      <h2>{stop.title}</h2>
       {stop.body && <p>{stop.body}</p>}
       {parts && (
         <div className="layers">
@@ -149,7 +146,7 @@ function GuideBody({ stop, onCv, onGo, onTile }: {
       )}
       {stop.extra === 'heroProof' && (
         <>
-          <Proof rows={[['frunt', 'Live'], ['Run', 'In App Store review'], ['Lift 2.0', 'Next']]} />
+          <div className="apps"><AppRow app="frunt" /><AppRow app="run" /><AppRow app="lift" /></div>
           <div className="ctas">
             <button type="button" className="btn solid" onClick={onCv}>View CV</button>
             <button type="button" className="btn ghost" onClick={() => onGo('contact')}>Get in touch</button>
@@ -157,7 +154,8 @@ function GuideBody({ stop, onCv, onGo, onTile }: {
           <IconLinks />
         </>
       )}
-      {stop.extra === 'mgkProof' && <Proof rows={[['Run 1.0', 'In App Store review'], ['Lift 2.0', 'Next'], ['Source', 'Open from 11 Oct']]} />}
+      {stop.extra === 'fruntApps' && <div className="apps"><AppRow app="frunt" /></div>}
+      {stop.extra === 'mgkApps' && <div className="apps"><AppRow app="run" /><AppRow app="lift" /></div>}
       {stop.extra === 'slots' && <Slots />}
       {stop.extra === 'slotsOne' && <Slots one />}
       {stop.extra === 'contact' && (

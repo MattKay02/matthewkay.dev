@@ -9,6 +9,7 @@ const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500'], variabl
 export const metadata: Metadata = {
   title: 'Matthew Kay · Product engineer',
   description: 'I design and build polished apps, end to end: frunt, MGKFitness and the studio behind them, MGKCodes.',
+  metadataBase: new URL('https://matthewkay.dev'),
   icons: { icon: '/favicon.svg' },
   openGraph: {
     title: 'Matthew Kay · Product engineer',
