@@ -1,7 +1,14 @@
 node_modules
 dist
+.next
+out
+next-env.d.ts
+*.tsbuildinfo
 .DS_Store
 *.local
 
 # Local Claude Code settings — personal, machine-specific permission grants
 .claude/settings.local.json
+
+# Browser-automation scratch output
+.playwright-mcp

@@ -1,0 +1,267 @@
+// The board: every cluster laid out in board pixels. Columns in the hero follow
+// a 12-column grid (column 103, gutter 24, starting at x 130).
+import type { CSSProperties } from 'react'
+import gh from '@/data/github.json'
+import { FaGithub, FiDownload, IconLinks } from './icons'
+import {
+  Browser, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Step, Tile, Title,
+} from './parts'
+import SkillsShelf from './Skills'
+import type { Cluster } from './stops'
+
+const d = (delay: string) => ({ '--d': delay }) as CSSProperties
+
+export interface Part { name: string; status: string; live?: boolean; line: string; tech: string; focus: string }
+
+export const FRUNT_PARTS: Part[] = [
+  { name: 'Manager app', status: 'Live', live: true, line: 'Documents in; training, a rota and sourced answers out.', tech: 'Next.js · Supabase pgvector · Claude · Inngest · Stripe', focus: '2230,400,1440,980' },
+  { name: 'Staff app', status: 'Live', live: true, line: 'Ask, read, sign off and train from a phone. On the App Store and Google Play.', tech: 'Flutter · Firebase messaging', focus: '3700,640,740,740' },
+  { name: 'Website', status: 'Live', live: true, line: 'Marketing site, pricing and ten UK-law guides, built to be found.', tech: 'Next.js · structured data · llms.txt', focus: '3700,70,740,560' },
+  { name: 'Admin console', status: 'In use', line: 'How I run the business: customers, revenue, AI cost per feature, health checks.', tech: 'Stripe · PostHog · Sentry · GitHub + Vercel APIs', focus: 'self' },
+  { name: 'Instagram studio', status: 'Live', live: true, line: 'Claude proposes posts and I approve them; they render, schedule, publish and report back.', tech: 'Instagram API · Inngest · Satori', focus: 'self' },
+  { name: 'Outreach + analytics', status: 'In use', line: 'Sourcing, email, calls and visits, with PostHog and Search Console showing what works.', tech: 'Notion · Gmail · Vercel cron · Search Console', focus: 'self' },
+]
+
+export const MGK_PARTS: Part[] = [
+  { name: 'Run', status: 'In review', line: 'Running tracker and training coach. Submitted to both stores on 2 October.', tech: 'Flutter · GPS · shared design system', focus: '3580,2560,580,650' },
+  { name: 'Lift', status: 'In progress', line: 'Strength log with a coach of its own. The rewrite of Liftio.', tech: 'Flutter · shared design system', focus: '2800,2560,580,650' },
+  { name: 'Backend + AI coach', status: 'Built', line: 'One account across both apps. The coach plans around your whole week.', tech: 'Supabase · Edge Functions · OpenRouter · RevenueCat', focus: 'self' },
+  { name: 'Website', status: 'Live', live: true, line: 'Scroll film, waiting list, support and legal pages. No tracking, by design.', tech: 'Next.js 16 · Replicate clips', focus: '3860,2080,660,470' },
+  { name: 'Social', status: 'In progress', line: "Posts drawn in Remotion from the site's own words, published through the Instagram API.", tech: 'Remotion · Instagram API', focus: 'self' },
+  { name: 'Release ops', status: 'In use', line: 'Store listings and submissions run from Claude Code; builds on Codemagic.', tech: 'App Store Connect · Google Play · Codemagic', focus: 'self' },
+]
+
+/** Tile ids per cluster, so the guide panel can offer them as chips. */
+export const PART_IDS: Partial<Record<Cluster, { id: string; name: string }[]>> = {
+  frunt: FRUNT_PARTS.map((p, i) => ({ id: `ft${i + 1}`, name: p.name })),
+  mgk: MGK_PARTS.map((p, i) => ({ id: `mt${i + 1}`, name: p.name })),
+}
+
+function Parts({ c, prefix, parts, x0, y0 }: { c: Cluster; prefix: string; parts: Part[]; x0: number; y0: number }) {
+  return (
+    <>
+      {parts.map((p, k) => (
+        <Tile key={p.name} id={`${prefix}${k + 1}`} c={c} ix={String(k + 1).padStart(2, '0')} name={p.name} status={p.status}
+          live={p.live} line={p.line} tech={p.tech} focus={p.focus}
+          x={x0 + (k % 3) * 600} y={y0 + Math.floor(k / 3) * 220} w={570} h={200} />
+      ))}
+    </>
+  )
+}
+
+// ---------- hero: the GitHub contribution graph, on the grid ----------
+const CELL = 23, PITCH = 28
+const fmtDay = (iso: string) => new Date(iso + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
+
+function GitHubGraph() {
+  const months: { x: number; label: string }[] = []
+  let last = -1
+  gh.weeks.forEach((w, i) => {
+    const m = new Date(w[0].d + 'T00:00:00Z').getUTCMonth()
+    if (m !== last) {
+      months.push({ x: i * PITCH, label: new Date(w[0].d + 'T00:00:00Z').toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' }) })
+      last = m
+    }
+  })
+  if (months.length > 1 && months[1].x - months[0].x < PITCH * 3) months.shift()
+  return (
+    <div className="gh hx" data-c="hero" style={{ left: 130, top: 690, width: 1500, ...d('.4s') }}>
+      <div className="gh-head">
+        <a href={`https://github.com/${gh.login}`} target="_blank" rel="noopener"><FaGithub aria-hidden="true" /> <b>{gh.total.toLocaleString('en-GB')}</b> contributions in the last year</a>
+        <span className="gh-legend" aria-hidden="true">Less <i className="l0" /><i className="l1" /><i className="l2" /><i className="l3" /><i className="l4" /> More</span>
+      </div>
+      <div className="gh-months" aria-hidden="true">{months.map((m) => <span key={m.x} style={{ left: m.x }}>{m.label}</span>)}</div>
+      <div className="gh-grid" role="img" aria-label={`${gh.total} GitHub contributions in the last year`}>
+        {gh.weeks.map((w, i) => (
+          <div className="gh-wk" key={i} style={{ width: CELL }}>
+            {w.map((day) => <i key={day.d} className={`l${day.l}`} title={`${day.c} contribution${day.c === 1 ? '' : 's'} · ${fmtDay(day.d)}`} />)}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function Hero({ cvLabel, onCv }: { cvLabel: string; onCv: () => void }) {
+  return (
+    <>
+      <div className="cols hx" data-c="hero" aria-hidden="true" style={{ left: 130, top: 130, width: 1500, height: 970, ...d('0s') }} />
+      <div className="guide hx" data-c="hero" id="gCap" aria-hidden="true" style={{ left: 100, top: 230, width: 1560, ...d('.15s') }}><span>Cap height</span></div>
+      <div className="guide hx" data-c="hero" id="gBase" aria-hidden="true" style={{ left: 100, top: 380, width: 1560, ...d('.15s') }}><span>Baseline</span></div>
+      <div className="measure hx" data-c="hero" id="measure" aria-hidden="true" style={{ left: 130, top: 150, width: 967, ...d('.25s') }}><span id="measureLbl">967</span></div>
+      <h1 className="ttl hx" data-c="hero" id="heroName" style={{ left: 130, top: 190, fontSize: 250, zIndex: 2, ...d('.1s') }}>Matthew<span className="bl" /></h1>
+      <div className="ttl o xl hx" data-c="hero" style={{ left: 511, top: 410, fontSize: 300, zIndex: 2, ...d('.2s') }}>Kay</div>
+      <div className="measure hx" data-c="hero" id="gGap" aria-hidden="true" style={{ left: 1097, top: 300, width: 176, ...d('.35s') }}><span id="gGapLbl">176</span></div>
+      <figure className="sel hx" data-c="hero" id="heroPhoto" style={{ left: 1273, top: 230, width: 357, height: 446, ...d('.3s') }}>
+        <img src={IMG('headshot')} width={900} height={600} alt="Matthew Kay" />
+        <i className="hd a" /><i className="hd b" /><i className="hd c" /><i className="hd d" />
+        <span className="sz">357 × 446</span>
+      </figure>
+      <GitHubGraph />
+      <div className="hero-links hx" data-c="hero" style={{ left: 130, top: 990, ...d('.55s') }}><IconLinks size="lg" /></div>
+      <button className="hcv hx" data-c="hero" type="button" onClick={onCv} style={{ left: 1273, top: 990, ...d('.6s') }}>{cvLabel}<FiDownload aria-hidden="true" /></button>
+      <div className="mcursor" data-c="hero" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M4 2.5 L20 11.2 L12.6 13.1 L9.2 20.8 Z" /></svg><span>Matthew</span>
+      </div>
+    </>
+  )
+}
+
+function Frunt() {
+  return (
+    <>
+      <Title c="frunt" x={1760} y={0} size={600} bg style={{ textTransform: 'none', letterSpacing: '-.04em' }}>frunt</Title>
+      <Note c="frunt" x={1790} y={250} w={470} kicker="The problem">Restaurants have their rules written down. Staff don&apos;t read them.</Note>
+      <MacBook c="frunt" id="frunt-a" label="Manager web app" x={2250} y={430} w={1400} slides={[
+        { img: 'frunt-home', w: 1100, h: 619, bg: '#f6f5f2', title: 'Home', alt: 'frunt manager dashboard, home' },
+        { img: 'frunt-ask', w: 1280, h: 720, bg: '#faf7ef', title: 'Ask frunt', alt: 'Ask frunt: an answer about peanut allergen controls, citing three source documents',
+          overlay: <><div className="redline" style={{ left: '37.2%', top: '46.45%', width: '33.5%', height: '6.5%' }} /><div className="tag" style={{ left: '37.2%', top: '54.5%' }}>↑ Every answer cites its source</div></> },
+        { img: 'frunt-docs', w: 1100, h: 619, bg: '#fbfcfb', title: 'Documents', alt: 'frunt documents library' },
+        { img: 'frunt-training', w: 1100, h: 619, bg: '#fefefb', title: 'Training', alt: 'frunt training courses' },
+        { img: 'frunt-rota', w: 1100, h: 619, bg: '#faf7ef', title: 'Rota', alt: 'frunt rota' },
+      ]} />
+      <IPhone c="frunt" x={3720} y={673} w={332} img="frunt-m-ask" iw={334} ih={736} alt="frunt staff app, asking a question" caption="Staff app · Ask" />
+      <IPhone c="frunt" x={4090} y={673} w={332} img="frunt-m-training" iw={334} ih={736} alt="frunt staff app, training" caption="Staff app · Training" />
+      <Browser c="frunt" x={3720} y={110} w={700} url="https://frunthospitality.com/" img="site-frunt-long" iw={640} ih={3185}
+        alt="frunthospitality.com, the frunt website" caption="Website · hover to scroll" long focus="3700,70,740,560" />
+      <Parts c="frunt" prefix="ft" parts={FRUNT_PARTS} x0={1790} y0={1480} />
+      <SlotBox c="frunt" x={3620} y={1480} w={1000} h={200} title="Case study" />
+      <SlotBox c="frunt" x={3620} y={1700} w={1000} h={200} title="What I learnt" />
+    </>
+  )
+}
+
+function MgkFitness() {
+  return (
+    <>
+      <Title c="mgk" x={1760} y={2100} size={220}>MGK</Title>
+      <Title c="mgk" x={2130} y={2225} size={330} outline xl>Fitness</Title>
+      <IPhone c="mgk" x={1780} y={2590} w={260} img="liftio-home" iw={560} ih={1212} alt="Liftio 1.4 home screen" caption="Liftio 1.4 · React Native" />
+      <IPhone c="mgk" x={2060} y={2650} w={260} img="liftio-tracking" iw={560} ih={1212} alt="Liftio 1.4 workout tracking" />
+      <IPhone c="mgk" x={2340} y={2590} w={260} img="liftio-detail" iw={560} ih={1212} alt="Liftio 1.4 exercise detail with a progress chart" />
+      <IPhone c="mgk" x={2820} y={2590} w={260} img="lift-log" iw={560} ih={1212} alt="Lift 2.0 logging a workout" caption="Lift 2.0 · Flutter" />
+      <IPhone c="mgk" x={3100} y={2650} w={260} img="lift-plan" iw={560} ih={1212} alt="Lift 2.0 plan" />
+      <IPhone c="mgk" x={3600} y={2590} w={260} img="run-record" iw={560} ih={1214} alt="Run recording a run" caption="Run 1.0 · Flutter" />
+      <IPhone c="mgk" x={3880} y={2650} w={260} img="run-plan" iw={560} ih={1214} alt="Run training plan" />
+      <Note c="mgk" x={2820} y={3270} w={780} kicker="Decision 0001 · accepted 17 Aug 2026"
+        quote={'"Retiring a live record to avoid an untidy string is paying a real cost for a cosmetic one."'}>
+        Liftio is replaced, not relaunched.
+      </Note>
+      <SlotBox c="mgk" x={3650} y={3290} w={470} h={200} title="Case study" />
+      <SlotBox c="mgk" x={4150} y={3290} w={470} h={200} title="What I learnt" />
+      <Browser c="mgk" x={3880} y={2105} w={620} url="https://mgkfitness.mgkcodes.com/" img="site-mgkfitness" iw={1000} ih={625}
+        alt="mgkfitness.mgkcodes.com, the MGKFitness website" caption="Website" focus="3860,2080,660,470" />
+      <Parts c="mgk" prefix="mt" parts={MGK_PARTS} x0={1790} y0={3560} />
+    </>
+  )
+}
+
+function OtherWork() {
+  return (
+    <>
+      <Title c="other" x={120} y={1370} size={170}>Other</Title>
+      <Title c="other" x={420} y={1480} size={260} outline>Work</Title>
+      <Shot c="other" x={130} y={1770} w={470} img="ledger" iw={1000} ih={621} alt="Ledger finance dashboard" nm="Ledger · web app" ln="Personal finance with AI transaction entry." />
+      <Shot c="other" x={645} y={1770} w={470} img="msa" iw={1000} ih={625} alt="MSA architecture portfolio" nm="MSA · client site" ln="Portfolio for an architecture student." />
+      <Shot c="other" x={1160} y={1770} w={470} img="redcross" iw={1000} ih={625} alt="Red Cross Reigate pub site" nm="Red Cross · client site" ln="Landing page for a pub in Reigate." />
+      <Shot c="other" x={130} y={2200} w={470} img="youtube" iw={1000} ih={474} alt="YouTube clone home feed" nm="YouTube clone · practice" ln="Full-stack video platform with auth." />
+      <Shot c="other" x={645} y={2200} w={470} img="netflix" iw={800} ih={500} alt="Netflix clone home" nm="Netflix clone · practice" ln="State management, layer by layer." />
+      <IPhone c="other" x={1160} y={2200} w={144} img="footy" iw={400} ih={831} alt="FootyScores app, live Premier League scores"
+        below={{ nm: 'FootyScores', ln: 'Live scores, React Native + Node.' }} />
+    </>
+  )
+}
+
+function About() {
+  return (
+    <>
+      <Title c="about" x={120} y={2915} size={170}>About</Title>
+      <Title c="about" x={600} y={3010} size={260} outline>Me</Title>
+      <div className="bio" data-c="about" style={{ left: 130, top: 3290, width: 820 }}>
+        <p>Building things has always been how I think. Before I knew what programming was, I was pulling things apart to see how they worked.</p>
+        <p>I run MGKCodes, the studio behind frunt and MGKFitness.</p>
+      </div>
+      <PassionCard c="about" x={1050} y={3010} img="gym" ix="01" label="Gym" rot={-8} />
+      <PassionCard c="about" x={1210} y={2975} img="golf" ix="02" label="Golf" />
+      <PassionCard c="about" x={1370} y={3010} img="gaming" ix="03" label="Gaming" rot={8} />
+      <img data-c="about" src="/work/mgk-logo.svg" width={1500} height={935} alt="MGKCodes" style={{ position: 'absolute', left: 1060, top: 3420, width: 220, height: 'auto' }} />
+      <Spec c="about" x={1060} y={3580}>MGKCodes · the studio<br />behind frunt + MGKFitness</Spec>
+    </>
+  )
+}
+
+function HowIWork() {
+  const ticks = [1790, 2360, 2930, 3500, 4070, 4590]
+  return (
+    <>
+      <Title c="how" x={1760} y={4135} size={150}>How I</Title>
+      <Title c="how" x={2290} y={4200} size={230} outline>Work</Title>
+      <svg className="wire" width={4760} height={4900} viewBox="0 0 4760 4900" aria-hidden="true">
+        <g data-c="how" className="mute" strokeWidth={2}>
+          <line x1={1790} y1={4440} x2={4590} y2={4440} />
+          {ticks.map((x) => <line key={x} x1={x} y1={4426} x2={x} y2={4454} />)}
+        </g>
+      </svg>
+      <SkillsShelf x={2960} y={4140} w={1630} />
+      <Step c="how" x={1790} y={4470} w={530} h={330} n="01" title="Plan" text="Every screen laid out on one board, each with what it's for." ev="e.g. Lift screen board, v11" />
+      <Step c="how" x={2360} y={4470} w={530} h={330} n="02" title="Decide" text="Big calls written down with the reasoning, so they can be checked." ev="e.g. Decision 0001" />
+      <Step c="how" x={2930} y={4470} w={530} h={330} n="03" title="Build" text="AI does the typing. My own skills library sets how it works." ev="e.g. github.com/MattKay02/skills" />
+      <Step c="how" x={3500} y={4470} w={530} h={330} n="04" title="Check" text="Screens checked by eye, design reviews, a build check on every PR." ev="e.g. 19 findings, 30 Sept review" />
+      <Step c="how" x={4070} y={4470} w={520} h={330} n="05" title="Ship" text="Store submissions with a written record of what went out." ev="e.g. Run 1.0, 2 Oct 2026" />
+    </>
+  )
+}
+
+function Contact() {
+  return (
+    <>
+      <Title c="contact" x={120} y={3895} size={200}>Let&apos;s</Title>
+      <Title c="contact" x={470} y={3990} size={320} outline xl>Talk</Title>
+      <div className="contactline" data-c="contact" style={{ left: 130, top: 4300 }}>mattykay2002@gmail.com</div>
+      <div className="hero-links" data-c="contact" style={{ left: 130, top: 4380 }}><IconLinks size="lg" /></div>
+    </>
+  )
+}
+
+/** Arrows between the MGKFitness phones: Liftio → Lift, and Lift ↔ Run. */
+function MgkWires() {
+  return (
+    <svg className="wire" width={4760} height={4900} viewBox="0 0 4760 4900" aria-hidden="true">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX={9} refY={5} markerWidth={9} markerHeight={9} orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" />
+        </marker>
+      </defs>
+      <g data-c="mgk">
+        <line x1={2614} y1={2880} x2={2802} y2={2880} strokeWidth={3} markerEnd="url(#ah)" />
+        <text x={2620} y={2862}>Rebuilt</text>
+        <polyline className="mute" points="2695,2896 2695,3390 2814,3390" fill="none" strokeWidth={2} strokeDasharray="8 8" />
+        <line x1={3376} y1={2920} x2={3584} y2={2920} strokeWidth={3} markerStart="url(#ah)" markerEnd="url(#ah)" />
+        <text x={3386} y={2902}>Shares</text>
+        <text x={3386} y={2952}>your week</text>
+      </g>
+    </svg>
+  )
+}
+
+export default function Board({ cvLabel, onCv }: { cvLabel: string; onCv: () => void }) {
+  return (
+    <>
+      <Frame c="hero" x={100} y={120} w={1560} h={1000} label="00 · Hero" />
+      <Frame c="frunt" x={1740} y={30} w={2920} h={1910} label="01 · frunt · main project" />
+      <Frame c="other" x={100} y={1320} w={1560} h={1440} label="03 · Other work" />
+      <Frame c="mgk" x={1740} y={2070} w={2920} h={1940} label="02 · MGKFitness" />
+      <Frame c="about" x={100} y={2880} w={1560} h={900} label="05 · About" />
+      <Frame c="how" x={1740} y={4090} w={2920} h={760} label="04 · How I work · first idea" />
+      <Frame c="contact" x={100} y={3860} w={1560} h={640} label="06 · Contact" />
+      <Hero cvLabel={cvLabel} onCv={onCv} />
+      <Frunt />
+      <MgkFitness />
+      <MgkWires />
+      <OtherWork />
+      <About />
+      <HowIWork />
+      <Contact />
+    </>
+  )
+}
