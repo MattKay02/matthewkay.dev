@@ -1,126 +1,140 @@
 # Architecture
 
-A short map of how the portfolio is built, where data comes from, and how it
-ships. Kept proportional to a single-page personal site.
+How the workbench is built, where its data comes from, and how it ships.
 
 ## Stack
 
-- **React 19** (plain, not Next.js) + **Vite 7** with `@vitejs/plugin-react-swc`
-- **Plain CSS Modules** per component (`*.module.css`) — no CSS framework
-- **react-icons** for social/UI glyphs
-- Single-page app, no router — navigation is anchor links + smooth scroll
-- Deployed to **GitHub Pages** via GitHub Actions
+- **Next.js 16** (App Router) with **TypeScript**, built as a **static export** (`output: 'export'`)
+  into `out/` and built and served by **Vercel**.
+- **React 19** renders the board and the guide panel; a small imperative controller
+  (`src/workbench/controller.ts`) drives everything that changes every frame.
+- **Global CSS with tokens** (`app/globals.css`). Three looks (Paper, Studio, Brutalist) are token
+  sets switched by `data-style` on `<html>`.
+- **next/font** for Space Grotesk, Inter and IBM Plex Mono. **react-icons** for link icons.
 
 ## Structure
 
 ```
-index.html              # entry; font loading, LCP preload, meta/SEO
-public/                 # copied verbatim to dist root
-  Professional_headshot.webp   # hero LCP image (stable URL for preload)
-  favicon.svg, robots.txt, sitemap.xml
-src/
-  main.jsx              # React root
-  App.jsx               # section composition + intro gate
-  index.css             # global reset + design tokens
-  components/           # one folder-less component + its .module.css each
-  data/                 # projects.js, contributions.js, skills.js
-  hooks/                # useCardScale, useScrollSlide
-scripts/
-  optimize-images.mjs   # one-off local image → WebP converter (not in build)
-docs/                   # this folder
-.github/workflows/deploy.yml
+app/layout.tsx            fonts, metadata, and an inline script that applies a saved look before paint
+app/page.tsx              <Workbench />
+app/globals.css           tokens + all styles
+src/workbench/stops.ts    the tour (13 stops): cluster, camera rects, panel copy
+src/workbench/Board.tsx   the board in board pixels; FRUNT_PARTS / MGK_PARTS data
+src/workbench/parts.tsx   Frame, Title, Note, SlotBox, MacBook, IPhone, Browser, Tile, Shot, …
+src/workbench/Skills.tsx  skills shelf (live skills.json)
+src/workbench/controller.ts  camera, rotation, focus, minimap, measurements, input
+src/workbench/Workbench.tsx  React shell: top bar, guide panel, minimap, stage
+src/workbench/apps.tsx    app statuses (appStatus, liveOn) and the AppRow component
+src/data/                 github.json, skills.json and stores.json (generated); apps.json (by hand)
+scripts/fetch-github.mjs  refreshes the GitHub and skills snapshots
+scripts/fetch-stores.mjs  checks which App Store and Google Play listings are live
+public/work/              board images, the Apple frames and the app icons
 ```
 
-### Section order (`App.jsx`)
+## The board and the camera
 
-`IntroScreen` (overlay) → `Navbar` → `#hero` → `#work` → `#open-source` →
-`#skills` → `#stack` → `#freelance` → `#about` → `Footer`.
+The board (`.world`) is one absolutely positioned element, **4760 × 4900 board pixels**. Every
+item on it is placed in board pixels. The camera is a single CSS transform on the board:
+`translate3d(tx, ty, 0) scale(z)`.
 
-`App` holds a single `introDone` state: while false, `IntroScreen` is mounted and
-body scroll is locked; the intro calls `onComplete` (~3.2s) to reveal the page.
+**Scroll drives the camera.** The page has a tall spacer (`#track`) and the stage is fixed. Each
+stop gets `HOLD` (0.6 of a screen) of scroll where the camera rests, then `TRAVEL` (1 screen) to
+the next stop. `pose(scrollY)` returns the current stop and how far along the move is.
 
-## Data flow
+**Framing.** Each stop has a rect `r` (desktop) and optionally `m` (phones). `fit()` scales the
+rect into the free area of the screen: right of the guide panel (and left of the minimap, when
+it shows) on desktop, above the bottom sheet at 1024px and below (`SHEET_MAX`, kept in sync with
+the CSS breakpoint). Moves ease in and out, interpolate zoom in log space, and pull back mid-flight
+on long moves so the visitor can see where they're going.
 
-All content is static/local except the Skills section.
+**Smoothing.** The rendered camera eases toward the target each frame. While it moves, the board
+gets `will-change: transform`; at rest it's removed so text re-rasterises sharp.
 
-- **`data/projects.js`** — array of project objects; images are `import`ed so
-  Vite fingerprints and bundles them. Card layout is driven by which image field
-  each project defines (see `design-system.md`).
-- **`data/contributions.js`** — open-source contributions; **intentionally empty**,
-  renders the dashed "CONTRIBUTIONS INCOMING" empty state.
-- **`data/skills.js`** — exports the manifest URL + a **baked fallback array**.
+**Reduced motion.** Moves become cuts, laptops don't rotate, the "Matthew" cursor stays still.
 
-### Live Skills fetch (do not break)
+## What happens at each stop
 
-`Skills.jsx` fetches its content at runtime from the public skills repo manifest:
+`select(i)` runs when the current stop changes:
 
-```
-https://raw.githubusercontent.com/MattKay02/skills/main/skills.json
-```
+- elements with `data-c` matching the stop's cluster get `.on`; everything else dims
+  (`--dim`), except devices, which stay as supplied (only their screen content dims);
+- the minimap highlights the cluster;
+- a stop can `lock` a rotating MacBook to one screen (the frunt "sourced answers" stop locks the
+  manager app to Ask frunt, which carries the annotation);
+- React is told the new index (`onStop`) and re-renders the guide panel.
 
-On success it renders the live list; on failure (offline / GitHub down) it falls
-back to the baked array in `data/skills.js`. This means **new skills appear on the
-site by editing only the skills repo** — no change or redeploy here. Keep the
-fallback roughly in sync, and don't change the fetch contract.
+## Interaction
 
-## Performance design
+- **Click a frame** in another cluster to jump to its first stop.
+- **Click a part** (a tile, a browser window, or a chip in the guide panel) to focus it: the
+  camera fits that part's `data-focus` rect (`"x,y,w,h"`, or `"self"` for the element's own box)
+  until the page scrolls on by more than 30px. Escape clears it.
+- **Drag** (mouse only) to look around; the offset springs back on release.
+- **Keys**: ← → move between stops.
+- **Minimap**: cells come from the `.frame` elements; clicking one jumps to that cluster.
+- **"You" tag** follows a mouse pointer over the board; hidden on touch devices.
 
-The June 2025 perf pass moved the build from ~53.7 MB of images to ~2.5 MB.
-Key decisions:
+## Rotating MacBooks
 
-- **Images are WebP**, generated by `scripts/optimize-images.mjs` (a *local*
-  one-off using `sharp` from a sibling project — see below). The committed `.webp`
-  files are what ship; the script is **not** part of `vite build` or CI, so the
-  deploy pipeline carries no native image dependency.
-- **Lazy loading:** every below-the-fold image is `loading="lazy"` +
-  `decoding="async"`. The hero headshot is `loading="eager"` + `fetchpriority="high"`
-  with explicit `width`/`height` (no layout shift) and is **preloaded** from
-  `index.html` — it's the LCP element, so it lives in `public/` with a stable URL
-  rather than a hashed import.
-- **Fonts** load non-render-blocking (`media="print"` → `onload` swap, with a
-  `<noscript>` fallback).
-- **CSS is inlined** into `index.html` at build time by a small custom Vite plugin
-  (`inlineCss` in `vite.config.js`), removing the stylesheet round-trip. No
-  dependency added.
-- **No code-splitting:** measured and rejected — the dynamic-import waterfall on
-  throttled mobile hurt LCP more than the smaller initial bundle helped.
+A `MacBook` with several slides rotates every 3.4s while its cluster is current, crossfading
+over the previous slide (no flash of the screen behind). It pauses on hover and for 9s after a
+dot is clicked. The label above it updates with the slide title.
 
-### Lighthouse (mobile, simulated) — before → after
+## The hero's measurements
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Performance | 68 | ~85 (median) |
-| Accessibility | 92 | 96 |
-| Best Practices | 96 | 96 |
-| SEO | 83 | 100 |
-| LCP | 38.1 s | ~3.8 s |
-| Image weight | 53.7 MB | ~2.5 MB |
+Everything in the hero is measured from the real type after fonts load (and again when the look
+changes): the name's width, the cap-height and baseline (a zero-size inline probe plus canvas
+`measureText`), and the gap to the photo. The photo's top edge is placed on the cap-height line.
+If a look's type is too wide (Brutalist is uppercase), the name is scaled so at least one
+column stays clear before the photo.
 
-The residual ~5 perf points to the 90 target are the client-rendered SPA's
-first-paint floor (FCP ~2.6 s = bundle parse before any paint), not images —
-closing it further would mean prerendering/SSG, a larger architectural change.
+## Live data
 
-## Regenerating images
+- **Contribution graph**: `scripts/fetch-github.mjs` queries GitHub's GraphQL API
+  (`contributionsCollection.contributionCalendar`) with `GITHUB_TOKEN` in CI or the `gh` CLI
+  locally, and writes per-day counts only to `src/data/github.json`.
+- **Skills**: `Skills.tsx` fetches the skills repo's `skills.json` in the browser and falls back
+  to the committed snapshot. Adding a skill to the skills repo shows it here with no change to
+  this repo; keep that contract.
+- **App statuses**: `scripts/fetch-stores.mjs` asks Apple's lookup API (by app id, UK store) and
+  loads each Google Play listing (a 200 means it's public), then writes `src/data/stores.json`.
+  `src/data/apps.json` holds the hand-written facts (names, icons, store ids, websites, and a
+  minimum version where an old app still occupies the listing, as Liftio does for Lift).
+  `appStatus()` in `apps.tsx` combines the two: an app is live if any listing is, and only live
+  listings get a button. The CV's "Live on …" uses the same function, so the site and CV agree.
+- **Product screens** are static files for now. `docs/screens-feed.md` specifies how the products
+  will publish screens that update themselves.
 
-`sharp` is intentionally **not** a dependency of this repo. The script loads it
-from a sibling project:
+## The CV
 
-```bash
-node scripts/optimize-images.mjs --dry-run   # report sizes, write nothing
-node scripts/optimize-images.mjs             # convert + delete originals
-```
+`src/data/cv.ts` holds the CV as typed data. `src/cv/CvSheet.tsx` renders it as an A4 sheet
+(`src/cv/cv.css`). It appears in three places: the viewer over the workbench (`CvViewer`, opened by
+every "View CV" button or `/#cv`, with Download PDF in its bar), the standalone `/cv` page (same
+design), and the PDF. The "Updated" date is when `cv.ts` last changed (`src/cv/updated.ts`, server-only, passed
+down from `app/page.tsx`), so it tracks content changes, not daily rebuilds. It comes from
+`git log` when the full history is there, and from GitHub's commits API when the clone is shallow
+(Vercel clones only recent history, and `git log` in a shallow clone reports the wrong commit). While the viewer is open,
+`html.cv-open` locks page scroll and the camera ignores the arrow keys. `scripts/build-cv.mjs` then serves `out/`, opens `/cv/` in headless Chromium (Playwright)
+with print styles, checks the content fits one A4 page, and prints `out/cv.pdf`. Locally it also
+copies the PDF to `public/cv.pdf` (gitignored) so the dev server can serve it. With `--private`
+and `CV_PHONE` set, it fills the hidden phone slot and writes `private/Matthew_Kay_CV.pdf`
+instead; that copy is gitignored and never deployed.
 
-Edit `SHARP_PATH` / `maxWidthFor()` in the script if paths or sizing change.
-Re-run after adding new screenshots to `src/assets`, then update the import
-extensions to `.webp`.
+## Build and deploy
 
-## Build & deploy
-
-- `npm run dev` — Vite dev server
-- `npm run build` — production build to `dist/` (runs the CSS-inline plugin)
-- `npm run preview` — serve the built `dist/` locally
-
-[`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) runs on push to
-`main`: `npm ci` → `npm run build` → upload `dist/` → deploy to GitHub Pages.
-`base: '/'` in `vite.config.js` matches the user-site root
-(`mattkay02.github.io`). **`main` auto-deploys** — do feature work on a branch.
+- `npm run dev` · `npm run build` (→ `out/`) · `npm run github` · `npm run stores` ·
+  `npm run preview`
+- **Vercel** (project `matthewkay-dev`) builds every push: `main` to production, other branches
+  to preview URLs. `vercel.json` serves `out/` as a static site and runs two scripts:
+  - `scripts/vercel-install.sh`: installs the system libraries headless Chrome needs on Vercel's
+    Amazon Linux build image (`dnf`), then `npm ci` and Playwright's headless Chrome.
+  - `scripts/vercel-build.sh`: `npm run github` → `npm run stores` (both allowed to fail; the
+    committed snapshots are used) → `npm run build` → `npm run cv`.
+- `daily.yml` calls a Vercel deploy hook once a day, so the graph and statuses refresh without a
+  push. `GITHUB_TOKEN` (a token with no extra permissions) is set on Vercel for the graph.
+- **Domain**: `matthewkay.dev` on the Vercel project; Cloudflare DNS points at Vercel, DNS-only,
+  and Vercel issues the certificate. `.dev` only works over HTTPS. GitHub Pages keeps the domain as
+  its custom domain only so `mattkay02.github.io` links redirect to it.
+- `ci.yml` builds every pull request into `main` and prints the CV, so an overflowing CV fails
+  the check.
+- **`main` auto-deploys**: do feature work on a branch.

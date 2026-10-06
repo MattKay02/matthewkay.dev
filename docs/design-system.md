@@ -1,110 +1,94 @@
-# Design System
+# Design system
 
-A lightweight reference for the visual language of the portfolio. The aesthetic
-is **brutalist greyscale**: hard edges, no rounded corners, oversized type as a
-design element, and asymmetric layouts. **Images are the only intended source of
-colour** — the UI itself is greyscale end to end.
+The visual language of the workbench. The intent lives in the root `CLAUDE.md`; this is the
+practical reference. Everything is defined in [`app/globals.css`](../app/globals.css).
 
-> Full brand/intent lives in the root `CLAUDE.md`. This doc is the practical
-> "how it's built" companion.
+## Principles
 
-## Colour tokens
+- **Greyscale UI; colour comes from the work.** Screens are greyscale until their project is
+  the current stop or the pointer is over them.
+- **Neat and precise.** Grids, alignment, measured spacing, and the vocabulary of design tools:
+  selection frames, guides, measurements. No scrapbook devices (tape, sticky notes, handwriting,
+  random tilts).
+- **The board shows; the panel tells.** Words that matter live in the guide panel as real text,
+  readable at any zoom.
 
-Defined in [`src/index.css`](../src/index.css) `:root`. Greyscale only — no
-accent colours anywhere in the UI.
+## Looks
 
-| Token | Value | Use |
-|-------|-------|-----|
-| `--black` | `#0a0a0a` | Page background |
-| `--dark` | `#1a1a1a` | Card / surface background |
-| `--mid` | `#333333` | Hairline borders, dividers (decorative — not text) |
-| `--grey` | `#858585` | Muted body text (tags, subtitles, descriptions). Meets WCAG AA 4.5:1 on `--black`/`--dark` |
-| `--outline` | `#666666` | Stroke colour for outline headings. Meets AA large-text 3:1 |
-| `--light` | `#cccccc` | Secondary emphasis text |
-| `--off-white` | `#e8e8e8` | Default body text colour |
-| `--white` | `#f5f5f5` | Headings, high-emphasis text |
+Three token sets on `<html data-style>`. **Paper** is the default and has no attribute.
 
-**Accessibility note:** `--grey` and `--outline` were tuned in the perf/a11y
-pass so muted text and outline headings clear WCAG AA. `--mid` is intentionally
-faint and is for *non-text* decoration only — don't colour text with it.
+| Token | Paper | Studio | Brutalist |
+|---|---|---|---|
+| `--bg` | `#ebebeb` | `#101010` | `#0a0a0a` |
+| `--surface` | `#ffffff` | `#1a1a1a` | `#1a1a1a` |
+| `--strong` (headings, primary) | `#0d0d0d` | `#f3f3f3` | `#f5f5f5` |
+| `--text2` (secondary text) | `#3a3a3a` | `#c8c8c8` | `#cccccc` |
+| `--muted` (labels) | `#6a6a6a` | `#8c8c8c` | `#858585` |
+| `--line` (hairlines) | 10% black | 9% white | `#333333` |
+| Radii (`--r-art` / panel / buttons) | 10 / 16 / pill | same | 0 |
+| Labels | Inter, sentence case | same | IBM Plex Mono, uppercase |
+| Shadows | soft | deep | none |
 
-**One intentional exception:** the MGKCodes (`#freelance`) section runs its own
-`--mgk-*` token set in [`MGKCodes.module.css`](../src/components/MGKCodes.module.css),
-including `--mgk-blue` (#0074d9). That blue is **MGKCodes' brand colour**, used
-deliberately on the logo wordmark and the primary CTA — it's a sanctioned
-exception to the greyscale-only rule (see `CLAUDE.md` section 4). Everywhere else
-uses the global tokens above.
+Other tokens: `--dim` (opacity of clusters that aren't current), `--img-off` (the greyscale
+filter on screens), `--hm0`–`--hm4` (contribution graph levels), `--colfill` (layout grid).
 
 ## Typography
 
-- **Headings:** `Space Grotesk`, 700–800 weight (`--font-heading`)
-- **Body:** `Inter`, 400–500 weight (`--font-body`)
-- Loaded from Google Fonts, non-render-blocking (see `architecture.md`).
-- Headings use tight tracking (`letter-spacing: -0.02em`) and `line-height: 1.05`.
-- Oversized, `clamp()`-scaled headings are used as layout elements, not just labels.
+- **Display**: Space Grotesk 500 (Paper, Studio) or 700 (Brutalist), tight tracking, line-height 0.82
+  on board titles.
+- **Body**: Inter 400/500.
+- **Data**: IBM Plex Mono for measurements, URLs, tech lists and graph labels.
+- **Two-line headings** on the board: a solid line (`Title`), then a larger offset second line
+  (`Title outline`): grey fill in Paper and Studio, an outline in Brutalist. Large watermark words
+  behind work use `Title bg`.
 
-## The two-line heading pattern
+## The hero grid
 
-Every major section header follows the same three-part structure:
+12 columns, **103px wide with 24px gutters**, starting at x 130 (a 127px pitch). The name takes
+columns 1–8, "Kay" starts on column 4, the photo takes 10–12, the contribution graph spans all 12,
+and the icon links sit one per column (a 64px icon with no circle plus a 63px gap is one
+column), followed by the "View CV" button. Guides,
+widths and gaps are measured from the rendered type, so the numbers shown are true.
 
-1. **Line 1** — solid `--white` text, smaller (e.g. `SELECTED`, `ABOUT`, `MGK`)
-2. **Line 2** — larger **outline** text (`color: transparent; -webkit-text-stroke: 2px var(--outline)`), offset right with `margin-left` (e.g. `WORK`, `ME`, `CODES`)
-3. **Bar** — a short `--grey` rule, `120px × 3px`, below the heading
+## Components (`src/workbench/parts.tsx`)
 
-Implemented per-section as `.title` / `.titleOutline` / `.line` in each
-component's CSS module. Example: [`Portfolio.module.css:12-30`](../src/components/Portfolio.module.css#L12-L30).
+| Component | Use |
+|---|---|
+| `Frame` | A cluster's outline on the board, with a label that stays the same size at any zoom. |
+| `Title` | Display type: solid, `outline`, or `bg` watermark. |
+| `Note` | A paper card for a problem statement or a decision record. |
+| `MacBook` | Apple's MacBook Air frame; rotates through slides; optional overlay per slide (redline + tag). |
+| `IPhone` | Apple's iPhone 18 Pro frame with a raw screen; caption above, or `below` with name + line. |
+| `Browser` | A plain browser window for live websites; `long` scrolls the page on hover. |
+| `Tile` | One part of a product: index, name, status (filled dot = live), one line, tech. Clickable. |
+| `Shot` | A plain 16:10 screenshot card for smaller projects. |
+| `AppRow` (`apps.tsx`) | One app on one line: its icon (32px in the panel), name, status dot, and logo-only buttons for each live store and the website. `.release` is the same row at board scale (64px icon) under each app's phones. |
+| `SlotBox` | A dashed placeholder for content still to be designed (case studies). |
+| `Step`, `PassionCard`, `Spec` | How I work, About, small annotations. |
 
-## Spacing & layout
+## Devices
 
-- Section rhythm via the global `.section-padding` utility (`index.css`):
-  `8rem 2rem` desktop, `5rem 1.25rem` mobile (≤768px).
-- Content max-width ~`1400px`, centred.
-- Layouts are deliberately asymmetric — elements bleed off edges, headings offset,
-  cards alternate left/right.
-- **No `border-radius` anywhere.** Hard edges are part of the brand.
+Apple's Product Bezels, used under Apple's marketing guidelines: shown as supplied, upright,
+never overlapping each other or other elements, no added shadows or reflections, never animated
+themselves, and at the correct relative scale within a group (iPhone ≈ 0.237 × MacBook width).
+Screen content can change. Greyscale and dimming are applied to the screen content only.
 
-## Interactions & motion
+- MacBook screen rect: 12.3529% / 12.8571% / 75.2941% / 74.2857% of the frame image; content
+  starts 3.4255% down, below the notch.
+- iPhone screen rect: 5.3333% / 2.5% / 89.3333% / 95%.
 
-- Smooth-scroll anchor navigation (`html { scroll-behavior: smooth }` + JS
-  `scrollIntoView`).
-- Hover states on every interactive element (colour/transform shifts to `--white`).
-- Spring easing for the card deck: `cubic-bezier(0.34, 1.35, 0.64, 1)`.
-- Background geometry animation in the About section (21 floating shapes via CSS
-  keyframes).
-- Scroll-driven effects: hero parallax slide-out, portfolio card scale, per-card
-  background text (see component catalog).
+## Motion
 
-## Component catalog
+- Camera moves ease in and out, pull back on long moves, and never change scroll speed.
+- The guide panel's body slides in on each stop; MacBooks crossfade every 3.4s.
+- The hero settles in on load (a 14px rise and fade, staggered).
+- `prefers-reduced-motion`: cuts instead of moves, no rotation, no cursor animation.
 
-| Component | Role | Notes |
-|-----------|------|-------|
-| `IntroScreen` | One-time intro animation | `MK.` scan → fall → exit, ~3.2s, then unmounts. Locks body scroll while active. |
-| `Navbar` | Fixed top nav | Logo `MK.`, centre links, right-side social icons; burger + slide-down panel on mobile. |
-| `Hero` | Landing | Asymmetric name/headshot, scroll parallax (`useScrollSlide`), `MATTHEW` bg text. Headshot is the LCP image (preloaded). |
-| `Portfolio` | Primary section | Scroll-scaled stacked cards (`useCardScale`), filter tabs, per-card bg text. See image variants below. |
-| `OpenSource` | Contributions | Dashed-border **empty state** by design (data in `contributions.js`, currently empty). |
-| `Skills` | Custom skills | **Live-fetched** at runtime from the skills repo manifest, with a baked fallback. |
-| `TechStack` | Tools | Greyscale official logos in asymmetric category rows. |
-| `MGKCodes` | Freelance brand | Logo + copy + CTAs; scrolling text/logo tickers. Uses its own `--mgk-*` tokens. |
-| `Passions` | About / human side | Bio text + interactive 3-card deck (idle stack → fan → fly-up). Background geometry. |
-| `Footer` | Close | Minimal contact links, outline footer text. |
-| `icons/MGKIcon` | MGK monogram | Inline SVG used in Navbar + Hero. |
+## Responsive
 
-### Project-card image variants (`Portfolio.jsx`)
-
-A project card renders one of several image treatments, chosen by which field
-the project defines in [`src/data/projects.js`](../src/data/projects.js):
-
-| Field | Treatment |
-|-------|-----------|
-| `carouselImages` | Single image at a time, left/right nav, vertical in-window scroll |
-| `mobileShowcaseImages` | App-Store-style horizontal strip of portrait phone shots |
-| `dualMobileImages` | Two portrait shots side-by-side, scrollable |
-| `longImage` (+ `mobileLongImage`) | Tall full-page capture, scrolls within the card; Desktop/Mobile toggle |
-| `image` | Single static 16:9 image |
-
-Projects with **both** `carouselImages` and `mobileShowcaseImages` get a
-**Desktop/Mobile toggle** (web carousel vs. iOS phone showcase) — e.g. Frunt.
-
-All card images are `loading="lazy"` + `decoding="async"`; only the hero headshot
-is eager/high-priority.
+| Width | Change |
+|---|---|
+| ≤ 1366px | The guide panel narrows to 380px. |
+| ≤ 1280px | The minimap is hidden. |
+| ≤ 1180px | The top-bar nav is hidden. |
+| ≤ 1024px | The guide becomes a bottom sheet (at most 52% of the height); the look switch, kicker and hint are hidden; each stop's phone rect (`m`) frames a smaller area, usually a phone screen, so it reads on a phone or tablet. |

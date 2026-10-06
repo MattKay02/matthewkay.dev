@@ -1,198 +1,204 @@
-# Personal Portfolio Website - Project Specification
+# Matthew Kay · Portfolio (the Workbench)
 
-## Project Overview
-A bold, brutalist personal website for Matthew Kay, a software engineer specializing in modern development with subtle expertise in AI integration and prompt engineering. The site features a unique greyscale aesthetic with unconventional layouts, asymmetric grids, and overlapping elements that break traditional web design norms.
+## What this site is for
 
-## Developer Information
-- **Name**: Matthew Kay
-- **Title**: Software Developer (with subtle implication of prompt engineering/AI expertise)
-- **Freelance Brand**: MGKCodes
-- **Website**: mgkcodes.com
-- **GitHub**: github.com/MattKay02
-- **LinkedIn**: linkedin.com/in/matthew-kay-
-- **Email**: mattykay2002@gmail.com
+A personal portfolio aimed at **recruiters and hiring managers**, who give it about a minute.
+Its job is to get Matthew interviews. Winning clients is mgkcodes.com's job, not this site's.
 
-## Design Philosophy
+- **Results first, AI as the method.** The site shows what Matthew made, why, what he aimed for
+  and how he dealt with the challenges. AI-assisted work is shown as evidence of *how* he works
+  (skills, decision records, checks), never as the headline.
+- **The skim test.** Someone who scrolls straight through still learns who he is, what he builds,
+  the proof, and how to reach him, because every message is real text in the guide panel.
+- This is the **personal hat** (`MattKay02`). MGKCodes products appear as Matthew's work; no
+  business internals (finances, client or lead data) ever go on the page or into this public repo.
 
-### Brutalist Greyscale Aesthetic
-- **Color Palette**: Exclusively greyscale (blacks, greys, whites) with varying shades for high contrast
-- **Color Source**: Images are the only source of color in the site's own UI — no blue, no accent colors anywhere. **One deliberate exception:** the MGKCodes (`#freelance`) section carries MGKCodes' own brand blue (`--mgk-blue`) on its logo wordmark and primary CTA — that's an intentional brand identity, not a greyscale violation.
-- **Typography**: Large, bold, statement fonts used as design elements
-- **Layout**: Asymmetric grids, unconventional positioning, elements breaking traditional alignment
-- **Overlapping**: Text and images intentionally overlap in creative ways
-- **Raw Edges**: No rounded corners, hard edges, stark contrasts
-- **Breaking Norms**: Layouts that deliberately challenge standard website conventions
+## The concept: the Workbench
 
-### Section Heading Pattern
-All sections use a consistent two-line heading style:
-- Line 1: Solid white text (smaller, e.g. `SELECTED`, `ABOUT`, `MGK`)
-- Line 2: Larger outline text with `--mid` greyscale stroke (e.g. `WORK`, `ME`, `CODES`), offset right with `margin-left`
-- Followed by a short `--grey` horizontal bar (120px × 3px)
+One board of real work. Native page scroll moves a camera through 13 stops; a guide panel on the
+left (a bottom sheet on phones) tells the story. Visitors can click a frame to jump, click a
+product "part" to zoom to it, drag to look around (springs back), use ← → keys, or the minimap.
 
-### Interactions & Animations
-- Subtle hover effects throughout
-- Smooth scroll navigation via anchor links
-- Clickable elements with creative feedback
-- Animations that feel intentional, not decorative
+Order: Hero → the whole board → **frunt** (problem, sourced answers, the whole system) →
+**MGKFitness** (Liftio, the rebuild, the suite, the whole system) → Other work → How I work →
+About → Contact. frunt is the main project and leads.
 
-## Technical Stack
-- **Framework**: React (Vite, plain React — not Next.js)
-- **Styling**: CSS Modules per component
-- **Structure**: Single-page application
-- **Navigation**: Anchor links that scroll to sections
-- **Responsive**: Mobile-friendly design
-- **Performance**: Fast loading, optimized images
+## Design rules
 
-## Navigation
+- **Paper look by default**: light greyscale desk. Studio (dark) and Brutalist (v1) are kept as
+  alternates behind the top-bar switch; decide whether to keep the switch before launch.
+- **Greyscale only. Colour comes only from the work**: screens are greyscale until their project
+  is the current stop or hovered.
+- **Neat and precise.** Matthew is a neat, precise person: grids, alignment, measured spacing,
+  design-tool vocabulary (selection frames, guides, measurements). **No scrapbook devices**:
+  no tape, sticky notes, handwriting fonts or random tilts. He rejected those explicitly.
+- **The hero is a design spec** on a 12-column grid (column 103px, gutter 24px, from x 130):
+  live-measured cap-height and baseline guides, name width and name-to-photo gap, the photo as a
+  selected frame, the live GitHub contribution graph, and large icon links. No numbered note boxes.
+- **Type**: Space Grotesk (display), Inter (body), IBM Plex Mono (data; labels in Brutalist).
+  Two-line headings: a solid line, then an offset second line (grey fill in Paper/Studio, outline
+  in Brutalist).
+- **Devices are Apple's own Product Bezels** (MacBook Air M5 13" Silver, iPhone 18 Pro Black),
+  used under Apple's rules: upright, never overlapping, no added shadows or reflections, never
+  animate the device itself, same relative scale within a group (iPhone ≈ 0.237 × MacBook
+  width). Screen content may change (rotating MacBook slides are fine). Filters and dimming apply
+  to screen content only. Web screens are 16:10 and sit below the notch; phone screens are raw
+  screens with no baked-in frame or background.
+- **Other work** is plain screenshots in equal 16:10 boxes on a three-column grid (no laptops).
+- **Motion carries meaning**: pin and play, never hijack scroll speed. Reduced motion means cuts,
+  no rotation, no cursor animation. Phones get a bottom-sheet guide and framing that favours
+  phone screens.
+- **Copy**: plain, short, specific, from the reader's side. No em dashes in on-page copy, no
+  buzzwords, no AI-sounding filler. **Statuses must be true** (see Facts) and go stale, so check
+  them before every launch.
 
-### Navbar (fixed, top)
-- **Logo**: `MK.` — left side, scrolls to `#hero`
-- **Desktop links** (centered): `PORTFOLIO` → `#work`, `STACK` → `#stack`, `MGKCODES` → `#freelance`, `ABOUT ME` → `#about`
-- **Right side icons** (left to right): MGKCodes logo (links to mgkcodes.com), GitHub, LinkedIn, Email — all same visual hierarchy, no separators
-- **Mobile**: Burger menu with slide-down panel; socials hidden, burger replaces them
+## Tech
 
-## Site Structure & Sections
+Next.js 16 (App Router), TypeScript, static export to `out/`, built and served by Vercel (project `matthewkay-dev`, personal scope
+"Matthew Kay's projects"). Global CSS
+with tokens in `app/globals.css` (no CSS Modules). Fonts via `next/font`. Icons via `react-icons`.
+Next.js 16 differs from older versions: read `node_modules/next/dist/docs/` before using an API
+you haven't checked (see the block at the end of this file).
 
-### 1. Hero Section (`#hero`)
-**Purpose**: Bold introduction to Matthew Kay
-
-**Content**:
-- Name: Matthew Kay
-- Title: Software Developer
-- Subtle implication of AI/prompt engineering expertise through copy
-- Headshot image
-- Contact links: LinkedIn, Email, GitHub profile
-
-**Design Notes**:
-- Large, bold typography
-- Asymmetric layout
-- Overlapping text and image elements
-- High contrast greyscale
-
-### 2. Portfolio Section (`#work`)
-**Purpose**: PRIMARY FOCUS — showcase development projects
-
-**Implementation**:
-- Vertical stack of project cards, scroll-driven scale animation
-- Cards alternate left/right layout (odd/even index)
-- Each card has: long scrollable image preview, category badge, status badge (optional), title, description, tech tags, GitHub link, optional live link
-- Some projects support carousel images (multiple screenshots), dual mobile images, or desktop/mobile view toggle
-- Filter tabs: Featured, Mobile Apps, Web Apps, Landing Pages, All
-- Background large text slides in/anchors/slides out per card as you scroll
-
-**Heading**: `SELECTED` / `WORK`
-
-### 3. Tech Stack Section (`#stack`)
-**Purpose**: Display technologies and tools used
-
-**Categories**: Languages (JS, TS, Python, HTML/CSS, C++, C#), Frameworks (React, Next.js, Vue.js, Node.js), CSS (Bootstrap), Databases (MongoDB, MySQL, Supabase), APIs (REST), Tools (GitHub, Vercel, Netlify), AI Tools (Claude, ChatGPT, Gemini — subtly included)
-
-**Design Notes**:
-- Official logos in greyscale
-- Creative asymmetric layout
-- AI tools present but not emphasized
-
-### 4. MGKCodes Section (`#freelance`)
-**Purpose**: Showcase freelance work and business
-
-**Content**:
-- MGKCodes logo (links to mgkcodes.com)
-- Description of freelance services and own products
-- Links: MGKCODES.COM (primary) + GITHUB (ghost)
-- Background: scrolling text ticker (`MGKCODES`) + scrolling logo ticker
-
-**Heading**: `MGK` / `CODES` — greyscale two-line heading, matching the rest of the site (the heading itself is NOT blue)
-
-**Design Notes**:
-- Significant section presence, not overshadowing portfolio
-- Left column: logo link; right column: text + action buttons
-- Section bordered top and bottom with `--mgk-border`
-- **Brand colour exception:** this section runs its own `--mgk-*` token set; `--mgk-blue` (#0074d9) is MGKCodes' brand colour and is intentionally used on the logo wordmark and the primary CTA. The greyscale-only rule applies everywhere else.
-
-### 5. About Me Section (`#about`)
-**Purpose**: Personal touch — humanise the developer
-
-**Implementation**: Interactive card deck (Passions component)
-
-**Layout**: Two-column side-by-side
-- **Left**: `ABOUT` / `ME` heading + 3 bio paragraphs with left-border styling
-- **Right**: Interactive card deck + hint text above the deck
-
-**Card Deck**:
-- 3 cards: `GYM` (01, front), `GOLF` (02, middle), `GAMING` (03, back)
-- **Idle**: cards stacked with slight offsets and rotations
-- **Hover**: fans out into an arc (3-card fan)
-- **Click card**: selected card flies up and enlarges (translateY -198px, scale 1.5); remaining 2 cards fan to a 2-card spread; hover still fans them further
-- **Click again / Escape**: card returns to deck
-- Cards show: index number (top-right) + label (bottom-left) only — no descriptive notes
-- Hint text (`Hover to explore` / `Select a card` / `Click card to return`) sits **above** the deck
-
-**Background**: 21 animated shapes (12 squares + 9 lines), low opacity, dramatic float/scale/rotate keyframe animations — gives the section subtle movement
-
-**Heading**: `ABOUT` / `ME`
-
-### 6. Footer
-**Purpose**: Creative closing element
-
-**Content**:
-- Minimal relevant information
-- Contact links (LinkedIn, Email, GitHub)
-- Brutalist aesthetic maintained
-
-## Images
-All real images are in place (no placeholders remaining for passions):
-- `src/assets/passions/Gym_image.PNG` — GYM card
-- `src/assets/passions/Golf_image.JPG` — GOLF card
-- `src/assets/passions/Playstation_image.png` — GAMING card
-- `src/assets/MGKCodes/logo-white-elements.svg` — MGKCodes logo (navbar + MGKCodes section)
-- Project screenshots in `src/assets/` per project
-
-## Content Tone & Style
-- **Voice**: Short, semi-formal, professional but approachable
-- **Copy**: Concise and impactful
-- **Avoid**: Flowery language, corporate jargon, excessive buzzwords, lorem ipsum, AI-generated sounding copy
-- **Embrace**: Directness, clarity, personality, confidence
-
-## Design Specifications
-
-### Color Variables (`src/index.css`)
 ```
---black:     #0a0a0a
---dark:      #1a1a1a
---mid:       #333333   /* hairline borders/dividers — decorative, not text */
---grey:      #858585   /* muted text — WCAG AA (4.5:1) on --black/--dark */
---outline:   #666666   /* outline-heading stroke — AA large-text (3:1) */
---light:     #cccccc
---off-white: #e8e8e8
---white:     #f5f5f5
+app/
+  layout.tsx           fonts, metadata, the no-flash look script
+  page.tsx             renders <Workbench />
+  globals.css          tokens for the three looks + every style on the page
+src/workbench/
+  stops.ts             the tour: camera rects (desktop r, phone m), panel copy, links
+  Board.tsx            the board layout in board pixels, plus the product "parts" data
+  parts.tsx            building blocks: Frame, Title, Note, MacBook, IPhone, Browser, Tile, Shot…
+  Skills.tsx           skills shelf, read live from the skills repo's skills.json
+  controller.ts        the camera and everything per-frame (imperative; returns destroy())
+  Workbench.tsx        React shell: top bar, guide panel, minimap, stage
+  apps.tsx             app statuses and AppRow (icon, name, status, store and website buttons)
+  icons.tsx            link icons and the MGKCodes monogram
+app/cv/page.tsx        the standalone CV page
+src/cv/                CvSheet (the A4 CV), CvViewer (viewer over the board + page shell),
+                       updated.ts (git date of cv.ts), cv.css
+src/data/
+  cv.ts                Matthew's CV as data: the single source for /cv and /cv.pdf
+  github.json          contribution calendar (generated)
+  skills.json          skills manifest snapshot (generated; the live fetch overrides it)
+  apps.json            app facts: names, icons, store ids, websites (edited by hand)
+  stores.json          which store listings are live (generated)
+scripts/fetch-github.mjs   refreshes both snapshots: `npm run github`
+scripts/fetch-stores.mjs   checks the App Store and Google Play: `npm run stores`
+scripts/build-cv.mjs       prints /cv to out/cv.pdf after a build: `npm run cv`
+scripts/vercel-*.sh        Vercel's install and build steps (see vercel.json)
+public/work/           every image on the board, the Apple frames and the app icons
+docs/                  architecture, design system, screens-feed spec, storyboard history
 ```
-No blue or accent colors in the UI — greyscale only. (The sole exception is the
-MGKCodes section's brand blue; see section 4.) `--mid` is faint and for non-text
-decoration only — colour text with `--grey` or lighter so it stays AA-legible.
 
-### Typography
-- **Heading font**: Space Grotesk (bold, 800–900 weight)
-- **Body font**: Inter (400 weight)
-- Bold, oversized headings used as design elements
-- High contrast between text and background
+**Commands**: `npm run dev` (dev server, http://localhost:3000) · `npm run build` (static site in
+`out/`) · `npm run cv` (print the CV PDF; run after build) · `npm run cv:private` (copy with phone
+number, see below) · `npm run github` (refresh contribution graph + skills snapshot) ·
+`npm run stores` (refresh store statuses) · `npm run preview`.
 
-### Layout Principles
-- Asymmetric grids
-- Elements bleeding off edges
-- Overlapping sections
-- Breaking traditional alignment
+### The CV is code
 
-### Interactions
-- Smooth scrolling between sections
-- Hover states on all interactive elements
-- Spring cubic-bezier transitions on card deck: `cubic-bezier(0.34, 1.35, 0.64, 1)`
-- CSS keyframe animations for background geometry shapes
+`src/data/cv.ts` is the **only** source of Matthew's CV. `/cv` renders it as an A4 page and
+`scripts/build-cv.mjs` prints that page to `/cv.pdf` on every deploy, stamped "Updated" with the
+date `cv.ts` last changed in git, not the build date (from GitHub's API when the build's clone is
+shallow, as on Vercel). To update the CV: edit `cv.ts`, commit,
+push. Rules:
 
-## What to Avoid
-- Traditional, conventional layouts
-- Rounded corners or soft edges
-- Any color accent (blue, brand color, etc.) — greyscale only, except the MGKCodes section's documented brand blue (see section 4)
-- Generic templates or Bootstrap-style components
-- Overly flashy animations
-- Symmetrical, balanced layouts
-- Corporate/professional website clichés
+- **One A4 page.** The CV build fails, with how many pixels it's over, if it overflows. Trim
+  content rather than shrinking type. Vercel prints it on Linux, where text can wrap a little
+  differently, so keep a few percent spare locally (the script reports the real fill and warns
+  above 98%). Every weight the CV uses must be loaded in `app/layout.tsx`; a faked weight renders
+  at different widths on different systems.
+- **Never commit a phone number.** The public PDF has none. `CV_PHONE="…" npm run cv:private`
+  writes a copy with it to `private/` (gitignored) for sending directly.
+- Same copy rules as the site: true statuses, no em dashes, specific results. Links come from
+  `LINKS` in `stops.ts`, so they can't drift from the site.
+- **View, then download.** Every CV button on the site says "View CV" and opens the viewer
+  (`src/cv/CvViewer.tsx`) over the board: the CV on the site's own desk, with Download PDF in its
+  bar. `/#cv` opens it directly; `/cv` is the same design as a standalone page. The sheet itself
+  is `src/cv/CvSheet.tsx`, shared by the viewer, the page and the PDF.
+
+**Adding a stop**: add it to `stops.ts` (cluster, `r`, `m`, `nav`, copy). **Adding a project
+part**: add it to `FRUNT_PARTS` / `MGK_PARTS` in `Board.tsx`. **Moving things**: everything on the
+board is in board pixels; the world is 4760 × 4900.
+
+### Live data (do not break)
+
+- **Skills**: `Skills.tsx` fetches
+  `https://raw.githubusercontent.com/MattKay02/skills/main/skills.json` in the browser. Matthew's
+  publishing loop depends on this: adding a skill to the skills repo must show here with no
+  change to this repo. Keep the fetch contract and the snapshot fallback.
+- **GitHub graph**: built from `src/data/github.json`. Every Vercel build refreshes it (needs a
+  `GITHUB_TOKEN` env var on Vercel; without one the committed snapshot is used), and
+  `.github/workflows/daily.yml` triggers a rebuild each day through a Vercel deploy hook
+  (`VERCEL_DEPLOY_HOOK` secret). Only per-day counts are stored.
+- **Product screens**: today they're static files in `public/work/`. The plan for screens that
+  update themselves is `docs/screens-feed.md` (implemented in the product repos, not here).
+
+### Verify before saying it's done
+
+`npm run build` passes (TypeScript included). Check the dev server at desktop width and at 390px
+(phone), with no console errors. Check reduced motion when touching animation. The `run` and
+`lighthouse-audit` skills cover launching and performance checks.
+
+## Statuses are never typed by hand
+
+Nothing on the site or CV may go out of date on its own: no "in review", "next", version numbers
+or release dates in copy. Which apps are **live**, and which store buttons show, comes from
+`src/data/stores.json`, written by `scripts/fetch-stores.mjs` (`npm run stores`) from Apple's
+lookup API and the Google Play listings, on every deploy (daily). App facts (store ids, icons,
+websites) live in `src/data/apps.json`. An app reads "Live · actively updated" once any listing is
+live, otherwise "In development". Lift's App Store page only counts from version 2.0.0, because
+until then it still carries Liftio 1.4. The CV's "Live on …" wording uses the same data
+(`liveOn()` in `src/workbench/apps.tsx`). On the page, each app is one compact `AppRow`: its
+icon, name and status, then logo-only buttons (Apple, Google Play, a globe for the website), each
+with a hover title and an `aria-label`. The dashed case-study placeholders are hidden
+(`SHOW_SLOTS` in `stops.ts`) until the first case study exists.
+
+## Facts (keep true; re-check before launch)
+
+- **frunt**: live SaaS. Manager web app; staff app on the App Store (June 2026) and Google Play.
+  Instagram studio live since 21 Sep 2026. **WhatsApp is built but switched off; never list it as
+  live.** Admin console and outreach + analytics are internal: no admin screenshots until they
+  can be captured from the demo restaurant, never a real customer's data.
+- **MGKFitness**: Run and Lift are both live on Google Play (Lift since 6 Oct 2026). Their App
+  Store listings show up on the site by themselves once Apple approves them (Run was in review on
+  5 Oct). Lift is the Flutter rebuild of Liftio; its App Store page still carries Liftio 1.4 until
+  Lift 2.0 ships (Liftio's backend stopped working in Aug 2026, so never present Liftio as live). Repo public by 11 Oct 2026. mgkfitness.mgkcodes.com has no tracking.
+- **Other work**: Ledger, MSA (client), Red Cross (client), YouTube clone and Netflix clone
+  (practice), FootyScores.
+
+## Open decisions
+
+- **Positioning line**: the hero's "Product engineer. I design and build polished apps, end to
+  end." is still a draft. Titles are settled by purpose: the **CV** (and this site, which is
+  also for getting hired) leads with the role he's applying for, **Product Engineer** (swap to
+  "Software Developer" for general junior roles); **LinkedIn** stays "Founder of MGKCodes",
+  because that's what he does now. Don't try to make them match.
+- **Domain and hosting: decided.** **matthewkay.dev** (bought 5 Oct 2026, Cloudflare Registrar;
+  DNS in Cloudflare, DNS-only records pointing at Vercel, which issues the certificate). Moved
+  from GitHub Pages to Vercel on 6 Oct 2026 after GitHub never started its certificate request;
+  Vercel is where Matthew hosts everything else. GitHub Pages keeps matthewkay.dev as its custom
+  domain only so old mattkay02.github.io links redirect there. `.dev` is HTTPS-only.
+- **Case studies**: the dashed "Case study" and "What I learnt" slots. Agreed format: what I made
+  → why → what I aimed for → challenges and decisions → where it landed → what I learnt.
+- **How I work** and **About** are first ideas.
+- **CV numbers**: deliberately none for now (Matthew, 5 Oct: "nothing yet worth putting on").
+  Don't push for metrics; suggest them only when a real milestone lands (e.g. Run's first month
+  in the stores, several restaurants on frunt), as totals only.
+- **Accessibility / SEO**: consider a plain list view of the work alongside the board.
+
+## Developer
+
+Matthew Kay · github.com/MattKay02 · mgkcodes.com · mattykay2002@gmail.com ·
+linkedin.com/in/matthew-kay- · x.com/mattykay2002
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

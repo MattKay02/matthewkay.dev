@@ -1,0 +1,26 @@
+{
+  "frunt": {
+    "name": "frunt",
+    "label": "frunt staff app",
+    "icon": "frunt-icon",
+    "web": "https://frunthospitality.com",
+    "apple": { "id": "6776269289", "url": "https://apps.apple.com/gb/app/frunt-restaurant-prep/id6776269289" },
+    "google": "com.frunt.frunt_mobile"
+  },
+  "run": {
+    "name": "Run",
+    "label": "Run",
+    "icon": "run-icon",
+    "web": "https://mgkfitness.mgkcodes.com",
+    "apple": { "id": "6800052303", "url": "https://apps.apple.com/app/id6800052303" },
+    "google": "com.mgkcodes.fitness.run"
+  },
+  "lift": {
+    "name": "Lift",
+    "label": "Lift",
+    "icon": "lift-icon",
+    "web": "https://mgkfitness.mgkcodes.com",
+    "apple": { "id": "6759969740", "url": "https://apps.apple.com/app/id6759969740", "minVersion": "2.0.0" },
+    "google": "com.mgkcodes.liftio"
+  }
+}

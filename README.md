@@ -1,62 +1,61 @@
-# Matthew Kay — Portfolio
+# Matthew Kay · Portfolio
 
-A bold, brutalist personal portfolio for **Matthew Kay**, software developer.
-Greyscale aesthetic, asymmetric layouts, oversized type — images are the only
-source of colour.
+The personal portfolio of **Matthew Kay**, software engineer and founder of
+[MGKCodes](https://mgkcodes.com).
 
-🔗 **Live:** [mattkay02.github.io](https://mattkay02.github.io)
+It's built as a **workbench**: one board of real, shipped work that a camera moves across as
+you scroll. A guide panel tells the story stop by stop, so the page reads well even if you just
+scroll straight through. Click a frame to jump to it, click a part of a product to look closer,
+or drag to look around.
 
-## About
+🔗 **Live:** [matthewkay.dev](https://matthewkay.dev)
 
-A single-page React app showcasing selected work, open-source contributions, a
-set of custom AI-coding skills, the tech stack, and the
-[MGKCodes](https://mgkcodes.com) studio. A few things worth calling out:
+## What's on the board
 
-- **Brutalist greyscale design** — hard edges, no rounded corners, a consistent
-  two-line outline-heading pattern, scroll-driven card animations.
-- **Live Skills section** — fetches its content at runtime from my
-  [skills repo](https://github.com/MattKay02/skills) manifest, so new skills
-  appear here without redeploying this site.
-- **Performance-tuned** — all imagery is optimised WebP, lazy-loaded below the
-  fold, with the LCP image preloaded. Lighthouse (mobile, production): ~92
-  Performance · 96 Accessibility · 100 Best Practices · 100 SEO.
+- **frunt**, the main project: a live SaaS that turns a restaurant's own documents into staff
+  training and answers that cite their source. Shown with its manager app, staff app, website
+  and the parts that run the business around it.
+- **MGKFitness**: Run and Lift, two Flutter apps on one account, and the rebuild of Liftio.
+- **Other work**, **How I work** (including the Claude Code skills I've built, read live from
+  [my skills repo](https://github.com/MattKay02/skills)), **About** and **Contact**.
+- The hero carries my **GitHub contribution graph**, refreshed daily.
+- **App statuses are checked, not typed.** Every deploy asks the App Store and Google Play which
+  listings are live, so an app shows as live, with a button for each store, the day it's approved.
+- My **CV** is generated from the same repo: [`src/data/cv.ts`](src/data/cv.ts) renders
+  [`/cv`](https://matthewkay.dev/cv/), and every deploy prints it to `/cv.pdf`, dated by
+  when the CV last changed.
 
-## Tech stack
+## Design
 
-React 19 · Vite 7 · plain CSS Modules · react-icons · deployed to GitHub Pages.
+Light, greyscale and precise: a 12-column grid, measured type, and colour that only ever comes
+from the work itself. Devices use Apple's official product bezels, shown the way Apple's
+marketing guidelines ask. See [`docs/design-system.md`](docs/design-system.md).
+
+## Tech
+
+Next.js 16 (App Router) · TypeScript · React 19 · static export, hosted on Vercel.
+See [`docs/architecture.md`](docs/architecture.md) for how the camera, the board and the live
+data work.
 
 ## Local development
 
 ```bash
 npm install
-npm run dev        # dev server
-npm run build      # production build to dist/
-npm run preview    # serve the production build locally
+npm run dev       # http://localhost:3000
+npm run build     # static site in out/
+npm run cv        # print the CV to out/cv.pdf (after build)
+npm run github    # refresh the contribution graph and the skills snapshot
+npm run stores    # check which App Store and Google Play listings are live
+npm run preview   # serve out/ locally
 ```
-
-## Project structure
-
-```
-src/
-  components/   # one component + its .module.css each
-  data/         # projects, contributions, skills (with live-fetch fallback)
-  hooks/        # scroll-driven animation hooks
-  index.css     # global reset + design tokens
-public/         # static assets (headshot, favicon, robots, sitemap)
-scripts/        # optimize-images.mjs — one-off WebP converter
-docs/           # design-system.md, architecture.md
-```
-
-See [`docs/design-system.md`](docs/design-system.md) for the visual language
-(tokens, typography, the heading pattern, component catalog) and
-[`docs/architecture.md`](docs/architecture.md) for structure, data flow, the
-live-Skills fetch, and the build/deploy setup.
 
 ## Deployment
 
-Pushes to `main` auto-deploy to GitHub Pages via
-[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)
-(`npm ci` → `npm run build` → deploy `dist/`).
+Vercel builds every push: `main` goes to production at [matthewkay.dev](https://matthewkay.dev)
+and every other branch gets a preview URL. The build ([`vercel.json`](vercel.json)) refreshes the
+live data, builds the site and prints the CV. [`daily.yml`](.github/workflows/daily.yml) rebuilds
+production once a day so the contribution graph and app statuses stay current, and pull requests
+run a build check ([`ci.yml`](.github/workflows/ci.yml)).
 
 ## License
 
