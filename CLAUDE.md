@@ -60,6 +60,10 @@ pipeline, then the checks) → About → Contact. frunt is the main project and 
   camera (cuts), a board that isn't a GPU layer, no frosted-glass blur, no wandering cursor, no fades
   and light shadows. iPhone Safari stalled and crashed on the full version (6 Oct 2026). The camera
   loop writes to the page only when a value changes, so a resting page does no work.
+- **The phone guide card never needs scrolling** at iPhone 13 Pro size with Safari's bar showing
+  (390 x 664): chip lists are one sideways-swipe row, the skills install line and the Intro's link
+  icons are hidden on phones, and Back/Next stay pinned to the card's bottom. Re-check all stops at
+  that size when adding copy to a stop.
 - **Copy**: plain, short, specific, from the reader's side. No em dashes in on-page copy, no
   buzzwords, no AI-sounding filler. **Statuses must be true** (see Facts) and go stale, so check
   them before every launch.

@@ -524,3 +524,16 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
   .mcursor { display: none; }
   [data-c], .dv .scr img, .card .shot img, .bw-scr img { transition: none; }
 }
+
+/* Phones: the guide card shows everything without scrolling (an iPhone 13 Pro with Safari's bar showing
+   gives the page 390 x 664). Chip lists become one row you swipe sideways; the skills install line and
+   the Intro's link icons are left to the board and the top bar; Back and Next stay pinned to the bottom
+   of the card in case a very small screen still runs out of room. The camera fits the board above it. */
+@media (max-width: 600px) {
+  .cap { max-height: calc(100% - 200px); }
+  .layers > div { flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px; padding: 0 16px; scrollbar-width: none; }
+  .layers > div::-webkit-scrollbar { display: none; }
+  .layers button { flex: none; }
+  .install, .cap.hero .icon-links { display: none; }
+  .cap-nav { position: sticky; bottom: 0; padding-top: 8px; background: var(--panel-bg); }
+}
