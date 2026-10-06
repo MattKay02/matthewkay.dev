@@ -345,13 +345,15 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 .cap-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 22px 28px 0; }
 .cap-chap { font: 500 calc(12px * var(--ls))/1.2 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--strong); }
 .cap-idx { font: 500 calc(11px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); color: var(--muted); font-variant-numeric: tabular-nums; }
-.ticks { display: flex; gap: 3px; padding: 10px 28px 0; }
-/* A 24px-tall hit area around a 4px bar (WCAG target size); the margins keep the layout as it was. */
-.tick { position: relative; flex: 1; height: 24px; margin: -4px 0; }
-.tick.gap { margin-left: 7px; }
-.tick::before, .tick i { content: ""; position: absolute; left: 0; top: 10px; height: 4px; border-radius: calc(var(--r-btn) * .01); }
-.tick::before { right: 0; background: var(--line); }
-.tick i { width: calc(var(--p, 0) * 100%); background: var(--strong); }
+.ticks { display: flex; padding: 10px 28px 0; }
+/* Hit areas sit edge to edge (at least 24 × 24px wherever the panel shows, the WCAG target size);
+   the gaps between bars, and the wider gap between chapters, are drawn inside each tick.
+   The vertical margins keep the layout as it was. */
+.tick { --l: 1.5px; --r: 1.5px; position: relative; flex: 1; height: 24px; margin: -4px 0; }
+.tick.gap { --l: 5px; }
+.tick::before, .tick i { content: ""; position: absolute; left: var(--l); top: 10px; height: 4px; border-radius: calc(var(--r-btn) * .01); }
+.tick::before { right: var(--r); background: var(--line); }
+.tick i { width: calc((100% - var(--l) - var(--r)) * var(--p, 0)); background: var(--strong); }
 .tick:hover::before { background: var(--outline); }
 .cap-body { display: flex; flex-direction: column; gap: 16px; padding: 22px 28px 24px; }
 .cap-body.swap { animation: capIn .45s ease both; }
