@@ -28,7 +28,9 @@ export const viewport: Viewport = {
 }
 
 // Applies a saved dark theme before first paint, so the page never flashes light first.
-const themeScript = `try{if(localStorage.getItem("wb-theme")==="dark")document.documentElement.dataset.theme="dark"}catch(e){}`
+// TEMPORARY (iPhone diagnosis, 6 Oct 2026): ?lite=cursor,shadow,filter,blur,motion,flat (or all) switches
+// suspects off one at a time, so a phone can show which one makes Safari stall. Remove once found.
+const themeScript = `try{if(localStorage.getItem("wb-theme")==="dark")document.documentElement.dataset.theme="dark"}catch(e){}try{var l=new URLSearchParams(location.search).get("lite");if(l)document.documentElement.dataset.lite=l==="all"?"cursor shadow filter blur motion flat":l.replace(/,/g," ")}catch(e){}`
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

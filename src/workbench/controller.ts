@@ -43,7 +43,9 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
   const { world, stage, track, bar, cap, ticks, mini, zoomRead, xyRead, you } = els
   const { w: W, h: H } = WORLD
   const MS = MINI_W / W, MINI_H = Math.round(H * MS)
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)')
+  const lite = (document.documentElement.dataset.lite ?? '').split(' ') // TEMPORARY: see layout.tsx
+  const mq = matchMedia('(prefers-reduced-motion: reduce)')
+  const reduced = { get matches() { return mq.matches || lite.includes('motion') }, addEventListener: mq.addEventListener.bind(mq), removeEventListener: mq.removeEventListener.bind(mq) }
   const tagged = Array.from(world.querySelectorAll<HTMLElement>('[data-c]'))
   const firstStop: Partial<Record<Cluster, number>> = {}
   stops.forEach((s, i) => { if (firstStop[s.c] === undefined) firstStop[s.c] = i })
@@ -312,11 +314,11 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
     delta += Math.abs(look.x) + Math.abs(look.y) > 0.5 ? 1 : 0
 
     const z = cur.z, tx = cur.ax - cur.cx * z + look.x, ty = cur.ay - cur.cy * z + look.y
-    world.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${z})`
+    world.style.transform = lite.includes('flat') ? `translate(${tx}px, ${ty}px) scale(${z})` : `translate3d(${tx}px, ${ty}px, 0) scale(${z})`
     world.style.setProperty('--inv', (1 / z).toFixed(4))
     // Promote the board to its own layer only while it moves, so text re-rasterises sharp at rest.
     still = delta > 0.05 ? 0 : still + 1
-    world.classList.toggle('moving', still < 8)
+    world.classList.toggle('moving', still < 8 && !lite.includes('flat'))
 
     let g = 48 * z
     while (g < 14) g *= 4
