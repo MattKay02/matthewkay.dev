@@ -220,8 +220,11 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
 - **Domain and hosting: decided.** **matthewkay.dev** (bought 5 Oct 2026, Cloudflare Registrar;
   DNS in Cloudflare, DNS-only records pointing at Vercel, which issues the certificate). Moved
   from GitHub Pages to Vercel on 6 Oct 2026 after GitHub never started its certificate request;
-  Vercel is where Matthew hosts everything else. GitHub Pages keeps matthewkay.dev as its custom
-  domain only so old mattkay02.github.io links redirect there. `.dev` is HTTPS-only.
+  Vercel is where Matthew hosts everything else. `.dev` is HTTPS-only. **This repo is
+  `MattKay02/matthewkay.dev`** (renamed from `MattKay02.github.io` on 6 Oct 2026). Old
+  `mattkay02.github.io` links are caught by a separate tiny repo, `MattKay02/MattKay02.github.io`,
+  whose `index.html` and `404.html` send every path to the same path on matthewkay.dev. GitHub
+  Pages on this repo is no longer needed (switching it off is Matthew's to do).
 - **Case studies**: the dashed "Case study" and "What I learnt" slots. Agreed format: what I made
   → why → what I aimed for → challenges and decisions → where it landed → what I learnt.
 - **How I work** and **About** are first ideas.
