@@ -43,9 +43,12 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
   const { world, stage, track, bar, cap, ticks, mini, zoomRead, xyRead, you } = els
   const { w: W, h: H } = WORLD
   const MS = MINI_W / W, MINI_H = Math.round(H * MS)
-  const lite = (document.documentElement.dataset.lite ?? '').split(' ') // TEMPORARY: see layout.tsx
+  // Touch devices (phones, tablets) get the reduced-motion camera, which cuts between stops, on a board
+  // that isn't its own GPU layer. iPhone Safari stalled and crashed redrawing the whole scaled board as
+  // the camera glided (6 Oct 2026). Drag-to-look is mouse-only, so touch loses nothing else.
+  const touch = matchMedia('(hover: none) and (pointer: coarse)').matches
   const mq = matchMedia('(prefers-reduced-motion: reduce)')
-  const reduced = { get matches() { return mq.matches || lite.includes('motion') }, addEventListener: mq.addEventListener.bind(mq), removeEventListener: mq.removeEventListener.bind(mq) }
+  const reduced = { get matches() { return mq.matches || touch } }
   const tagged = Array.from(world.querySelectorAll<HTMLElement>('[data-c]'))
   const firstStop: Partial<Record<Cluster, number>> = {}
   stops.forEach((s, i) => { if (firstStop[s.c] === undefined) firstStop[s.c] = i })
@@ -290,6 +293,10 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
 
   // ---------- the loop ----------
   let cur: Cam | null = null, last = performance.now(), still = 0, raf = 0
+  // What was last written to the page. The loop runs every frame but only touches the DOM on a change:
+  // Chrome skips identical writes, Safari may restyle the whole board for each one.
+  const wrote: Record<string, string> = {}
+  const put = (key: string, v: string, apply: (v: string) => void) => { if (wrote[key] !== v) { wrote[key] = v; apply(v) } }
   const tickVals: number[] = []
   function frame(now: number) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now
@@ -309,28 +316,30 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
       for (const key of ['cx', 'cy', 'ax', 'ay'] as const) { const dd = (target[key] - cur[key]) * k; cur[key] += dd; delta += Math.abs(dd) }
       const lz = Math.log(cur.z), dz = (Math.log(target.z) - lz) * k
       cur.z = Math.exp(lz + dz); delta += Math.abs(dz) * 400
+      // The ease never quite arrives; snap once it's invisible, so a resting page writes nothing.
+      if (delta < 0.01) cur = { ...target }
     }
     if (!dragging) { look.x *= 0.86; look.y *= 0.86; if (Math.abs(look.x) < 0.1) look.x = 0; if (Math.abs(look.y) < 0.1) look.y = 0 }
     delta += Math.abs(look.x) + Math.abs(look.y) > 0.5 ? 1 : 0
 
     const z = cur.z, tx = cur.ax - cur.cx * z + look.x, ty = cur.ay - cur.cy * z + look.y
-    world.style.transform = lite.includes('flat') ? `translate(${tx}px, ${ty}px) scale(${z})` : `translate3d(${tx}px, ${ty}px, 0) scale(${z})`
-    world.style.setProperty('--inv', (1 / z).toFixed(4))
+    put('tf', touch ? `translate(${tx}px, ${ty}px) scale(${z})` : `translate3d(${tx}px, ${ty}px, 0) scale(${z})`, (v) => { world.style.transform = v })
+    put('inv', (1 / z).toFixed(4), (v) => world.style.setProperty('--inv', v))
     // Promote the board to its own layer only while it moves, so text re-rasterises sharp at rest.
     still = delta > 0.05 ? 0 : still + 1
-    world.classList.toggle('moving', still < 8 && !lite.includes('flat'))
+    put('moving', String(still < 8 && !touch), (v) => world.classList.toggle('moving', v === 'true'))
 
     let g = 48 * z
     while (g < 14) g *= 4
-    stage.style.backgroundSize = `${g}px ${g}px`
-    stage.style.backgroundPosition = `${tx}px ${ty}px`
+    put('bgs', `${g}px ${g}px`, (v) => { stage.style.backgroundSize = v })
+    put('bgp', `${tx}px ${ty}px`, (v) => { stage.style.backgroundPosition = v })
 
     const vx = -tx / z, vy = -ty / z
     const x0 = clamp(vx * MS, MINI_W), x1 = clamp((vx + vw / z) * MS, MINI_W)
     const y0 = clamp(vy * MS, MINI_H), y1 = clamp((vy + vh / z) * MS, MINI_H)
-    view.style.cssText = `left:${x0}px;top:${y0}px;width:${x1 - x0}px;height:${y1 - y0}px`
-    zoomRead.textContent = Math.round(z * 100) + '%'
-    xyRead.textContent = `x ${Math.round(cur.cx)} y ${Math.round(cur.cy)}`
+    put('view', `left:${x0}px;top:${y0}px;width:${x1 - x0}px;height:${y1 - y0}px`, (v) => { view.style.cssText = v })
+    put('zoom', Math.round(z * 100) + '%', (v) => { zoomRead.textContent = v })
+    put('xy', `x ${Math.round(cur.cx)} y ${Math.round(cur.cy)}`, (v) => { xyRead.textContent = v })
     navTicks().forEach((el, j) => {
       const v = j <= p.i ? 1 : j === p.i + 1 ? p.f : 0
       if (tickVals[j] !== v) { tickVals[j] = v; el.style.setProperty('--p', v.toFixed(3)) }
