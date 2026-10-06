@@ -297,6 +297,64 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
   // Chrome skips identical writes, Safari may restyle the whole board for each one.
   const wrote: Record<string, string> = {}
   const put = (key: string, v: string, apply: (v: string) => void) => { if (wrote[key] !== v) { wrote[key] = v; apply(v) } }
+
+  // ---------- the camera on touch screens ----------
+  // The camera itself cuts (see `reduced`); what the visitor sees between stops is one of two moves:
+  // - 'gpu': the board glides to the new view as a single CSS transition, which Safari runs on the GPU
+  //   without redrawing the board. Its first glide is timed; if the phone can't keep up it switches to
+  //   'slide' for good. It is marked 'trying' before that first glide, so if Safari crashes mid-glide
+  //   the next visit starts on 'slide' instead of crashing again.
+  // - 'slide': the new view slides in from the direction of travel. One redraw, then a viewport-sized move.
+  const GLIDE_MS = 620
+  let glide: 'gpu' | 'slide' = 'gpu', glideChecked = false
+  try {
+    const saved = localStorage.getItem('wb-glide')
+    if (saved === 'slide' || saved === 'trying') { glide = 'slide'; localStorage.setItem('wb-glide', 'slide') }
+    else if (saved === 'gpu') glideChecked = true
+  } catch { /* no storage: glide, unchecked */ }
+  const remember = (v: string) => { try { localStorage.setItem('wb-glide', v) } catch { /* fine */ } }
+  let shown2d: { tx: number; ty: number; z: number } | null = null, glideEnd = 0
+  const flat = (c: { tx: number; ty: number; z: number }) => `translate(${c.tx}px, ${c.ty}px) scale(${c.z})`
+  function moveTouch(next: { tx: number; ty: number; z: number }) {
+    const prev = shown2d
+    const key = flat(next)
+    if (prev && flat(prev) === key) return
+    shown2d = next
+    if (!prev || mq.matches) { world.style.transition = ''; world.style.transform = key; return } // first view, or real reduced motion: cut
+    clearTimeout(glideEnd)
+    if (glide === 'gpu') {
+      // Start from wherever the board is now (mid-glide included), on its own layer, and transition once.
+      const from = getComputedStyle(world).transform
+      world.style.transition = 'none'
+      world.style.transform = from === 'none' ? flat(prev) : from
+      world.style.willChange = 'transform'
+      void world.offsetWidth
+      world.style.transition = `transform ${GLIDE_MS}ms cubic-bezier(.3, .7, .2, 1)`
+      world.style.transform = `translate3d(${next.tx}px, ${next.ty}px, 0) scale(${next.z})`
+      if (!glideChecked) {
+        glideChecked = true; remember('trying')
+        let frames = 0, worst = 0, last = performance.now(); const t0 = last
+        const watch = (t: number) => {
+          frames++; worst = Math.max(worst, t - last); last = t
+          if (t - t0 < GLIDE_MS) { requestAnimationFrame(watch); return }
+          const ok = worst < 120 && frames >= (GLIDE_MS / 1000) * 24
+          glide = ok ? 'gpu' : 'slide'; remember(glide)
+        }
+        requestAnimationFrame(watch)
+      }
+      // At rest the board goes back to a plain 2D transform, off its own layer.
+      glideEnd = window.setTimeout(() => { world.style.transition = ''; world.style.willChange = ''; world.style.transform = key }, GLIDE_MS + 40)
+    } else {
+      world.style.transition = ''; world.style.willChange = ''; world.style.transform = key
+      // The new view comes in from the side it lies on: the direction the camera travelled, on screen.
+      const dx = (prev.tx - next.tx) / Math.max(prev.z, next.z), dy = (prev.ty - next.ty) / Math.max(prev.z, next.z)
+      const len = Math.hypot(dx, dy) || 1
+      stage.animate([
+        { transform: `translate(${(dx / len) * 36}px, ${(dy / len) * 36}px)`, opacity: 0.35 },
+        { transform: 'none', opacity: 1 },
+      ], { duration: 320, easing: 'cubic-bezier(.2, .8, .2, 1)' })
+    }
+  }
   const tickVals: number[] = []
   function frame(now: number) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now
@@ -323,7 +381,8 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
     delta += Math.abs(look.x) + Math.abs(look.y) > 0.5 ? 1 : 0
 
     const z = cur.z, tx = cur.ax - cur.cx * z + look.x, ty = cur.ay - cur.cy * z + look.y
-    put('tf', touch ? `translate(${tx}px, ${ty}px) scale(${z})` : `translate3d(${tx}px, ${ty}px, 0) scale(${z})`, (v) => { world.style.transform = v })
+    if (touch) moveTouch({ tx, ty, z })
+    else put('tf', `translate3d(${tx}px, ${ty}px, 0) scale(${z})`, (v) => { world.style.transform = v })
     put('inv', (1 / z).toFixed(4), (v) => world.style.setProperty('--inv', v))
     // Promote the board to its own layer only while it moves, so text re-rasterises sharp at rest.
     still = delta > 0.05 ? 0 : still + 1

@@ -18,3 +18,5 @@ public/cv.pdf
 private/
 # The share image: generated (npm run og), never hand-edited.
 public/og.png
+# The whole-board pictures for Explore on phones: generated (npm run board).
+public/board-*.jpg

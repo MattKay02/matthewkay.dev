@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { FiFileText, FiMoon, FiSun } from 'react-icons/fi'
 import { CvViewer } from '@/cv/CvViewer'
+import { ExploreViewer } from './Explore'
 import { CaseStudyViewer } from '@/case-studies/CaseStudyViewer'
 import { BOARD_DECISIONS } from '@/case-studies/frunt-board'
 import type { CaseStudy } from '@/case-studies/frunt'
@@ -41,6 +42,9 @@ export default function Workbench({ cvUpdated, caseStudy = null }: { cvUpdated: 
   const [cvOpen, setCvOpen] = useState(false)
   const openCv = useCallback(() => setCvOpen(true), [])
   const closeCv = useCallback(() => setCvOpen(false), [])
+  const [exploreOpen, setExploreOpen] = useState(false)
+  const openExplore = useCallback(() => setExploreOpen(true), [])
+  const closeExplore = useCallback(() => setExploreOpen(false), [])
   const [caseOpen, setCaseOpen] = useState(false)
   const openCase = useCallback(() => setCaseOpen(true), [])
   const closeCase = useCallback(() => setCaseOpen(false), [])
@@ -117,7 +121,7 @@ export default function Workbench({ cvUpdated, caseStudy = null }: { cvUpdated: 
           ))}
         </div>
         <div className="cap-body swap" key={shown} aria-live="polite">
-          <GuideBody stop={stop} onCv={openCv} onCase={openCase} onGo={(c) => api.current?.goCluster(c)} onTile={(id) => api.current?.focusTile(id)} />
+          <GuideBody stop={stop} onCv={openCv} onCase={openCase} onExplore={openExplore} onGo={(c) => api.current?.goCluster(c)} onTile={(id) => api.current?.focusTile(id)} />
         </div>
         <div className="cap-nav">
           <button type="button" className="nav-prev" disabled={shown === 0} onClick={() => api.current?.prev()}><span aria-hidden="true">←</span> Back</button>
@@ -131,6 +135,7 @@ export default function Workbench({ cvUpdated, caseStudy = null }: { cvUpdated: 
       </aside>
 
       <CvViewer open={cvOpen} onClose={closeCv} updated={cvUpdated} />
+      <ExploreViewer open={exploreOpen} onClose={closeExplore} />
       <CaseStudyViewer study={caseStudy} open={caseOpen} onClose={closeCase} />
 
       <div className="mini" aria-hidden="true">
@@ -157,8 +162,8 @@ function Slots({ one }: { one?: boolean }) {
   )
 }
 
-function GuideBody({ stop, onCv, onCase, onGo, onTile }: {
-  stop: Stop; onCv: () => void; onCase: () => void; onGo: (c: Stop['c']) => void; onTile: (id: string) => void
+function GuideBody({ stop, onCv, onCase, onExplore, onGo, onTile }: {
+  stop: Stop; onCv: () => void; onCase: () => void; onExplore: () => void; onGo: (c: Stop['c']) => void; onTile: (id: string) => void
 }) {
   const [copied, setCopied] = useState('')
   const copy = (text: string) => {
@@ -178,6 +183,8 @@ function GuideBody({ stop, onCv, onCase, onGo, onTile }: {
           <div>{parts.map((p) => <button key={p.id} type="button" data-tile={p.id} onClick={() => onTile(p.id)}>{p.name}</button>)}</div>
         </div>
       )}
+      {/* Touch screens only: the live board is a guided tour there, so this is how to wander it. */}
+      {stop.c === 'all' && <div className="ctas explore"><button type="button" className="btn solid" onClick={onExplore}>Explore the board</button></div>}
       {stop.extra === 'heroProof' && (
         <>
           <div className="apps"><AppRow app="frunt" /><AppRow app="run" /><AppRow app="lift" /></div>
