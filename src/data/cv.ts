@@ -72,9 +72,9 @@ export const cv = {
 
   projects: [
     { name: 'skills', line: 'open-source Claude Code skills I build for my own workflow: Playwright UI walkthroughs, Lighthouse audits, emulator checks, CI builds.', link: { label: 'github.com/MattKay02/skills', href: LINKS.skills } },
-    { name: 'This portfolio', line: 'a Next.js site with a scroll-driven camera, live GitHub and skills data, and this CV generated from the same source.' },
+    { name: 'This portfolio', line: 'a Next.js site with a scroll-driven camera, live GitHub and skills data, and this CV generated from it.' },
     { name: 'Video-sharing platform', line: 'Next.js, Prisma, JWT / bcrypt auth, FFmpeg thumbnails, full-text search, infinite scroll.' },
-    { name: 'Ledger', line: 'business finance dashboard: React, Supabase, Google and Apple sign-in, AI transaction entry with Claude, Recharts.' },
+    { name: 'Ledger', line: 'business finance dashboard: React, Supabase, Google and Apple sign-in, AI transaction entry with Claude.' },
   ] as CvItem[],
 
   work: [

@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-05T22:17:23.566Z",
+  "checkedAt": "2026-10-06T10:45:03.373Z",
   "apps": {
     "frunt": {
       "apple": {
@@ -30,7 +30,7 @@
         "updated": "2026-04-30"
       },
       "google": {
-        "live": false,
+        "live": true,
         "url": "https://play.google.com/store/apps/details?id=com.mgkcodes.liftio"
       }
     }

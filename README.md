@@ -33,7 +33,7 @@ marketing guidelines ask. See [`docs/design-system.md`](docs/design-system.md).
 
 ## Tech
 
-Next.js 16 (App Router) · TypeScript · React 19 · static export to GitHub Pages.
+Next.js 16 (App Router) · TypeScript · React 19 · static export, hosted on Vercel.
 See [`docs/architecture.md`](docs/architecture.md) for how the camera, the board and the live
 data work.
 
@@ -51,12 +51,11 @@ npm run preview   # serve out/ locally
 
 ## Deployment
 
-Pushes to `main` deploy to GitHub Pages through
-[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), which also rebuilds once a day
-so the contribution graph and app statuses stay current. The site is served at
-[matthewkay.dev](https://matthewkay.dev) (a custom domain on GitHub Pages; DNS in Cloudflare).
-Pull requests run a build check
-([`ci.yml`](.github/workflows/ci.yml)).
+Vercel builds every push: `main` goes to production at [matthewkay.dev](https://matthewkay.dev)
+and every other branch gets a preview URL. The build ([`vercel.json`](vercel.json)) refreshes the
+live data, builds the site and prints the CV. [`daily.yml`](.github/workflows/daily.yml) rebuilds
+production once a day so the contribution graph and app statuses stay current, and pull requests
+run a build check ([`ci.yml`](.github/workflows/ci.yml)).
 
 ## License
 

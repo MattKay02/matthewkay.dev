@@ -5,7 +5,7 @@ How the workbench is built, where its data comes from, and how it ships.
 ## Stack
 
 - **Next.js 16** (App Router) with **TypeScript**, built as a **static export** (`output: 'export'`)
-  into `out/` and served by **GitHub Pages**.
+  into `out/` and built and served by **Vercel**.
 - **React 19** renders the board and the guide panel; a small imperative controller
   (`src/workbench/controller.ts`) drives everything that changes every frame.
 - **Global CSS with tokens** (`app/globals.css`). Three looks (Paper, Studio, Brutalist) are token
@@ -110,9 +110,10 @@ column stays clear before the photo.
 `src/data/cv.ts` holds the CV as typed data. `src/cv/CvSheet.tsx` renders it as an A4 sheet
 (`src/cv/cv.css`). It appears in three places: the viewer over the workbench (`CvViewer`, opened by
 every "View CV" button or `/#cv`, with Download PDF in its bar), the standalone `/cv` page (same
-design), and the PDF. The "Updated" date comes from `git log` for `cv.ts` at build time
-(`src/cv/updated.ts`, server-only, passed down from `app/page.tsx`), so it tracks content changes,
-not daily rebuilds (the deploy checks out full history for this). While the viewer is open,
+design), and the PDF. The "Updated" date is when `cv.ts` last changed (`src/cv/updated.ts`, server-only, passed
+down from `app/page.tsx`), so it tracks content changes, not daily rebuilds. It comes from
+`git log` when the full history is there, and from GitHub's commits API when the clone is shallow
+(Vercel clones only recent history, and `git log` in a shallow clone reports the wrong commit). While the viewer is open,
 `html.cv-open` locks page scroll and the camera ignores the arrow keys. `scripts/build-cv.mjs` then serves `out/`, opens `/cv/` in headless Chromium (Playwright)
 with print styles, checks the content fits one A4 page, and prints `out/cv.pdf`. Locally it also
 copies the PDF to `public/cv.pdf` (gitignored) so the dev server can serve it. With `--private`
@@ -123,12 +124,17 @@ instead; that copy is gitignored and never deployed.
 
 - `npm run dev` · `npm run build` (→ `out/`) · `npm run github` · `npm run stores` ·
   `npm run preview`
-- `deploy.yml` runs on push to `main` and **daily**: `npm ci` → `npm run github` → `npm run stores`
-  (both allowed to fail; the committed snapshots are used) → `npm run build` → install Chromium →
-  `npm run cv` → upload `out/` → GitHub Pages.
-- **Domain**: `matthewkay.dev`, the Pages custom domain (Cloudflare DNS: four A and four AAAA
-  records for GitHub Pages, `www` as a CNAME, all DNS-only). `.dev` only works over HTTPS, so the
-  Pages certificate has to stay valid; proxying the records through Cloudflare would break it.
+- **Vercel** (project `matthewkay-dev`) builds every push: `main` to production, other branches
+  to preview URLs. `vercel.json` serves `out/` as a static site and runs two scripts:
+  - `scripts/vercel-install.sh`: installs the system libraries headless Chrome needs on Vercel's
+    Amazon Linux build image (`dnf`), then `npm ci` and Playwright's headless Chrome.
+  - `scripts/vercel-build.sh`: `npm run github` → `npm run stores` (both allowed to fail; the
+    committed snapshots are used) → `npm run build` → `npm run cv`.
+- `daily.yml` calls a Vercel deploy hook once a day, so the graph and statuses refresh without a
+  push. `GITHUB_TOKEN` (a token with no extra permissions) is set on Vercel for the graph.
+- **Domain**: `matthewkay.dev` on the Vercel project; Cloudflare DNS points at Vercel, DNS-only,
+  and Vercel issues the certificate. `.dev` only works over HTTPS. GitHub Pages keeps the domain as
+  its custom domain only so `mattkay02.github.io` links redirect to it.
 - `ci.yml` builds every pull request into `main` and prints the CV, so an overflowing CV fails
   the check.
 - **`main` auto-deploys**: do feature work on a branch.

@@ -54,7 +54,8 @@ About → Contact. frunt is the main project and leads.
 
 ## Tech
 
-Next.js 16 (App Router), TypeScript, static export to `out/`, served by GitHub Pages. Global CSS
+Next.js 16 (App Router), TypeScript, static export to `out/`, built and served by Vercel (project `matthewkay-dev`, personal scope
+"Matthew Kay's projects"). Global CSS
 with tokens in `app/globals.css` (no CSS Modules). Fonts via `next/font`. Icons via `react-icons`.
 Next.js 16 differs from older versions: read `node_modules/next/dist/docs/` before using an API
 you haven't checked (see the block at the end of this file).
@@ -85,6 +86,7 @@ src/data/
 scripts/fetch-github.mjs   refreshes both snapshots: `npm run github`
 scripts/fetch-stores.mjs   checks the App Store and Google Play: `npm run stores`
 scripts/build-cv.mjs       prints /cv to out/cv.pdf after a build: `npm run cv`
+scripts/vercel-*.sh        Vercel's install and build steps (see vercel.json)
 public/work/           every image on the board, the Apple frames and the app icons
 docs/                  architecture, design system, screens-feed spec, storyboard history
 ```
@@ -98,11 +100,15 @@ number, see below) · `npm run github` (refresh contribution graph + skills snap
 
 `src/data/cv.ts` is the **only** source of Matthew's CV. `/cv` renders it as an A4 page and
 `scripts/build-cv.mjs` prints that page to `/cv.pdf` on every deploy, stamped "Updated" with the
-date `cv.ts` last changed in git (not the build date). To update the CV: edit `cv.ts`, commit,
+date `cv.ts` last changed in git, not the build date (from GitHub's API when the build's clone is
+shallow, as on Vercel). To update the CV: edit `cv.ts`, commit,
 push. Rules:
 
 - **One A4 page.** The CV build fails, with how many pixels it's over, if it overflows. Trim
-  content rather than shrinking type.
+  content rather than shrinking type. Vercel prints it on Linux, where text can wrap a little
+  differently, so keep a few percent spare locally (the script reports the real fill and warns
+  above 98%). Every weight the CV uses must be loaded in `app/layout.tsx`; a faked weight renders
+  at different widths on different systems.
 - **Never commit a phone number.** The public PDF has none. `CV_PHONE="…" npm run cv:private`
   writes a copy with it to `private/` (gitignored) for sending directly.
 - Same copy rules as the site: true statuses, no em dashes, specific results. Links come from
@@ -122,8 +128,10 @@ board is in board pixels; the world is 4760 × 4900.
   `https://raw.githubusercontent.com/MattKay02/skills/main/skills.json` in the browser. Matthew's
   publishing loop depends on this: adding a skill to the skills repo must show here with no
   change to this repo. Keep the fetch contract and the snapshot fallback.
-- **GitHub graph**: built from `src/data/github.json`. The deploy workflow refreshes it before
-  each build and rebuilds daily (`schedule` in `deploy.yml`). Only per-day counts are stored.
+- **GitHub graph**: built from `src/data/github.json`. Every Vercel build refreshes it (needs a
+  `GITHUB_TOKEN` env var on Vercel; without one the committed snapshot is used), and
+  `.github/workflows/daily.yml` triggers a rebuild each day through a Vercel deploy hook
+  (`VERCEL_DEPLOY_HOOK` secret). Only per-day counts are stored.
 - **Product screens**: today they're static files in `public/work/`. The plan for screens that
   update themselves is `docs/screens-feed.md` (implemented in the product repos, not here).
 
@@ -153,10 +161,10 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
   Instagram studio live since 21 Sep 2026. **WhatsApp is built but switched off; never list it as
   live.** Admin console and outreach + analytics are internal: no admin screenshots until they
   can be captured from the demo restaurant, never a real customer's data.
-- **MGKFitness**: Run is live on Google Play; its App Store listing shows up on the site by itself
-  once Apple approves it (in review on 5 Oct 2026). Lift is in development:
-  the Flutter rebuild of Liftio (Liftio 1.4's backend stopped working in Aug 2026, so never
-  present Liftio as live). Repo public by 11 Oct 2026. mgkfitness.mgkcodes.com has no tracking.
+- **MGKFitness**: Run and Lift are both live on Google Play (Lift since 6 Oct 2026). Their App
+  Store listings show up on the site by themselves once Apple approves them (Run was in review on
+  5 Oct). Lift is the Flutter rebuild of Liftio; its App Store page still carries Liftio 1.4 until
+  Lift 2.0 ships (Liftio's backend stopped working in Aug 2026, so never present Liftio as live). Repo public by 11 Oct 2026. mgkfitness.mgkcodes.com has no tracking.
 - **Other work**: Ledger, MSA (client), Red Cross (client), YouTube clone and Netflix clone
   (practice), FootyScores.
 
@@ -167,10 +175,11 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
   also for getting hired) leads with the role he's applying for, **Product Engineer** (swap to
   "Software Developer" for general junior roles); **LinkedIn** stays "Founder of MGKCodes",
   because that's what he does now. Don't try to make them match.
-- **Domain: decided.** **matthewkay.dev** (bought 5 Oct 2026, Cloudflare Registrar; DNS in
-  Cloudflare, DNS-only records pointing at GitHub Pages; set as the Pages custom domain, so
-  mattkay02.github.io redirects to it). `.dev` is HTTPS-only, so the Pages certificate must stay
-  valid; never proxy those DNS records.
+- **Domain and hosting: decided.** **matthewkay.dev** (bought 5 Oct 2026, Cloudflare Registrar;
+  DNS in Cloudflare, DNS-only records pointing at Vercel, which issues the certificate). Moved
+  from GitHub Pages to Vercel on 6 Oct 2026 after GitHub never started its certificate request;
+  Vercel is where Matthew hosts everything else. GitHub Pages keeps matthewkay.dev as its custom
+  domain only so old mattkay02.github.io links redirect there. `.dev` is HTTPS-only.
 - **Case studies**: the dashed "Case study" and "What I learnt" slots. Agreed format: what I made
   → why → what I aimed for → challenges and decisions → where it landed → what I learnt.
 - **How I work** and **About** are first ideas.

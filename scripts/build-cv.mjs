@@ -45,16 +45,22 @@ try {
     await page.evaluate((num) => { const el = document.querySelector('[data-phone]'); if (el) { el.textContent = num; el.hidden = false } }, phone)
   }
 
-  // One page, always: compare the content's height with an A4 page.
+  // One page, always: compare the content's height with an A4 page. The sheet
+  // itself is fixed at A4 height in print, so measure down to its lowest child.
   const { content, pageH } = await page.evaluate(() => {
     const sheet = document.querySelector('.cv-sheet')
     const probe = Object.assign(document.createElement('div'), { style: 'height:297mm;position:absolute' })
     document.body.appendChild(probe)
     const h = probe.getBoundingClientRect().height
     probe.remove()
-    return { content: sheet.scrollHeight, pageH: h }
+    const top = sheet.getBoundingClientRect().top
+    const bottom = Math.max(...[...sheet.children].map((el) => el.getBoundingClientRect().bottom))
+    return { content: bottom - top + parseFloat(getComputedStyle(sheet).paddingBottom), pageH: h }
   })
   if (content > pageH + 1) throw new Error(`The CV runs ${Math.ceil(content - pageH)}px past one A4 page. Trim src/data/cv.ts.`)
+  // Text wraps slightly differently on Linux (where Vercel prints it) than on
+  // Windows or macOS, so a CV that only just fits locally can overflow there.
+  if (content > pageH * 0.98) console.warn(`CV: only ${Math.floor(pageH - content)}px spare; it may overflow on another OS. Consider trimming.`)
 
   const target = isPrivate ? join(root, 'private', 'Matthew_Kay_CV.pdf') : join(outDir, 'cv.pdf')
   await mkdir(dirname(target), { recursive: true })
