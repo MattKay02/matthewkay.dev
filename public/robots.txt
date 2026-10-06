@@ -1,3 +1,5 @@
+# Everyone, including AI crawlers, is welcome. A plain-text summary for AI
+# tools is at https://matthewkay.dev/llms.txt
 User-agent: *
 Allow: /
 

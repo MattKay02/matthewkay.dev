@@ -1,0 +1,22 @@
+/* The share image (app/og/page.tsx): 1200 × 630, light Paper, the hero's type
+   and selection frame at card scale. Margins are 72px all round. */
+.og {
+  position: relative; width: 1200px; height: 630px; overflow: hidden; color: var(--strong);
+  background-color: var(--bg); background-image: radial-gradient(circle, var(--dot) 1.3px, transparent 1.6px); background-size: 24px 24px;
+}
+.og-url { position: absolute; left: 72px; top: 56px; font: 500 18px/1 var(--mono); letter-spacing: .02em; color: var(--muted); }
+.og-name { margin: 0; font-family: var(--display); font-weight: 500; letter-spacing: -.045em; line-height: .82; }
+.og-name span { position: absolute; left: 72px; top: 120px; font-size: 128px; }
+.og-name .og-kay { left: 267px; top: 233px; font-size: 154px; color: var(--ttl2); }
+.og-line { position: absolute; left: 72px; top: 400px; width: 640px; margin: 0; font: 500 32px/1.15 var(--display); letter-spacing: -.02em; }
+.og-apps { position: absolute; left: 72px; top: 510px; display: flex; gap: 32px; margin: 0; padding: 0; list-style: none; }
+.og-apps li { display: flex; align-items: center; gap: 12px; font: 500 20px/1 var(--body); color: var(--text2); }
+.og-apps img { width: 48px; height: 48px; border-radius: 22%; box-shadow: var(--ring); }
+.og-photo { position: absolute; right: 72px; top: 120px; margin: 0; outline: 1.5px solid var(--strong); }
+.og-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 40% 30%; filter: grayscale(1) contrast(1.06); }
+.og-photo i { position: absolute; width: 12px; height: 12px; background: var(--surface); border: 1.5px solid var(--strong); }
+.og-photo .tl { left: -6px; top: -6px; }
+.og-photo .tr { right: -6px; top: -6px; }
+.og-photo .bl { left: -6px; bottom: -6px; }
+.og-photo .br { right: -6px; bottom: -6px; }
+.og-photo figcaption { position: absolute; left: 50%; top: calc(100% + 16px); translate: -50% 0; padding: 6px 9px; border-radius: 6px; background: var(--strong); color: var(--bg); font: 500 14px/1 var(--mono); white-space: nowrap; }

@@ -24,6 +24,10 @@ src/workbench/parts.tsx   Frame, Title, Note, SlotBox, MacBook, IPhone, Browser,
 src/workbench/Skills.tsx  skills shelf (live skills.json)
 src/workbench/controller.ts  camera, rotation, focus, minimap, measurements, input
 src/workbench/Workbench.tsx  React shell: top bar, guide panel, minimap, stage
+src/workbench/products.ts the flagships' parts (tiles, chips, text version)
+src/workbench/TourText.tsx the tour as hidden text for screen readers and crawlers
+src/seo/describe.ts       JSON-LD and /llms.txt from the page's own data
+app/og/, app/llms.txt/    the share image's page; /llms.txt (static route handler)
 src/workbench/apps.tsx    app statuses (appStatus, liveOn) and the AppRow component
 src/data/                 github.json, skills.json and stores.json (generated); apps.json (by hand)
 scripts/fetch-github.mjs  refreshes the GitHub and skills snapshots
@@ -127,7 +131,8 @@ instead; that copy is gitignored and never deployed.
   - `scripts/vercel-install.sh`: installs the system libraries headless Chrome needs on Vercel's
     Amazon Linux build image (`dnf`), then `npm ci` and Playwright's headless Chrome.
   - `scripts/vercel-build.sh`: `npm run github` → `npm run stores` (both allowed to fail; the
-    committed snapshots are used) → `npm run build` → `npm run cv`.
+    committed snapshots are used) → `npm run build` → `npm run cv` → `npm run og` (photographs
+    `/og/` into `out/og.png`, the link-preview image).
 - `daily.yml` calls a Vercel deploy hook once a day, so the graph and statuses refresh without a
   push. `GITHUB_TOKEN` (a token with no extra permissions) is set on Vercel for the graph.
 - **Domain**: `matthewkay.dev` on the Vercel project; Cloudflare DNS points at Vercel, DNS-only,

@@ -65,11 +65,15 @@ you haven't checked (see the block at the end of this file).
 ```
 app/
   layout.tsx           fonts, metadata, the no-flash theme script
-  page.tsx             renders <Workbench />
+  page.tsx             renders <Workbench />, the hidden text version and the JSON-LD
   globals.css          tokens (light, plus dark overrides) + every style on the page
+  og/                  the share image's page (photographed into /og.png; noindex)
+  llms.txt/route.ts    /llms.txt, written at build time
 src/workbench/
   stops.ts             the tour: camera rects (desktop r, phone m), panel copy, links
-  Board.tsx            the board layout in board pixels, plus the product "parts" data
+  Board.tsx            the board layout in board pixels
+  products.ts          each flagship's "parts" (tile copy, statuses, focus rects)
+  TourText.tsx         the whole tour as hidden text, for screen readers and crawlers
   parts.tsx            building blocks: Frame, Title, Note, MacBook, IPhone, Browser, Tile, Shot…
   Skills.tsx           skills shelf, read live from the skills repo's skills.json
   controller.ts        the camera and everything per-frame (imperative; returns destroy())
@@ -79,6 +83,7 @@ src/workbench/
 app/cv/page.tsx        the standalone CV page
 src/cv/                CvSheet (the A4 CV), CvViewer (viewer over the board + page shell),
                        updated.ts (git date of cv.ts), cv.css
+src/seo/describe.ts    JSON-LD and /llms.txt, built from the same data as the page
 src/data/
   cv.ts                Matthew's CV as data: the single source for /cv and /cv.pdf
   github.json          contribution calendar (generated)
@@ -88,6 +93,8 @@ src/data/
 scripts/fetch-github.mjs   refreshes both snapshots: `npm run github`
 scripts/fetch-stores.mjs   checks the App Store and Google Play: `npm run stores`
 scripts/build-cv.mjs       prints /cv to out/cv.pdf after a build: `npm run cv`
+scripts/build-og.mjs       photographs /og/ to out/og.png after a build: `npm run og`
+scripts/headless.mjs       shared by both: serves out/ and launches headless Chrome
 scripts/vercel-*.sh        Vercel's install and build steps (see vercel.json)
 public/work/           every image on the board, the Apple frames and the app icons
 docs/                  architecture, design system, screens-feed spec, storyboard history
@@ -96,7 +103,8 @@ docs/                  architecture, design system, screens-feed spec, storyboar
 **Commands**: `npm run dev` (dev server, http://localhost:3000) · `npm run build` (static site in
 `out/`) · `npm run cv` (print the CV PDF; run after build) · `npm run cv:private` (copy with phone
 number, see below) · `npm run github` (refresh contribution graph + skills snapshot) ·
-`npm run stores` (refresh store statuses) · `npm run preview`.
+`npm run stores` (refresh store statuses) · `npm run og` (share image; run after build) ·
+`npm run preview`.
 
 ### The CV is code
 
@@ -121,7 +129,7 @@ push. Rules:
   is `src/cv/CvSheet.tsx`, shared by the viewer, the page and the PDF.
 
 **Adding a stop**: add it to `stops.ts` (cluster, `r`, `m`, `nav`, copy). **Adding a project
-part**: add it to `FRUNT_PARTS` / `MGK_PARTS` in `Board.tsx`. **Moving things**: everything on the
+part**: add it to `FRUNT_PARTS` / `MGK_PARTS` in `products.ts`. **Moving things**: everything on the
 board is in board pixels; the world is 4760 × 4900.
 
 ### Live data (do not break)
@@ -142,6 +150,20 @@ board is in board pixels; the world is 4760 × 4900.
 `npm run build` passes (TypeScript included). Check the dev server at desktop width and at 390px
 (phone), with no console errors. Check reduced motion when touching animation. The `run` and
 `lighthouse-audit` skills cover launching and performance checks.
+
+## Read by machines (search engines, AI tools, link previews)
+
+Everything here is generated from the same data as the page; never hand-write any of it.
+- **Text version**: `TourText.tsx` puts every stop's words (the panel only renders the current
+  one), the parts and the links into the HTML, visually hidden. The hero's `h1` reads "Matthew
+  Kay" (the visible "Kay" is a separate element).
+- **Structured data**: `src/seo/describe.ts` → JSON-LD on the homepage (ProfilePage, Person,
+  MGKCodes as Organization, frunt / Run / Lift as SoftwareApplication with live stores).
+- **`/llms.txt`**: the same module, as Markdown for AI tools (llmstxt.org). robots.txt allows
+  everyone and points to it.
+- **Share image**: `app/og/page.tsx` (real CSS, light Paper), photographed at 1200 × 630 into
+  `/og.png` on every deploy by `scripts/build-og.mjs`; used for Open Graph and X cards.
+- Canonical URLs on `/` and `/cv/`; `sitemap.xml` lists both.
 
 ## Statuses are never typed by hand
 
@@ -188,7 +210,8 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
 - **CV numbers**: deliberately none for now (Matthew, 5 Oct: "nothing yet worth putting on").
   Don't push for metrics; suggest them only when a real milestone lands (e.g. Run's first month
   in the stores, several restaurants on frunt), as totals only.
-- **Accessibility / SEO**: consider a plain list view of the work alongside the board.
+- **Accessibility / SEO**: the tour exists as hidden text (`TourText.tsx`); a visible plain list
+  view of the work alongside the board is still an option.
 
 ## Developer
 
