@@ -1,7 +1,7 @@
 /* Layout: one fixed board the camera flies over, driven by native page scroll.
    The board shows the work; the guide panel tells the story in real text.
-   Three looks share one structure: Paper (default), Studio, Brutalist.
-   Greyscale everywhere; colour only ever comes from the work itself. */
+   One design, Paper, in two themes: light (default) and dark, chosen with the
+   top-bar toggle. Greyscale everywhere; colour only ever comes from the work itself. */
 
 :root {
   --bg: #ebebeb; --surface: #ffffff; --line: rgba(0,0,0,.1); --frame-line: rgba(0,0,0,.07);
@@ -25,7 +25,8 @@
   --ticks: 0; --dim: .4;
   color-scheme: light;
 }
-:root[data-style="studio"] {
+/* Paper, dark: the same design on a dark desk. */
+:root[data-theme="dark"] {
   --bg: #101010; --surface: #1a1a1a; --line: rgba(255,255,255,.09); --frame-line: rgba(255,255,255,.06);
   --dot: #202020; --outline: #555555; --muted: #8c8c8c; --text2: #c8c8c8; --text: #e6e6e6; --strong: #f3f3f3;
   --paper: #ececec; --ink: #121212; --ink-muted: #666666;
@@ -39,23 +40,6 @@
   --shadow: 0 34px 80px -24px rgba(0,0,0,.75), 0 10px 26px -10px rgba(0,0,0,.55);
   --shadow-panel: 0 24px 60px -16px rgba(0,0,0,.65);
   --dim: .34;
-  color-scheme: dark;
-}
-:root[data-style="brutal"] {
-  --bg: #0a0a0a; --surface: #1a1a1a; --line: #333333; --frame-line: #333333;
-  --dot: #2a2a2a; --outline: #666666; --muted: #858585; --text2: #cccccc; --text: #e8e8e8; --strong: #f5f5f5;
-  --paper: #e8e8e8; --ink: #0a0a0a; --ink-muted: #555555;
-  --ttl2: transparent; --ttl-bg: transparent; --ttl2-stroke: 3px; --ttl-bg-stroke: 4px;
-  --wire: #cccccc; --wire-muted: #666666;
-  --panel-bg: rgba(10,10,10,.94); --bar-bg: rgba(10,10,10,.9); --blur: none;
-  --img-off: grayscale(1) brightness(.82) contrast(1.06);
-  --colfill: rgba(255,255,255,.028);
-  --hm0: #1c1c1c; --hm1: #3a3a3a; --hm2: #666666; --hm3: #a3a3a3; --hm4: #f5f5f5;
-  --label: var(--mono); --label-case: uppercase; --label-track: .09em; --ls: 1;
-  --ttl-weight: 700; --ttl-case: uppercase; --ttl-track: -.02em;
-  --r-art: 0px; --r-panel: 0px; --r-btn: 0px; --r-frame: 0px; --r-note: 0px;
-  --ring: 0 0 0 1px #333333; --shadow: 0 0 0 0 transparent; --shadow-panel: 0 0 0 0 transparent;
-  --ticks: 1; --dim: .28;
   color-scheme: dark;
 }
 
@@ -328,14 +312,22 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 .nav button:hover { color: var(--text2); }
 .nav button.on { color: var(--strong); border-bottom-color: var(--strong); }
 .bar-right { display: flex; align-items: center; gap: 10px; }
-.looks { display: flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: var(--r-btn); }
-.looks button { padding: 7px 10px; border-radius: var(--r-btn); font: 500 calc(11px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--muted); }
-.looks button:hover { color: var(--strong); }
-.looks button[aria-pressed="true"] { background: var(--strong); color: var(--bg); }
 .proto { padding: 6px 9px; white-space: nowrap; border: 1px dashed var(--outline); border-radius: var(--r-btn); font: 500 calc(10px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--muted); }
 .ibtn { display: inline-grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--line); border-radius: var(--r-btn); color: var(--text2); }
 .ibtn:hover { color: var(--strong); border-color: var(--strong); }
 .ibtn svg { width: 16px; height: 16px; }
+/* Theme switch: a pill whose knob slides to the active side (sun = light, moon = dark).
+   The knob's side comes from <html data-theme>, so it's right before React hydrates. */
+.theme { position: relative; flex: none; width: 64px; height: 36px; border: 1px solid var(--line); border-radius: var(--r-btn); color: var(--muted); }
+.theme:hover { border-color: var(--strong); color: var(--text2); }
+.theme > svg { position: absolute; top: 50%; width: 14px; height: 14px; margin-top: -7px; }
+.theme .t-sun { left: 10px; }
+.theme .t-moon { right: 10px; }
+.knob { position: absolute; top: 3px; left: 3px; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--strong); color: var(--bg); transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
+.knob svg { width: 14px; height: 14px; }
+.knob .k-moon, :root[data-theme="dark"] .knob .k-sun { display: none; }
+:root[data-theme="dark"] .knob { transform: translateX(28px); }
+:root[data-theme="dark"] .knob .k-moon { display: block; }
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 16px; white-space: nowrap; border: 1px solid var(--strong); border-radius: var(--r-btn); transition: background .2s, color .2s; font: 500 calc(12px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); }
 .btn.solid { background: var(--strong); color: var(--bg); }
 .btn.solid:hover { background: transparent; color: var(--strong); }
@@ -414,7 +406,7 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 @media (max-width: 1280px) { .mini { display: none; } }
 /* Phones, tablets and narrow windows: the guide becomes a bottom sheet (keep in sync with SHEET_MAX in controller.ts). */
 @media (max-width: 1024px) {
-  .who, .proto, .mini, .looks, .cap .hint, .cap .kick, .cap .slots { display: none; }
+  .who, .proto, .mini, .cap .hint, .cap .kick, .cap .slots { display: none; }
   .bar-in { gap: 10px; padding-inline: 12px; }
   .bar .btn { padding: 8px 11px; }
   .cap { left: 0; right: 0; bottom: 0; width: auto; max-height: 52%; border-width: 1px 0 0; border-radius: var(--r-panel) var(--r-panel) 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -435,5 +427,5 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
   .hx, .cap-body.swap { animation: none; }
   .mcursor { animation: none; transform: translate(1618px, 640px); }
   .browser.long:hover .bw-scr img { translate: none; }
-  [data-c], .dv .scr img, .card .shot img, .bw-scr img { transition: none; }
+  [data-c], .dv .scr img, .card .shot img, .bw-scr img, .knob { transition: none; }
 }

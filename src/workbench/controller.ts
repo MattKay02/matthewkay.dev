@@ -4,9 +4,6 @@
 // a destroy() that undoes everything it set up.
 import { WORLD, type Cluster, type Rect, type Stop } from './stops'
 
-export const LOOKS = ['paper', 'studio', 'brutal'] as const
-export type Look = (typeof LOOKS)[number]
-
 export interface WorkbenchEls {
   world: HTMLElement
   stage: HTMLElement
@@ -26,7 +23,6 @@ export interface WorkbenchApi {
   next(): void
   prev(): void
   focusTile(id: string): void
-  setLook(l: Look): void
   destroy(): void
 }
 
@@ -181,7 +177,7 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
     const gBase = $('gBase'), gCap = $('gCap'), gGap = $('gGap'), gGapLbl = $('gGapLbl')
     const bl = nm?.querySelector<HTMLElement>('.bl')
     if (!nm || !ms || !lbl || !ph || !gBase || !gCap || !gGap || !gGapLbl || !bl) return
-    // Fit the name to leave at least one column before the photo (uppercase looks are wider).
+    // Fit the name to leave at least one column before the photo.
     nm.style.fontSize = '250px'
     const room = ph.offsetLeft - nm.offsetLeft - 127
     if (nm.offsetWidth > room) nm.style.fontSize = Math.floor((250 * room) / nm.offsetWidth) + 'px'
@@ -205,12 +201,6 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
     gGapLbl.textContent = String(Math.round(gap))
   }
   document.fonts?.ready.then(() => measureHero())
-
-  function setLook(l: Look) {
-    document.documentElement.dataset.style = l
-    try { localStorage.setItem('wb-style', l) } catch { /* private window: the look just isn't remembered */ }
-    measureHero()
-  }
 
   // ---------- focus: a part (tile, browser or chip) takes the camera until the page scrolls on ----------
   let focus: { rect: Rect; y: number; c: string; el: HTMLElement } | null = null
@@ -359,7 +349,7 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
   cleanups.push(() => cancelAnimationFrame(raf))
 
   return {
-    goStop, goCluster, next, prev, focusTile, setLook,
+    goStop, goCluster, next, prev, focusTile,
     destroy() {
       cleanups.splice(0).forEach((fn) => fn())
       document.body.classList.remove('overview', 'dragging')

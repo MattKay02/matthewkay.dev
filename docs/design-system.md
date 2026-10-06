@@ -13,33 +13,37 @@ practical reference. Everything is defined in [`app/globals.css`](../app/globals
 - **The board shows; the panel tells.** Words that matter live in the guide panel as real text,
   readable at any zoom.
 
-## Looks
+## Themes
 
-Three token sets on `<html data-style>`. **Paper** is the default and has no attribute.
+One design, **Paper**, in two themes. Light is the default (no attribute); dark is
+`<html data-theme="dark">`, set by the sun/moon toggle in the top bar, remembered in localStorage
+(`wb-theme`) and applied before first paint by the script in `app/layout.tsx`. Dark only changes
+colour tokens; radii, type, labels and layout are the same.
 
-| Token | Paper | Studio | Brutalist |
-|---|---|---|---|
-| `--bg` | `#ebebeb` | `#101010` | `#0a0a0a` |
-| `--surface` | `#ffffff` | `#1a1a1a` | `#1a1a1a` |
-| `--strong` (headings, primary) | `#0d0d0d` | `#f3f3f3` | `#f5f5f5` |
-| `--text2` (secondary text) | `#3a3a3a` | `#c8c8c8` | `#cccccc` |
-| `--muted` (labels) | `#6a6a6a` | `#8c8c8c` | `#858585` |
-| `--line` (hairlines) | 10% black | 9% white | `#333333` |
-| Radii (`--r-art` / panel / buttons) | 10 / 16 / pill | same | 0 |
-| Labels | Inter, sentence case | same | IBM Plex Mono, uppercase |
-| Shadows | soft | deep | none |
+| Token | Light | Dark |
+|---|---|---|
+| `--bg` | `#ebebeb` | `#101010` |
+| `--surface` | `#ffffff` | `#1a1a1a` |
+| `--strong` (headings, primary) | `#0d0d0d` | `#f3f3f3` |
+| `--text2` (secondary text) | `#3a3a3a` | `#c8c8c8` |
+| `--muted` (labels) | `#6a6a6a` | `#8c8c8c` |
+| `--line` (hairlines) | 10% black | 9% white |
+| Radii (`--r-art` / panel / buttons) | 10 / 16 / pill | same |
+| Shadows | soft | deep |
+
+The CV sheet stays white in both themes: it's a document. The phone browser's toolbar colour
+(`theme-color`) follows the theme.
 
 Other tokens: `--dim` (opacity of clusters that aren't current), `--img-off` (the greyscale
 filter on screens), `--hm0`–`--hm4` (contribution graph levels), `--colfill` (layout grid).
 
 ## Typography
 
-- **Display**: Space Grotesk 500 (Paper, Studio) or 700 (Brutalist), tight tracking, line-height 0.82
-  on board titles.
-- **Body**: Inter 400/500.
+- **Display**: Space Grotesk 500, tight tracking, line-height 0.82 on board titles.
+- **Body**: Inter 400/500 (600 for the CV's labels).
 - **Data**: IBM Plex Mono for measurements, URLs, tech lists and graph labels.
 - **Two-line headings** on the board: a solid line (`Title`), then a larger offset second line
-  (`Title outline`): grey fill in Paper and Studio, an outline in Brutalist. Large watermark words
+  (`Title outline`) in a grey fill. Large watermark words
   behind work use `Title bg`.
 
 ## The hero grid
@@ -91,4 +95,4 @@ Screen content can change. Greyscale and dimming are applied to the screen conte
 | ≤ 1366px | The guide panel narrows to 380px. |
 | ≤ 1280px | The minimap is hidden. |
 | ≤ 1180px | The top-bar nav is hidden. |
-| ≤ 1024px | The guide becomes a bottom sheet (at most 52% of the height); the look switch, kicker and hint are hidden; each stop's phone rect (`m`) frames a smaller area, usually a phone screen, so it reads on a phone or tablet. |
+| ≤ 1024px | The guide becomes a bottom sheet (at most 52% of the height); the kicker and hint are hidden; each stop's phone rect (`m`) frames a smaller area, usually a phone screen, so it reads on a phone or tablet. |

@@ -27,9 +27,11 @@ async function fromGitHub(): Promise<string> {
   } catch { return '' }
 }
 
+// One lookup per build (both pages ask). Not in dev, where the server outlives edits to cv.ts.
 let cached: Promise<string> | undefined
 
 export function cvUpdated(): Promise<string> {
+  if (process.env.NODE_ENV !== 'production') cached = undefined
   cached ??= (async () => {
     const shallow = git('rev-parse --is-shallow-repository') !== 'false'
     const iso = (!shallow && git(`log -1 --format=%cs -- ${FILE}`)) || (await fromGitHub()) || new Date().toISOString().slice(0, 10)
