@@ -1,0 +1,93 @@
+/* A case study: a readable page on the desk, in the site's own tokens, so it is
+   the same design in light and dark. Measured, not decorated: one reading
+   column, mono labels, hairline rules. */
+
+.cs-sheet {
+  flex: none; width: min(100%, 800px); padding: 56px 64px 44px;
+  background: var(--surface); color: var(--text2); border-radius: var(--r-note); box-shadow: var(--shadow);
+  font: 400 17px/1.62 var(--body);
+  animation: sheetIn .45s cubic-bezier(.2, .8, .2, 1) both;
+}
+.cvv-page .cs-sheet { animation: none; }
+.cs-sheet p { margin: 0; }
+.cs-sheet p + p { margin-top: 14px; }
+.cs-sheet b { font-weight: 600; color: var(--strong); }
+
+.cs-kick, .cs-label, .cs-asof, .cs-foot, .cs-shot figcaption, .cs-card header span, .cs-time time {
+  font: 500 12px/1.3 var(--mono); letter-spacing: .02em; color: var(--muted);
+}
+
+/* The site's two-line heading: a solid line, then an offset line in grey. */
+.cs-ttl { margin: 14px 0 0; font: var(--ttl-weight) 46px/1.04 var(--display); letter-spacing: -.032em; color: var(--strong); text-wrap: balance; }
+.cs-ttl span { display: block; margin-top: 4px; padding-left: 56px; color: var(--ttl2); }
+.cs-ttl.sm { margin: 0 0 18px; font-size: 30px; letter-spacing: -.025em; }
+.cs-ttl.sm span { padding-left: 36px; }
+
+.cs-head .cs-app { margin-top: 26px; }
+.cs-facts { display: grid; gap: 8px; margin: 22px 0 0; }
+.cs-facts div { display: grid; grid-template-columns: 84px 1fr; gap: 16px; }
+.cs-facts dt { font: 500 12px/1.7 var(--mono); color: var(--muted); }
+.cs-facts dd { margin: 0; font-size: 15px; line-height: 1.55; color: var(--text); }
+
+.cs-tldr { margin-top: 36px; padding: 22px 26px 24px; background: var(--colfill); border: 1px solid var(--line); border-radius: calc(var(--r-art) * 1.2); }
+.cs-tldr dl { display: grid; gap: 10px; margin: 14px 0 0; }
+.cs-tldr div { display: grid; grid-template-columns: 136px 1fr; gap: 16px; }
+.cs-tldr dt { font-size: 14px; font-weight: 600; line-height: 1.5; color: var(--strong); }
+.cs-tldr dd { margin: 0; font-size: 15px; line-height: 1.5; }
+
+.cs-shot { margin: 40px 0 0; }
+.cs-shot img { display: block; width: 100%; height: auto; border-radius: var(--r-art); box-shadow: var(--ring); }
+.cs-shot figcaption { margin-top: 10px; }
+
+.cs-sec { margin-top: 52px; }
+.cs-sec h2 { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--strong); }
+.cs-sec h2 span { color: var(--muted); }
+.cs-sec h2::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.cs-note { font-size: 15px; color: var(--muted); }
+
+.cs-time { margin: 0; padding: 0; list-style: none; }
+.cs-time li { display: grid; grid-template-columns: 76px 1fr; gap: 16px; padding: 9px 0; border-top: 1px solid var(--line); font-size: 16px; line-height: 1.5; }
+.cs-time li:last-child { border-bottom: 1px solid var(--line); }
+.cs-time time { padding-top: 3px; font-variant-numeric: tabular-nums; }
+
+.cs-card { margin-top: 18px; padding: 22px 26px 24px; border: 1px solid var(--line); border-radius: calc(var(--r-art) * 1.2); }
+.cs-card header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+.cs-card h3 { margin: 0; font: var(--ttl-weight) 23px/1.2 var(--display); letter-spacing: -.015em; color: var(--strong); }
+.cs-card header span { margin-left: auto; white-space: nowrap; }
+.cs-card dl { display: grid; gap: 12px; margin: 16px 0 0; }
+.cs-card dt { font-size: 13px; font-weight: 600; color: var(--strong); }
+.cs-card dd { margin: 2px 0 0; font-size: 16px; line-height: 1.58; }
+.cs-card ul { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 10px; font-size: 16px; line-height: 1.58; }
+.cs-card li::marker { color: var(--outline); }
+.cs-card blockquote { margin: 18px 0 0; padding-left: 16px; border-left: 2px solid var(--strong); font: 500 18px/1.45 var(--display); letter-spacing: -.01em; color: var(--strong); }
+
+.cs-figs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin: 26px 0 0; background: var(--line); border: 1px solid var(--line); border-radius: calc(var(--r-art) * 1.2); overflow: hidden; }
+.cs-figs div { padding: 16px 18px; background: var(--surface); }
+.cs-figs dt { font: var(--ttl-weight) 38px/1 var(--display); letter-spacing: -.03em; color: var(--strong); font-variant-numeric: tabular-nums; }
+.cs-figs dd { margin: 8px 0 0; font-size: 13px; line-height: 1.35; color: var(--muted); }
+.cs-asof { margin-top: 10px !important; }
+
+.cs-steps { margin: 14px 0 0; padding-left: 24px; display: grid; gap: 10px; }
+.cs-steps li::marker { font: 500 13px var(--mono); color: var(--muted); }
+.cs-big { font-size: 19px; line-height: 1.55; color: var(--text); }
+.cs-big + p { margin-top: 18px; }
+
+.cs-foot { margin-top: 52px; padding-top: 16px; border-top: 1px solid var(--line); }
+
+@media (prefers-reduced-motion: reduce) { .cs-sheet { animation: none; } }
+@media (max-width: 760px) {
+  .cs-open span { display: none; }
+  .cs-open { padding: 11px; }
+  .cs-sheet { padding: 30px 20px 28px; font-size: 16px; }
+  .cs-ttl { font-size: 32px; }
+  .cs-ttl span { padding-left: 24px; }
+  .cs-ttl.sm { font-size: 24px; }
+  .cs-ttl.sm span { padding-left: 18px; }
+  .cs-facts div, .cs-tldr div { grid-template-columns: 1fr; gap: 2px; }
+  .cs-tldr { padding: 18px; }
+  .cs-card { padding: 18px; }
+  .cs-card header span { margin-left: 0; }
+  .cs-figs { grid-template-columns: repeat(2, 1fr); }
+  .cs-time li { grid-template-columns: 64px 1fr; gap: 12px; }
+  .cs-sec { margin-top: 40px; }
+}

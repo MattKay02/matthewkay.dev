@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-10-06T17:14:58.715Z",
+  "ref": "main",
+  "commit": "187c4a9",
+  "decisionRecords": 84,
+  "latestAdr": "0087",
+  "apiRoutes": 142,
+  "pages": 65,
+  "migrations": 73,
+  "testFiles": 66,
+  "eval": null
+}

@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { FiFileText, FiMoon, FiSun } from 'react-icons/fi'
 import { CvViewer } from '@/cv/CvViewer'
+import { CaseStudyViewer } from '@/case-studies/CaseStudyViewer'
+import { BOARD_DECISIONS } from '@/case-studies/frunt-board'
+import type { CaseStudy } from '@/case-studies/frunt'
 import Board from './Board'
 import { PART_IDS } from './products'
 import { mountWorkbench, type WorkbenchApi } from './controller'
@@ -11,7 +14,8 @@ import { AppRow } from './apps'
 import { skillId, useSkills } from './Skills'
 import { CHAPTERS, LINKS, NAV_ITEMS, SHOW_SLOTS, SKILLS_INSTALL, stops, type Stop } from './stops'
 
-export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
+/** `caseStudy` is passed only while it is visible (published, or a draft in dev), so unpublished copy never reaches the built site. */
+export default function Workbench({ cvUpdated, caseStudy = null }: { cvUpdated: string; caseStudy?: CaseStudy | null }) {
   const world = useRef<HTMLDivElement>(null)
   const stage = useRef<HTMLDivElement>(null)
   const track = useRef<HTMLDivElement>(null)
@@ -29,6 +33,9 @@ export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
   const [cvOpen, setCvOpen] = useState(false)
   const openCv = useCallback(() => setCvOpen(true), [])
   const closeCv = useCallback(() => setCvOpen(false), [])
+  const [caseOpen, setCaseOpen] = useState(false)
+  const openCase = useCallback(() => setCaseOpen(true), [])
+  const closeCase = useCallback(() => setCaseOpen(false), [])
 
   useEffect(() => {
     const els = {
@@ -40,6 +47,7 @@ export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
     api.current = a
     if (document.documentElement.dataset.theme === 'dark') { setDark(true); paintThemeColor(true) }
     if (location.hash === '#cv') setCvOpen(true) // a shareable link straight to the CV
+    if (location.hash === '#frunt' && caseStudy) setCaseOpen(true) // and to the case study
     return () => { a.destroy(); api.current = null }
   }, [])
 
@@ -98,7 +106,7 @@ export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
           ))}
         </div>
         <div className="cap-body swap" key={shown} aria-live="polite">
-          <GuideBody stop={stop} onCv={openCv} onGo={(c) => api.current?.goCluster(c)} onTile={(id) => api.current?.focusTile(id)} />
+          <GuideBody stop={stop} onCv={openCv} onCase={openCase} onGo={(c) => api.current?.goCluster(c)} onTile={(id) => api.current?.focusTile(id)} />
         </div>
         <div className="cap-nav">
           <button type="button" className="nav-prev" disabled={shown === 0} onClick={() => api.current?.prev()}><span aria-hidden="true">←</span> Back</button>
@@ -112,6 +120,7 @@ export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
       </aside>
 
       <CvViewer open={cvOpen} onClose={closeCv} updated={cvUpdated} />
+      <CaseStudyViewer study={caseStudy} open={caseOpen} onClose={closeCase} />
 
       <div className="mini" aria-hidden="true">
         <div className="mini-map" ref={mini} />
@@ -137,8 +146,8 @@ function Slots({ one }: { one?: boolean }) {
   )
 }
 
-function GuideBody({ stop, onCv, onGo, onTile }: {
-  stop: Stop; onCv: () => void; onGo: (c: Stop['c']) => void; onTile: (id: string) => void
+function GuideBody({ stop, onCv, onCase, onGo, onTile }: {
+  stop: Stop; onCv: () => void; onCase: () => void; onGo: (c: Stop['c']) => void; onTile: (id: string) => void
 }) {
   const [copied, setCopied] = useState('')
   const copy = (text: string) => {
@@ -169,6 +178,12 @@ function GuideBody({ stop, onCv, onGo, onTile }: {
         </>
       )}
       {stop.extra === 'fruntApps' && <div className="apps"><AppRow app="frunt" /></div>}
+      {stop.extra === 'fruntCase' && (
+        <>
+          <ol className="calls">{BOARD_DECISIONS.map((d) => <li key={d}>{d}</li>)}</ol>
+          <div className="ctas"><button type="button" className="btn solid" onClick={onCase}>Read the case study</button></div>
+        </>
+      )}
       {stop.extra === 'mgkApps' && <div className="apps"><AppRow app="run" /><AppRow app="lift" /></div>}
       {stop.extra === 'slots' && <Slots />}
       {stop.extra === 'slotsOne' && <Slots one />}

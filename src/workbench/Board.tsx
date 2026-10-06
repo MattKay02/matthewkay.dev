@@ -5,12 +5,15 @@ import gh from '@/data/github.json'
 import { FiFileText } from 'react-icons/fi'
 import { FaGithub, IconLinks } from './icons'
 import {
-  Browser, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Step, Tile, Title,
+  Brief, Browser, Callout, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Step, Tile, Title,
 } from './parts'
 import SkillsPipeline, { type Column } from './Skills'
 import { SHOW_SLOTS, WORLD, type Cluster } from './stops'
 import { AppRow } from './apps'
-import { FRUNT_PARTS, MGK_PARTS, type Part } from './products'
+import { FRUNT_PARTS, FRUNT_SITE_FOCUS, FRUNT_SITE_Y, MGK_PARTS, type Part } from './products'
+import { FRUNT_SCREENS, MGK_SCREENS, phone, slide } from './screens'
+import { SHOW_FRUNT } from '@/case-studies/flags'
+import { BOARD_MILESTONES, fmtShort } from '@/case-studies/frunt-board'
 
 const d = (delay: string) => ({ '--d': delay }) as CSSProperties
 
@@ -84,26 +87,86 @@ function Hero({ onCv }: { onCv: () => void }) {
   )
 }
 
+// ---------- frunt: how it was built, on a dated ruler ----------
+// Each marker sits at its real date, so the pace shows: the May–June build, the
+// summer away, the second wave. Markers too close to share a row step up a level.
+const TL_INSET = 30, TL_AXIS = 940, TL_LEVEL = 32
+const day = (iso: string) => Date.parse(iso + 'T00:00:00Z')
+
+function BuildTimeline() {
+  const first = new Date(day(BOARD_MILESTONES[0].date))
+  const last = new Date(day(BOARD_MILESTONES[BOARD_MILESTONES.length - 1].date))
+  const start = Date.UTC(first.getUTCFullYear(), first.getUTCMonth(), 1)
+  const end = Date.UTC(last.getUTCFullYear(), last.getUTCMonth() + 2, 1)
+  const xAt = (t: number) => TL_INSET + ((t - start) / (end - start)) * TL_AXIS
+
+  const months: { x: number; label: string }[] = []
+  for (let m = new Date(start); m.getTime() <= end; m.setUTCMonth(m.getUTCMonth() + 1)) {
+    months.push({ x: xAt(m.getTime()), label: m.toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' }) })
+  }
+  const lastX: number[] = []
+  const marks = BOARD_MILESTONES.map((m) => {
+    const x = xAt(day(m.date))
+    let level = 0
+    while (lastX[level] !== undefined && x - lastX[level] < 30) level++
+    lastX[level] = x
+    return { x, level }
+  })
+
+  return (
+    <div className="tl" data-c="frunt" style={{ left: 3620, top: 1480, width: 1000, height: 420 }}>
+      <div className="tl-head"><b>How it was built</b><span>Dates from frunt&apos;s git history · {first.getUTCFullYear()}</span></div>
+      <div className="tl-axis" aria-hidden="true">
+        <i className="tl-line" />
+        {months.map((m) => <span key={m.x} className="tl-month" style={{ left: m.x }}>{m.label}</span>)}
+        {marks.map((mk, i) => (
+          <b key={i} className="tl-mk" style={{ left: mk.x, bottom: 44 + mk.level * TL_LEVEL, '--stem': `${8 + mk.level * TL_LEVEL}px` } as CSSProperties}>{i + 1}</b>
+        ))}
+      </div>
+      <ol className="tl-list">
+        {BOARD_MILESTONES.map((m, i) => (
+          <li key={m.date + m.label}><b>{String(i + 1).padStart(2, '0')}</b><time dateTime={m.date}>{fmtShort(m.date)}</time><span>{m.label}</span></li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+
 function Frunt() {
   return (
     <>
       <Title c="frunt" x={1760} y={0} size={600} bg style={{ textTransform: 'none', letterSpacing: '-.04em' }}>frunt</Title>
-      <Note c="frunt" x={1790} y={250} w={470} kicker="The problem">Restaurants have their rules written down. Staff don&apos;t read them.</Note>
+      <Brief c="frunt" x={1790} y={250} w={450}
+        problem="Restaurants have their rules written down. Staff don't read them."
+        story="I saw it working behind a bar: training was a compliance module that ticked a box, and finding an answer meant flipping through spec sheets or asking a manager again."
+        steps={[
+          'A manager uploads the documents the restaurant already has.',
+          'frunt turns them into short courses on staff phones.',
+          'Staff ask in plain words; every answer names the document it came from.',
+        ]}
+        facts="For independent restaurants · built and run solo · live since June 2026" />
+      <Browser c="frunt" x={1790} y={FRUNT_SITE_Y} w={450} url="https://frunthospitality.com/" img="site-frunt-long" iw={640} ih={3185}
+        alt="frunthospitality.com, the frunt website" caption="Website · hover to scroll" long focus={FRUNT_SITE_FOCUS} />
       <MacBook c="frunt" id="frunt-a" label="Manager web app" x={2250} y={430} w={1400} slides={[
-        { img: 'frunt-home', w: 1100, h: 619, bg: '#f6f5f2', title: 'Home', alt: 'frunt manager dashboard, home' },
-        { img: 'frunt-ask', w: 1280, h: 720, bg: '#faf7ef', title: 'Ask frunt', alt: 'Ask frunt: an answer about peanut allergen controls, citing three source documents',
-          overlay: <><div className="redline" style={{ left: '37.2%', top: '46.45%', width: '33.5%', height: '6.5%' }} /><div className="tag" style={{ left: '37.2%', top: '54.5%' }}>↑ Every answer cites its source</div></> },
-        { img: 'frunt-docs', w: 1100, h: 619, bg: '#fbfcfb', title: 'Documents', alt: 'frunt documents library' },
-        { img: 'frunt-training', w: 1100, h: 619, bg: '#fefefb', title: 'Training', alt: 'frunt training courses' },
-        { img: 'frunt-rota', w: 1100, h: 619, bg: '#faf7ef', title: 'Rota', alt: 'frunt rota' },
+        { ...slide(FRUNT_SCREENS.home), bg: '#f6f5f2', title: 'Home' },
+        { ...slide(FRUNT_SCREENS.ask), bg: '#faf7ef', title: 'Ask frunt',
+          // The redline is measured on the saved screenshot, so a new capture drops it.
+          overlay: FRUNT_SCREENS.ask.fromFeed ? undefined : <><div className="redline" style={{ left: '37.2%', top: '46.45%', width: '33.5%', height: '6.5%' }} /><div className="tag" style={{ left: '37.2%', top: '54.5%' }}>↑ Every answer cites its source</div></> },
+        { ...slide(FRUNT_SCREENS.documents), bg: '#fbfcfb', title: 'Documents' },
+        { ...slide(FRUNT_SCREENS.training), bg: '#fefefb', title: 'Training' },
       ]} />
-      <IPhone c="frunt" x={3720} y={673} w={332} img="frunt-m-ask" iw={334} ih={736} alt="frunt staff app, asking a question" caption="Staff app · Ask" />
-      <IPhone c="frunt" x={4090} y={673} w={332} img="frunt-m-training" iw={334} ih={736} alt="frunt staff app, training" caption="Staff app · Training" />
-      <Browser c="frunt" x={3720} y={110} w={700} url="https://frunthospitality.com/" img="site-frunt-long" iw={640} ih={3185}
-        alt="frunthospitality.com, the frunt website" caption="Website · hover to scroll" long focus="3700,70,740,560" />
+      <Callout c="frunt" n="01" title="Ask" x={3720} y={400} w={332} h={240}>
+        Staff ask in plain words, in the app or on WhatsApp. Every answer lists the documents it came from, so a manager can check it.
+      </Callout>
+      <Callout c="frunt" n="02" title="Training" x={4090} y={400} w={332} h={240}>
+        Short courses built from the restaurant&apos;s own documents, not a generic module. Each one finished is recorded, with the date it&apos;s due again.
+      </Callout>
+      <IPhone c="frunt" x={3720} y={673} w={332} {...phone(FRUNT_SCREENS.staffAsk)} />
+      <IPhone c="frunt" x={4090} y={673} w={332} {...phone(FRUNT_SCREENS.staffTraining)} />
       <Parts c="frunt" prefix="ft" parts={FRUNT_PARTS} x0={1790} y0={1480} />
-      {SHOW_SLOTS && <SlotBox c="frunt" x={3620} y={1480} w={1000} h={200} title="Case study" />}
-      {SHOW_SLOTS && <SlotBox c="frunt" x={3620} y={1700} w={1000} h={200} title="What I learnt" />}
+      {SHOW_SLOTS && !SHOW_FRUNT && <SlotBox c="frunt" x={3620} y={1480} w={1000} h={200} title="Case study" />}
+      {SHOW_SLOTS && !SHOW_FRUNT && <SlotBox c="frunt" x={3620} y={1700} w={1000} h={200} title="What I learnt" />}
+      {SHOW_FRUNT && <BuildTimeline />}
       <img className="brand-mark" data-c="frunt" src={IMG('frunt-icon')} width={256} height={256} alt="frunt" style={{ left: 1790, top: 110, width: 110, height: 110 }} />
       <AppRow app="frunt" web={false} c="frunt" className="release" style={{ left: 3720, top: 1372 }} />
     </>
@@ -118,10 +181,10 @@ function MgkFitness() {
       <IPhone c="mgk" x={1780} y={2590} w={260} img="liftio-home" iw={560} ih={1212} alt="Liftio 1.4 home screen" caption="Liftio 1.4 · React Native" />
       <IPhone c="mgk" x={2060} y={2650} w={260} img="liftio-tracking" iw={560} ih={1212} alt="Liftio 1.4 workout tracking" />
       <IPhone c="mgk" x={2340} y={2590} w={260} img="liftio-detail" iw={560} ih={1212} alt="Liftio 1.4 exercise detail with a progress chart" />
-      <IPhone c="mgk" x={2820} y={2590} w={260} img="lift-log" iw={560} ih={1212} alt="Lift 2.0 logging a workout" caption="Lift · Flutter" />
-      <IPhone c="mgk" x={3100} y={2650} w={260} img="lift-plan" iw={560} ih={1212} alt="Lift 2.0 plan" />
-      <IPhone c="mgk" x={3600} y={2590} w={260} img="run-record" iw={560} ih={1214} alt="Run recording a run" caption="Run · Flutter" />
-      <IPhone c="mgk" x={3880} y={2650} w={260} img="run-plan" iw={560} ih={1214} alt="Run training plan" />
+      <IPhone c="mgk" x={2820} y={2590} w={260} {...phone(MGK_SCREENS.liftLog)} caption="Lift · Flutter" />
+      <IPhone c="mgk" x={3100} y={2650} w={260} {...phone(MGK_SCREENS.liftPlan)} />
+      <IPhone c="mgk" x={3600} y={2590} w={260} {...phone(MGK_SCREENS.runRecord)} caption="Run · Flutter" />
+      <IPhone c="mgk" x={3880} y={2650} w={260} {...phone(MGK_SCREENS.runPlan)} />
       <Note c="mgk" x={2820} y={3305} w={780} kicker="Decision 0001 · accepted 17 Aug 2026"
         quote={'"Retiring a live record to avoid an untidy string is paying a real cost for a cosmetic one."'}>
         Liftio is replaced, not relaunched.

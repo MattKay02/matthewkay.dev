@@ -2,9 +2,11 @@
 // frames on a wide screen (r) and on a phone (m), and what the guide panel says.
 // Rects are [x, y, width, height] in board pixels.
 
+import { SHOW_FRUNT } from '@/case-studies/flags'
+
 export type Cluster = 'hero' | 'all' | 'frunt' | 'mgk' | 'other' | 'how' | 'about' | 'contact'
 export type Rect = [number, number, number, number]
-export type Extra = 'heroProof' | 'slots' | 'slotsOne' | 'fruntApps' | 'mgkApps' | 'skills' | 'contact'
+export type Extra = 'heroProof' | 'slots' | 'slotsOne' | 'fruntApps' | 'mgkApps' | 'skills' | 'contact' | 'fruntCase'
 
 export interface Stop {
   c: Cluster
@@ -46,6 +48,14 @@ export const NAV_ITEMS: { c: Cluster; label: string }[] = [
   { c: 'contact', label: 'Contact' },
 ]
 
+/** The way into the frunt case study: its dated timeline on the board, three decisions in the panel. */
+const FRUNT_CASE: Stop = {
+  c: 'frunt', r: [3590, 1440, 1060, 490], m: [3600, 1450, 1040, 470], nav: 'frunt: how it was built',
+  extra: 'fruntCase',
+  title: 'Every big call written down, with the date I made it.',
+  body: 'From a demo on 1 May 2026 to both app stores by 13 June. Three of the calls that shaped it:',
+}
+
 export const stops: Stop[] = [
   {
     c: 'hero', r: [100, 120, 1560, 1000], m: [100, 150, 1520, 960], nav: 'Intro',
@@ -59,15 +69,25 @@ export const stops: Stop[] = [
     body: 'Scroll for the guided tour, or click any frame to jump straight to it.',
   },
   {
-    c: 'frunt', r: [1770, 200, 1900, 1200], m: [2230, 400, 1440, 980], nav: 'frunt: the problem',
+    c: 'frunt', r: [1760, 200, 510, 880], m: [1760, 200, 510, 880], nav: 'frunt: the problem',
     title: "Restaurants have their rules written down. Staff don't read them.",
-    body: "frunt turns a restaurant's own documents into staff training and instant answers. A web app for managers, a phone app for staff.",
+    body: "frunt turns a restaurant's own documents into staff training and instant answers. A web app for managers; a phone app and WhatsApp for staff.",
   },
   {
-    c: 'frunt', r: [2220, 380, 2240, 1000], m: [3700, 640, 372, 740], nav: 'frunt: sourced answers',
+    c: 'frunt', r: [2230, 380, 1440, 1110], m: [2230, 400, 1440, 1060], nav: 'frunt: the manager app',
+    title: 'Managers bring the documents they already have.',
+    body: 'frunt reads them, files them and turns them into courses, and a manager checks each one before staff see it. Use the tabs under the laptop to look through the screens.',
+  },
+  {
+    c: 'frunt', r: [2400, 520, 1100, 740], m: [3700, 640, 372, 740], nav: 'frunt: sourced answers',
     lock: { 'frunt-a': 1 },
     title: 'Every answer shows where it came from.',
     body: "Staff ask in plain words. frunt answers only from that restaurant's documents and cites each source, so a manager can check it.",
+  },
+  {
+    c: 'frunt', r: [3690, 370, 760, 1080], m: [3700, 380, 740, 1050], nav: 'frunt: the staff app',
+    title: 'Staff get answers and training on their phone.',
+    body: 'Two screens from the staff app, on the App Store and Google Play. Staff can also ask on WhatsApp, with no app to install.',
   },
   {
     c: 'frunt', r: [1740, 30, 2920, 1910], m: [1770, 1460, 1180, 460], nav: 'frunt: the whole system',
@@ -75,6 +95,7 @@ export const stops: Stop[] = [
     title: 'More than an app.',
     body: 'frunt is six parts I designed, built and run: two apps, a website, an admin console, an Instagram studio and an outreach engine.',
   },
+  ...(SHOW_FRUNT ? [FRUNT_CASE] : []),
   {
     c: 'mgk', r: [1740, 2080, 1200, 1160], m: [1770, 2530, 820, 620], nav: 'MGKFitness: Liftio',
     title: 'Liftio. My first App Store app.',

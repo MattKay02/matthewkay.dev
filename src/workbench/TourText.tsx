@@ -4,6 +4,7 @@
 import { appStatus, statusText, type AppKey } from './apps'
 import { FRUNT_PARTS, MGK_PARTS, type Part } from './products'
 import { LINKS, SKILLS_INSTALL, stops } from './stops'
+import { BOARD_DECISIONS } from '@/case-studies/frunt-board'
 import { SKILLS, skillText } from './skills-data'
 
 const APPS: AppKey[] = ['frunt', 'run', 'lift']
@@ -41,6 +42,12 @@ export default function TourText() {
             <>
               <p>Install my skills: <code>{SKILLS_INSTALL}</code> (<a href={LINKS.skills}>MattKay02/skills</a>)</p>
               <ul>{SKILLS.map((k) => <li key={k.name}>{skillText(k)}</li>)}</ul>
+            </>
+          )}
+          {s.extra === 'fruntCase' && (
+            <>
+              <ol>{BOARD_DECISIONS.map((d) => <li key={d}>{d}</li>)}</ol>
+              <p><a href="/work/frunt/">Read the frunt case study</a></p>
             </>
           )}
         </article>

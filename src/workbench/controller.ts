@@ -29,7 +29,7 @@ export interface WorkbenchApi {
 type Cam = { cx: number; cy: number; z: number; ax: number; ay: number }
 type Lap = {
   el: HTMLElement; id: string; c: string; label: string; cap: HTMLElement | null
-  slides: HTMLElement[]; dots: HTMLButtonElement[]; i: number; hold: number; hover: boolean
+  slides: HTMLElement[]; tabs: HTMLButtonElement[]; count: HTMLElement | null; i: number; hold: number; hover: boolean
 }
 
 const HOLD = 0.6, TRAVEL = 1.0, MINI_W = 130
@@ -112,27 +112,23 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
     lap.i = next
     lap.slides.forEach((sl, k) => { sl.classList.toggle('is-on', k === next); if (k !== next) sl.classList.remove('was') })
     if (prev && prev !== lap.slides[next]) { prev.classList.add('was'); setTimeout(() => prev.classList.remove('was'), 950) }
-    lap.dots.forEach((d, k) => d.classList.toggle('is-on', k === next))
+    lap.tabs.forEach((t, k) => { t.classList.toggle('is-on', k === next); t.setAttribute('aria-pressed', String(k === next)) })
+    if (lap.count) lap.count.textContent = `${next + 1} / ${lap.slides.length}`
     if (lap.cap && lap.label) lap.cap.textContent = `${lap.label} · ${lap.slides[next].dataset.title}`
   }
   const laps: Lap[] = Array.from(world.querySelectorAll<HTMLElement>('.dev.mac')).map((el) => {
     const lap: Lap = {
       el, id: el.dataset.lap || '', c: el.dataset.c || '', label: el.dataset.label || '', cap: el.querySelector('figcaption'),
-      slides: Array.from(el.querySelectorAll<HTMLElement>('.scr .sl')), dots: [], i: 0, hold: 0, hover: false,
+      slides: Array.from(el.querySelectorAll<HTMLElement>('.scr .sl')),
+      tabs: Array.from(el.querySelectorAll<HTMLButtonElement>('.lp-tab')), count: el.querySelector('.lp-count'),
+      i: 0, hold: 0, hover: false,
     }
-    const dotsEl = el.querySelector('.lp-dots')
-    if (dotsEl) {
-      lap.dots = lap.slides.map((sl, j) => {
-        const d = document.createElement('button')
-        d.type = 'button'
-        d.setAttribute('aria-label', `Show ${sl.dataset.title}`)
-        d.addEventListener('click', (e) => { e.stopPropagation(); show(lap, j); lap.hold = performance.now() + 9000 })
-        dotsEl.appendChild(d)
-        return d
-      })
-      lap.dots[0]?.classList.add('is-on')
-      cleanups.push(() => lap.dots.forEach((d) => d.remove()))
-    }
+    // The visitor's choice wins: once they pick a screen, this laptop stops rotating on its own.
+    const pick = (e: Event, j: number) => { e.stopPropagation(); show(lap, j); lap.hold = Infinity }
+    lap.tabs.forEach((t, j) => listen(t, 'click', (e) => pick(e, j)))
+    const prev = el.querySelector('.lp-prev'), next = el.querySelector('.lp-next')
+    if (prev) listen(prev, 'click', (e) => pick(e, lap.i - 1))
+    if (next) listen(next, 'click', (e) => pick(e, lap.i + 1))
     listen(el, 'mouseenter', () => { lap.hover = true })
     listen(el, 'mouseleave', () => { lap.hover = false })
     return lap
@@ -250,7 +246,7 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
   listen(stage, 'click', (ev) => {
     if (moved) { moved = false; return }
     const t = ev.target as Element
-    if (t.closest('.lp-dots, a, button')) return
+    if (t.closest('.lp-ctl, a, button')) return
     const ft = t.closest<HTMLElement>('[data-focus]')
     if (ft && shown >= 0 && ft.dataset.c === stops[shown].c) { setFocus(ft); return }
     const hit = t.closest<HTMLElement>('[data-c]')

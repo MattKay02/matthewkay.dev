@@ -1,6 +1,7 @@
 // Building blocks for the board. Everything is placed in board pixels; the
 // camera in controller.ts moves and scales the whole board at once.
 import type { CSSProperties, ReactNode } from 'react'
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import type { Cluster } from './stops'
 
 type Box = { x: number; y: number; w?: number; h?: number }
@@ -42,9 +43,10 @@ export function Spec({ c, children, ...box }: Box & { c: Cluster; children: Reac
 
 // ---------- devices: Apple's MacBook Air and iPhone frames, used as supplied ----------
 
-export interface Slide { img: string; w: number; h: number; bg: string; title: string; alt: string; overlay?: ReactNode }
+/** `src` is a full image URL (a product's own screen, see screens.ts); `img` names a saved copy in public/work. */
+export interface Slide { img?: string; src?: string; w: number; h: number; bg: string; title: string; alt: string; overlay?: ReactNode }
 
-/** A MacBook that rotates through its slides (controller.ts drives the rotation and the dots). */
+/** A MacBook that rotates through its slides; tabs and arrows under it pick one (controller.ts wires both). */
 export function MacBook({ c, id, label, slides, ...box }: Box & { c: Cluster; id: string; label: string; slides: Slide[] }) {
   return (
     <figure className="dev mac" data-c={c} data-lap={id} data-label={label} style={at(box)}>
@@ -52,27 +54,66 @@ export function MacBook({ c, id, label, slides, ...box }: Box & { c: Cluster; id
         <img className="fr" src={IMG('macbook-air')} width={1700} height={1120} alt="" />
         <div className="scr">
           {slides.map((s, i) => (
-            <div key={s.img} className={`sl${i === 0 ? ' is-on' : ''}`} data-title={s.title} style={{ background: s.bg }}>
-              <img src={IMG(s.img)} width={s.w} height={s.h} alt={s.alt} />
+            <div key={s.title} className={`sl${i === 0 ? ' is-on' : ''}`} data-title={s.title} style={{ background: s.bg }}>
+              <img src={s.src ?? IMG(s.img ?? '')} width={s.w} height={s.h} alt={s.alt} />
               {s.overlay}
             </div>
           ))}
         </div>
       </div>
-      {slides.length > 1 && <div className="lp-dots" />}
+      {slides.length > 1 && (
+        // Under the frame, never on it (Apple's rules).
+        <div className="lp-ctl">
+          <button type="button" className="lp-prev" aria-label="Previous screen"><FiChevronLeft aria-hidden="true" /></button>
+          <div className="lp-tabs" role="group" aria-label={`${label} screens`}>
+            {slides.map((s, i) => (
+              <button key={s.title} type="button" className={`lp-tab${i === 0 ? ' is-on' : ''}`} aria-pressed={i === 0}>{s.title}</button>
+            ))}
+          </div>
+          <button type="button" className="lp-next" aria-label="Next screen"><FiChevronRight aria-hidden="true" /></button>
+          <span className="lp-count" aria-hidden="true">1 / {slides.length}</span>
+        </div>
+      )}
       <figcaption>{label} · {slides[0].title}</figcaption>
     </figure>
   )
 }
 
-export function IPhone({ c, img, iw, ih, alt, caption, below, ...box }: Box & {
-  c: Cluster; img: string; iw: number; ih: number; alt: string; caption?: string; below?: { nm: string; ln: string }
+/** A numbered spec-style note above a device, with a leader line down to it. */
+export function Callout({ c, n, title, children, ...box }: Box & { c: Cluster; n: string; title: string; children: ReactNode }) {
+  return (
+    <div className="callout" data-c={c} style={at(box)}>
+      <header><b>{n}</b><span>{title}</span></header>
+      <p>{children}</p>
+      <i className="callout-lead" aria-hidden="true" />
+    </div>
+  )
+}
+
+/** A project brief: the problem, what the product does in numbered steps, and the facts. */
+export function Brief({ c, problem, story, steps, facts, ...box }: Box & {
+  c: Cluster; problem: string; story: string; steps: string[]; facts: string
+}) {
+  return (
+    <div className="note brief" data-c={c} style={at(box)}>
+      <span className="k">The problem</span>
+      <p className="brief-h">{problem}</p>
+      <p className="brief-p">{story}</p>
+      <span className="k">What it does</span>
+      <ol className="brief-steps">{steps.map((s) => <li key={s}>{s}</li>)}</ol>
+      <p className="brief-f">{facts}</p>
+    </div>
+  )
+}
+
+export function IPhone({ c, img, src, iw, ih, alt, caption, below, ...box }: Box & {
+  c: Cluster; img?: string; src?: string; iw: number; ih: number; alt: string; caption?: string; below?: { nm: string; ln: string }
 }) {
   return (
     <figure className={`dev iph${below ? ' below' : ''}`} data-c={c} style={at(box)}>
       <div className="dv">
         <img className="fr" src={IMG('iphone')} width={675} height={1380} alt="" />
-        <div className="scr"><img src={IMG(img)} width={iw} height={ih} alt={alt} /></div>
+        <div className="scr"><img src={src ?? IMG(img ?? '')} width={iw} height={ih} alt={alt} /></div>
       </div>
       {below
         ? <figcaption><span className="nm">{below.nm}</span><span className="ln">{below.ln}</span></figcaption>
@@ -112,10 +153,10 @@ export function Tile({ id, c, ix, name, status, live, line, tech, focus, ...box 
 }
 
 /** A plain screenshot card, for the smaller projects. */
-export function Shot({ c, img, iw, ih, alt, nm, ln, ...box }: Box & { c: Cluster; img: string; iw: number; ih: number; alt: string; nm: string; ln: string }) {
+export function Shot({ c, img, src, iw, ih, alt, nm, ln, ...box }: Box & { c: Cluster; img?: string; src?: string; iw: number; ih: number; alt: string; nm: string; ln: string }) {
   return (
     <figure className="card" data-c={c} style={at(box)}>
-      <div className="shot"><img src={IMG(img)} width={iw} height={ih} alt={alt} /></div>
+      <div className="shot"><img src={src ?? IMG(img ?? '')} width={iw} height={ih} alt={alt} /></div>
       <figcaption><span className="nm">{nm}</span><span className="ln">{ln}</span></figcaption>
     </figure>
   )
