@@ -77,7 +77,10 @@ body.overview:not(.dragging) .world [data-c] { cursor: pointer; }
 .frame::after { right: -14px; bottom: -14px; border-right-width: 2px; border-bottom-width: 2px; }
 .flabel {
   position: absolute; left: calc(var(--r-frame) * .6); bottom: 100%; padding-bottom: 8px;
-  transform: scale(var(--inv, 1)); transform-origin: 0 100%; white-space: nowrap;
+  /* Same size on screen at any zoom, but never taller than ~155 board px (7.2 × its 21.5px), the
+     clear space above the closest-packed frames, so a zoomed-out overview never lays a label over
+     the frame above. Small screens get smaller labels rather than overlapping ones. */
+  transform: scale(min(var(--inv, 1), 7.2)); transform-origin: 0 100%; white-space: nowrap;
   font: 500 calc(12px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--muted);
 }
 .frame.on .flabel, body.overview .flabel { color: var(--strong); }

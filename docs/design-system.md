@@ -58,7 +58,7 @@ widths and gaps are measured from the rendered type, so the numbers shown are tr
 
 | Component | Use |
 |---|---|
-| `Frame` | A cluster's outline on the board, with a label that stays the same size at any zoom. |
+| `Frame` | A cluster's outline on the board, with a label that stays the same size at any zoom, up to ~155 board px tall (it shrinks on small screens rather than overlap the frame above). |
 | `Title` | Display type: solid, `outline`, or `bg` watermark. |
 | `Note` | A paper card for a problem statement or a decision record. |
 | `MacBook` | Apple's MacBook Air frame; rotates through slides; optional overlay per slide (redline + tag). |
