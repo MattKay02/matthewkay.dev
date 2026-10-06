@@ -45,7 +45,13 @@ About → Contact. frunt is the main project and leads.
   animate the device itself, same relative scale within a group (iPhone ≈ 0.237 × MacBook
   width). Screen content may change (rotating MacBook slides are fine). Filters and dimming apply
   to screen content only. Web screens are 16:10 and sit below the notch; phone screens are raw
-  screens with no baked-in frame or background.
+  screens with no baked-in frame or background. Annotations go next to a device, never on it: a
+  rotating MacBook has named tabs with arrows either end and a counter under it (a visitor's click
+  stops its rotation), and phone screens get numbered callouts above them with a leader line down
+  (`Callout` in `parts.tsx`).
+- **Each flagship opens with a project brief** (`Brief` in `parts.tsx`): the problem in Matthew's
+  own words, what the product does in three numbered steps, and a facts line. The tour zooms to it,
+  because board text is only readable when the camera frames it.
 - **Other work** is plain screenshots in equal 16:10 boxes on a three-column grid (no laptops).
 - **Motion carries meaning**: pin and play, never hijack scroll speed. Reduced motion means cuts,
   no rotation, no cursor animation. Phones get a bottom-sheet guide and framing that favours
@@ -147,7 +153,8 @@ panel. Format: TL;DR, what I made, why, what I aimed for, timeline, challenges a
 (dated cards with their ADR numbers), where it landed, how I build it with AI, what I learnt.
 
 - **Hidden until published.** `FRUNT_PUBLISHED` in `flags.ts` is `false`: the stop, the viewer and
-  the page exist only in `npm run dev` (the bar says "draft, not published"); the built site has
+  the page exist only in `npm run dev` and on Vercel preview deployments, which sit behind Vercel's
+  login (the bar says "draft, not published"); the production site has
   none of them, `/work/frunt/` renders the 404 with `noindex`, and the case study's text is never
   in the build (it's passed from `app/page.tsx` only while visible). The board stop's short strings
   (`frunt-board.ts`) are in the JS bundle regardless, unrendered, so only public-ready copy goes there.
@@ -231,6 +238,9 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
 ## Facts (keep true; re-check before launch)
 
 - **frunt**: live SaaS. Manager web app; staff app on the App Store (June 2026) and Google Play.
+  **The staff Ask screenshot (`public/work/frunt-m-ask.webp`) is out of date**: it shows six
+  sources for a Challenge 25 answer, the over-citing fixed on 28 Sep 2026. Recapture it before the
+  case study goes public (the case study describes the fix).
   Instagram studio live since 21 Sep 2026. **WhatsApp is live** (Matthew, 6 Oct 2026; the live
   webhook answers, it doesn't 404, so `WHATSAPP_ENABLED` is on in production). The rota and briefs
   are frozen in frunt (ADR 0076, 24 Aug 2026): never sell them on the board. Admin console and outreach + analytics are internal: no admin screenshots until they

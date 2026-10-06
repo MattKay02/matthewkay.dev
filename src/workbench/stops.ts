@@ -69,15 +69,25 @@ export const stops: Stop[] = [
     body: 'Scroll for the guided tour, or click any frame to jump straight to it.',
   },
   {
-    c: 'frunt', r: [1770, 200, 1900, 1200], m: [2230, 400, 1440, 980], nav: 'frunt: the problem',
+    c: 'frunt', r: [1760, 200, 510, 880], m: [1760, 200, 510, 880], nav: 'frunt: the problem',
     title: "Restaurants have their rules written down. Staff don't read them.",
     body: "frunt turns a restaurant's own documents into staff training and instant answers. A web app for managers; a phone app and WhatsApp for staff.",
   },
   {
-    c: 'frunt', r: [2220, 380, 2240, 1000], m: [3700, 640, 372, 740], nav: 'frunt: sourced answers',
+    c: 'frunt', r: [2230, 380, 1440, 1110], m: [2230, 400, 1440, 1060], nav: 'frunt: the manager app',
+    title: 'Managers bring the documents they already have.',
+    body: 'frunt reads them, files them and turns them into courses, and a manager checks each one before staff see it. Use the tabs under the laptop to look through the screens.',
+  },
+  {
+    c: 'frunt', r: [2400, 520, 1100, 740], m: [3700, 640, 372, 740], nav: 'frunt: sourced answers',
     lock: { 'frunt-a': 1 },
     title: 'Every answer shows where it came from.',
     body: "Staff ask in plain words. frunt answers only from that restaurant's documents and cites each source, so a manager can check it.",
+  },
+  {
+    c: 'frunt', r: [3690, 370, 760, 1080], m: [3700, 380, 740, 1050], nav: 'frunt: the staff app',
+    title: 'Staff get answers and training on their phone.',
+    body: 'Two screens from the staff app, on the App Store and Google Play. Staff can also ask on WhatsApp, with no app to install.',
   },
   {
     c: 'frunt', r: [1740, 30, 2920, 1910], m: [1770, 1460, 1180, 460], nav: 'frunt: the whole system',

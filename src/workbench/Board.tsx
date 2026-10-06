@@ -5,12 +5,12 @@ import gh from '@/data/github.json'
 import { FiFileText } from 'react-icons/fi'
 import { FaGithub, IconLinks } from './icons'
 import {
-  Browser, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Step, Tile, Title,
+  Brief, Browser, Callout, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Step, Tile, Title,
 } from './parts'
 import SkillsShelf from './Skills'
 import { SHOW_SLOTS, type Cluster } from './stops'
 import { AppRow } from './apps'
-import { FRUNT_PARTS, MGK_PARTS, type Part } from './products'
+import { FRUNT_PARTS, FRUNT_SITE_FOCUS, FRUNT_SITE_Y, MGK_PARTS, type Part } from './products'
 import { SHOW_FRUNT } from '@/case-studies/flags'
 import { BOARD_MILESTONES, fmtShort } from '@/case-studies/frunt-board'
 
@@ -135,7 +135,17 @@ function Frunt() {
   return (
     <>
       <Title c="frunt" x={1760} y={0} size={600} bg style={{ textTransform: 'none', letterSpacing: '-.04em' }}>frunt</Title>
-      <Note c="frunt" x={1790} y={250} w={470} kicker="The problem">Restaurants have their rules written down. Staff don&apos;t read them.</Note>
+      <Brief c="frunt" x={1790} y={250} w={450}
+        problem="Restaurants have their rules written down. Staff don't read them."
+        story="I saw it working behind a bar: training was a compliance module that ticked a box, and finding an answer meant flipping through spec sheets or asking a manager again."
+        steps={[
+          'A manager uploads the documents the restaurant already has.',
+          'frunt turns them into short courses on staff phones.',
+          'Staff ask in plain words; every answer names the document it came from.',
+        ]}
+        facts="For independent restaurants · built and run solo · live since June 2026" />
+      <Browser c="frunt" x={1790} y={FRUNT_SITE_Y} w={450} url="https://frunthospitality.com/" img="site-frunt-long" iw={640} ih={3185}
+        alt="frunthospitality.com, the frunt website" caption="Website · hover to scroll" long focus={FRUNT_SITE_FOCUS} />
       <MacBook c="frunt" id="frunt-a" label="Manager web app" x={2250} y={430} w={1400} slides={[
         { img: 'frunt-home', w: 1100, h: 619, bg: '#f6f5f2', title: 'Home', alt: 'frunt manager dashboard, home' },
         { img: 'frunt-ask', w: 1280, h: 720, bg: '#faf7ef', title: 'Ask frunt', alt: 'Ask frunt: an answer about peanut allergen controls, citing three source documents',
@@ -143,10 +153,14 @@ function Frunt() {
         { img: 'frunt-docs', w: 1100, h: 619, bg: '#fbfcfb', title: 'Documents', alt: 'frunt documents library' },
         { img: 'frunt-training', w: 1100, h: 619, bg: '#fefefb', title: 'Training', alt: 'frunt training courses' },
       ]} />
-      <IPhone c="frunt" x={3720} y={673} w={332} img="frunt-m-ask" iw={334} ih={736} alt="frunt staff app, asking a question" caption="Staff app · Ask" />
-      <IPhone c="frunt" x={4090} y={673} w={332} img="frunt-m-training" iw={334} ih={736} alt="frunt staff app, training" caption="Staff app · Training" />
-      <Browser c="frunt" x={3720} y={110} w={700} url="https://frunthospitality.com/" img="site-frunt-long" iw={640} ih={3185}
-        alt="frunthospitality.com, the frunt website" caption="Website · hover to scroll" long focus="3700,70,740,560" />
+      <Callout c="frunt" n="01" title="Ask" x={3720} y={400} w={332} h={240}>
+        Staff ask in plain words, in the app or on WhatsApp. Every answer lists the documents it came from, so a manager can check it.
+      </Callout>
+      <Callout c="frunt" n="02" title="Training" x={4090} y={400} w={332} h={240}>
+        Short courses built from the restaurant&apos;s own documents, not a generic module. Each one finished is recorded, with the date it&apos;s due again.
+      </Callout>
+      <IPhone c="frunt" x={3720} y={673} w={332} img="frunt-m-ask" iw={334} ih={736} alt="frunt staff app, asking a question" />
+      <IPhone c="frunt" x={4090} y={673} w={332} img="frunt-m-training" iw={334} ih={736} alt="frunt staff app, training" />
       <Parts c="frunt" prefix="ft" parts={FRUNT_PARTS} x0={1790} y0={1480} />
       {SHOW_SLOTS && !SHOW_FRUNT && <SlotBox c="frunt" x={3620} y={1480} w={1000} h={200} title="Case study" />}
       {SHOW_SLOTS && !SHOW_FRUNT && <SlotBox c="frunt" x={3620} y={1700} w={1000} h={200} title="What I learnt" />}

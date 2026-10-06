@@ -6,5 +6,9 @@
 // Matthew's call, 6 Oct 2026. The publishing checklist is in CLAUDE.md.
 export const FRUNT_PUBLISHED = false
 
-/** Drafts show in `npm run dev` so they can be reviewed; never in the built site. */
-export const SHOW_FRUNT = FRUNT_PUBLISHED || process.env.NODE_ENV === 'development'
+/**
+ * Drafts show in `npm run dev` and on Vercel preview deployments (which sit
+ * behind Vercel's login), so they can be reviewed; never on the production site.
+ */
+export const SHOW_FRUNT =
+  FRUNT_PUBLISHED || process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview'

@@ -1,6 +1,7 @@
 // Building blocks for the board. Everything is placed in board pixels; the
 // camera in controller.ts moves and scales the whole board at once.
 import type { CSSProperties, ReactNode } from 'react'
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import type { Cluster } from './stops'
 
 type Box = { x: number; y: number; w?: number; h?: number }
@@ -44,7 +45,7 @@ export function Spec({ c, children, ...box }: Box & { c: Cluster; children: Reac
 
 export interface Slide { img: string; w: number; h: number; bg: string; title: string; alt: string; overlay?: ReactNode }
 
-/** A MacBook that rotates through its slides (controller.ts drives the rotation and the dots). */
+/** A MacBook that rotates through its slides; tabs and arrows under it pick one (controller.ts wires both). */
 export function MacBook({ c, id, label, slides, ...box }: Box & { c: Cluster; id: string; label: string; slides: Slide[] }) {
   return (
     <figure className="dev mac" data-c={c} data-lap={id} data-label={label} style={at(box)}>
@@ -59,9 +60,48 @@ export function MacBook({ c, id, label, slides, ...box }: Box & { c: Cluster; id
           ))}
         </div>
       </div>
-      {slides.length > 1 && <div className="lp-dots" />}
+      {slides.length > 1 && (
+        // Under the frame, never on it (Apple's rules).
+        <div className="lp-ctl">
+          <button type="button" className="lp-prev" aria-label="Previous screen"><FiChevronLeft aria-hidden="true" /></button>
+          <div className="lp-tabs" role="group" aria-label={`${label} screens`}>
+            {slides.map((s, i) => (
+              <button key={s.img} type="button" className={`lp-tab${i === 0 ? ' is-on' : ''}`} aria-pressed={i === 0}>{s.title}</button>
+            ))}
+          </div>
+          <button type="button" className="lp-next" aria-label="Next screen"><FiChevronRight aria-hidden="true" /></button>
+          <span className="lp-count" aria-hidden="true">1 / {slides.length}</span>
+        </div>
+      )}
       <figcaption>{label} · {slides[0].title}</figcaption>
     </figure>
+  )
+}
+
+/** A numbered spec-style note above a device, with a leader line down to it. */
+export function Callout({ c, n, title, children, ...box }: Box & { c: Cluster; n: string; title: string; children: ReactNode }) {
+  return (
+    <div className="callout" data-c={c} style={at(box)}>
+      <header><b>{n}</b><span>{title}</span></header>
+      <p>{children}</p>
+      <i className="callout-lead" aria-hidden="true" />
+    </div>
+  )
+}
+
+/** A project brief: the problem, what the product does in numbered steps, and the facts. */
+export function Brief({ c, problem, story, steps, facts, ...box }: Box & {
+  c: Cluster; problem: string; story: string; steps: string[]; facts: string
+}) {
+  return (
+    <div className="note brief" data-c={c} style={at(box)}>
+      <span className="k">The problem</span>
+      <p className="brief-h">{problem}</p>
+      <p className="brief-p">{story}</p>
+      <span className="k">What it does</span>
+      <ol className="brief-steps">{steps.map((s) => <li key={s}>{s}</li>)}</ol>
+      <p className="brief-f">{facts}</p>
+    </div>
   )
 }
 
