@@ -34,7 +34,10 @@ const server = createServer(async (req, res) => {
 await new Promise((r) => server.listen(0, r))
 const port = server.address().port
 
-const browser = await chromium.launch()
+// Without this, headless Chrome on Linux (Vercel) rounds every glyph to whole
+// pixels: letters get uneven gaps ("Sof tware") and lines run wider than on
+// Windows or macOS, so the CV wraps more and can spill past one page.
+const browser = await chromium.launch({ args: ['--font-render-hinting=none'] })
 try {
   const page = await browser.newPage()
   await page.emulateMedia({ media: 'print' })
@@ -57,10 +60,29 @@ try {
     const bottom = Math.max(...[...sheet.children].map((el) => el.getBoundingClientRect().bottom))
     return { content: bottom - top + parseFloat(getComputedStyle(sheet).paddingBottom), pageH: h }
   })
-  if (content > pageH + 1) throw new Error(`The CV runs ${Math.ceil(content - pageH)}px past one A4 page. Trim src/data/cv.ts.`)
   // Text wraps slightly differently on Linux (where Vercel prints it) than on
   // Windows or macOS, so a CV that only just fits locally can overflow there.
-  if (content > pageH * 0.98) console.warn(`CV: only ${Math.floor(pageH - content)}px spare; it may overflow on another OS. Consider trimming.`)
+  // When space is tight, list the lines whose last line holds only a word or
+  // two: trimming a few words from one of those saves a whole line.
+  if (content > pageH * 0.98) {
+    const short = await page.evaluate(() => [...document.querySelectorAll('.cv-sheet li, .cv-sheet p')].flatMap((el) => {
+      const range = document.createRange()
+      range.selectNodeContents(el)
+      const rects = [...range.getClientRects()].filter((r) => r.width > 0)
+      const tops = [...new Set(rects.map((r) => Math.round(r.top)))]
+      if (tops.length < 2) return []
+      const last = Math.max(...tops)
+      const width = rects.filter((r) => Math.round(r.top) === last).reduce((sum, r) => sum + r.width, 0)
+      const pct = Math.round((width / el.getBoundingClientRect().width) * 100)
+      return pct < 30 ? [`  ${String(pct).padStart(2)}% last line: …${el.textContent.trim().slice(-60)}`] : []
+    }))
+    const spare = Math.floor(pageH - content)
+    console.warn(spare >= 0
+      ? `CV: only ${spare}px spare; it may overflow on another OS.`
+      : `CV: ${-spare}px past one A4 page.`)
+    if (short.length) console.warn(`Lines that end with a word or two (trim a few words to save a line):\n${short.join('\n')}`)
+  }
+  if (content > pageH + 1) throw new Error(`The CV runs ${Math.ceil(content - pageH)}px past one A4 page. Trim src/data/cv.ts.`)
 
   const target = isPrivate ? join(root, 'private', 'Matthew_Kay_CV.pdf') : join(outDir, 'cv.pdf')
   await mkdir(dirname(target), { recursive: true })
