@@ -160,7 +160,10 @@ stop shows a dated ruler of milestones on the board (`frunt-board.ts`) and three
 panel. Format: TL;DR, what I made, why, what I aimed for, timeline, challenges and decisions
 (dated cards with their ADR numbers), where it landed, how I build it with AI, what I learnt.
 
-- **Hidden until published.** `FRUNT_PUBLISHED` in `flags.ts` is `false`: the stop, the viewer and
+- **Publishes itself when the fix is live.** `FRUNT_PUBLISHED` in `flags.ts` is true once
+  frunt's answer-accuracy eval passes its whole safety floor in a record on frunt-web's **`main`**
+  (read by `npm run frunt`), i.e. the allergen-gate fix (MGKCodes/frunt-web#61) is in production.
+  Until then it is hidden: the stop, the viewer and
   the page exist only in `npm run dev` and on Vercel preview deployments, which sit behind Vercel's
   login (the bar says "draft, not published"); the production site has
   none of them, `/work/frunt/` renders the 404 with `noindex`, and the case study's text is never
@@ -172,18 +175,19 @@ panel. Format: TL;DR, what I made, why, what I aimed for, timeline, challenges a
 - **Figures are counted, never typed**: `npm run frunt` (and every Vercel build) counts decision
   records, API routes, migrations and test files from frunt-web's `main`, and reads the latest eval
   record (`evals/answers/results/latest.json`, main or develop), into `src/data/frunt-stats.json`.
-  frunt-web is private, so the token needs read access to `MGKCodes/frunt-web`; without it the
-  committed snapshot is used. The page prints the date and commit they were counted at.
+  frunt-web is private, so on Vercel this uses its own token, `FRUNT_GITHUB_TOKEN`: a fine-grained
+  token that can only read `MGKCodes/frunt-web` (Contents: read), kept apart from `GITHUB_TOKEN`
+  so the graph's token stays permission-free. Without it the committed snapshot is used. The
+  page prints the date and commit the figures were counted at.
 - **Keeping it true:** `checked` is the day the words were last verified against frunt, and
   `lastAdrRead` the last frunt decision record read. To update, read frunt-web's ADRs after
   `lastAdrRead` and its commits after `checked`, then move both. `npm run frunt` lists the newer
   records. Statuses still come from `stores.json`; same copy rules as the site.
 
-**Publishing checklist (frunt):** gate fix merged and live in frunt; `npm run eval:answers` in
-frunt-web shows safety floor 8 of 8 and the record is committed; add the eval decision card to
-`frunt.ts` (what the first run found, the fix, the date); `npm run frunt`; set `FRUNT_PUBLISHED =
-true`; add `/work/frunt/` to `public/sitemap.xml`; build, check desktop + 390px + dark; point the
-`MattKay02/frunt` README at the page.
+**Publishing (frunt):** automatic once the passing eval record is on frunt-web's `main` and this
+site rebuilds (daily, or any deploy). When it goes public, check desktop + 390px + dark, and point
+the `MattKay02/frunt` README at `/work/frunt/`. `/work/frunt/` joins the sitemap by itself
+(`app/sitemap.ts`). Recapture the staff Ask screen (frunt-web `public/screens/staff-ask.webp`).
 
 **Adding a stop**: add it to `stops.ts` (cluster, `r`, `m`, `nav`, copy). **Adding a project
 part**: add it to `FRUNT_PARTS` / `MGK_PARTS` in `products.ts`. **Moving things**: everything on the

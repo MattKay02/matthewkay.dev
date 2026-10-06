@@ -1,10 +1,21 @@
 // Whether each case study is public. Kept apart from the content so the board
 // can ask without pulling the whole case study into the browser bundle.
-//
-// frunt stays unpublished until its answer-accuracy eval passes the safety floor
-// after the allergen-gate fix (frunt-web docs/allergen-gate-unmatched-dish.md):
-// Matthew's call, 6 Oct 2026. The publishing checklist is in CLAUDE.md.
-export const FRUNT_PUBLISHED = false
+import stats from '@/data/frunt-stats.json'
+
+/** Matthew approved the frunt case study's copy (6 Oct 2026). */
+const FRUNT_APPROVED = true
+
+/**
+ * The case study quotes frunt's answer-accuracy eval after the allergen-gate
+ * fix (Matthew's call, 6 Oct 2026). So it publishes itself only once that
+ * eval passes its whole safety floor in a record on frunt-web's `main`, which
+ * means the fix is live in production, not just written. `npm run frunt`
+ * (every build) reads the record, so publishing needs no edit here.
+ */
+const run = stats.eval as null | { ref: string; safety: { passed: number; total: number } }
+export const FRUNT_EVAL_LIVE = !!run && run.ref === 'main' && run.safety.total > 0 && run.safety.passed === run.safety.total
+
+export const FRUNT_PUBLISHED = FRUNT_APPROVED && FRUNT_EVAL_LIVE
 
 /**
  * Drafts show in `npm run dev` and on Vercel preview deployments (which sit

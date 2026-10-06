@@ -9,8 +9,9 @@
 // frunt's decision records are newer than the case study's `lastAdrRead`, which
 // is where the next update starts.
 //
-// Auth: GITHUB_TOKEN when set (Vercel), otherwise the signed-in gh CLI. frunt-web
-// is private (MGKCodes), so the token needs read access to it. Without it this
+// Auth: FRUNT_GITHUB_TOKEN (Vercel: a fine-grained token that can only read
+// MGKCodes/frunt-web), else GITHUB_TOKEN, else the signed-in gh CLI. frunt-web
+// is private, so the token needs read access to it. Without it this
 // fails and the build keeps the committed snapshot.
 
 import { execSync } from 'node:child_process'
@@ -22,7 +23,7 @@ const REPO = 'MGKCodes/frunt-web'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const out = join(root, 'src', 'data', 'frunt-stats.json')
 
-const token = process.env.GITHUB_TOKEN || execSync('gh auth token', { encoding: 'utf8' }).trim()
+const token = process.env.FRUNT_GITHUB_TOKEN || process.env.GITHUB_TOKEN || execSync('gh auth token', { encoding: 'utf8' }).trim()
 const headers = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'User-Agent': 'mattkay02-portfolio' }
 
 async function get(path) {

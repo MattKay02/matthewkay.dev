@@ -19,6 +19,8 @@ export interface Decision {
   /** A finding list instead of rows (the September card). */
   items?: Row[]
   quote?: string
+  /** Ends with the latest answer-accuracy result, read from frunt-stats.json, never typed. */
+  liveEval?: boolean
 }
 
 export interface CaseStudy {
@@ -49,7 +51,7 @@ export const FRUNT: CaseStudy = {
     { label: 'What I made', text: "frunt turns a restaurant's own documents into cited answers and training for staff. Live on the web, the App Store, Google Play and WhatsApp. Built and run by me, solo." },
     { label: 'Why', text: 'I worked behind a bar. Training ticked a compliance box, and finding an answer meant spec sheets or asking a manager the same question again.' },
     { label: 'What I aimed for', text: "Answers staff can trust. Each one names its document, or frunt says it doesn't know." },
-    { label: 'Decisions', text: 'Allergen facts come from the database and a plain-code check, not a second AI. Every job reports that it ran. When features crowded out the answers, I froze them.' },
+    { label: 'Decisions', text: 'Allergen facts come from the database and a plain-code check, not a second AI. Every job reports that it ran. When features crowded out the answers, I froze them. When my own test found a safety gap, I fixed it the same day.' },
     { label: 'Where it landed', text: 'Live since 1 June 2026, on both app stores four weeks after the first commit, first paying venue on 14 June.' },
     { label: 'How I build it', text: 'Claude writes most of the code. Decision records, tests, a release gate and checking the real app keep it right.' },
     { label: 'What I learnt', text: 'Know what the product is, and build around it.' },
@@ -94,6 +96,7 @@ export const FRUNT: CaseStudy = {
     { date: '2026-09-11', text: 'Answers on WhatsApp' },
     { date: '2026-09-21', text: 'Instagram studio live' },
     { date: '2026-09-28', text: 'Answers cite only the documents they used' },
+    { date: '2026-10-06', text: 'Built a fixed test for the answers. Its first run found a safety gap, fixed the same day' },
   ],
 
   decisions: [
@@ -152,6 +155,16 @@ export const FRUNT: CaseStudy = {
         { label: 'Lost pages.', text: 'A 40-page handbook silently lost pages 19 to 40, because text extraction for long PDFs had never been built. Now it has. (Live, 23 Sep.)' },
         { label: 'A planted mistake.', text: 'In a dry run on the live app, I planted a wrong cooking temperature in a test document. frunt quoted it back, with a citation. A citation proves where an answer came from, not that the document is right. So frunt\'s document checks are an aid, and the manager stays responsible for what their documents say. (Written as ADR 0084 on 24 Sep.)' },
       ],
+    },
+    {
+      title: 'My own test found a safety gap',
+      when: '6 Oct 2026',
+      adr: '0088 · 0046',
+      rows: [
+        { label: 'What happened', text: "I built a fixed test for frunt's answers: 38 questions asked of a restaurant I invented, marked by code, not by a model. Its first run failed three of the eight safety questions. Asked about a dish missing from the allergen matrix, frunt marked the model's guesses as verified instead of refusing." },
+        { label: 'What I chose', text: "Fix the rule, not the wording. The list of every dish with a given allergen now only answers questions that ask for a list. A question about one dish the matrix doesn't have gets no facts, so frunt refuses it. Fixed and re-tested the same day." },
+      ],
+      liveEval: true,
     },
   ],
 
