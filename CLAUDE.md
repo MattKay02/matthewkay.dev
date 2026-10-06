@@ -136,7 +136,7 @@ push. Rules:
 
 **Adding a stop**: add it to `stops.ts` (cluster, `r`, `m`, `nav`, copy). **Adding a project
 part**: add it to `FRUNT_PARTS` / `MGK_PARTS` in `products.ts`. **Moving things**: everything on the
-board is in board pixels; the world is 4760 × 4900.
+board is in board pixels; the world is 4760 × 6260 (`WORLD` in `stops.ts`).
 
 ### Live data (do not break)
 
