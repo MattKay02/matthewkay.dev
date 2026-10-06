@@ -43,7 +43,7 @@ html.cv-open { overflow: hidden; }
 .cv-sheet p, .cv-sheet ul, .cv-sheet dl { margin: 0; }
 
 .cv-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8mm; }
-.cv-head .cv-name { margin: 0; font: 500 24pt/1 var(--display); letter-spacing: -.025em; color: #0d0d0d; }
+.cv-head h1 { margin: 0; font: 500 24pt/1 var(--display); letter-spacing: -.025em; color: #0d0d0d; }
 .cv-role { margin-top: 1.6mm !important; font-size: 10.5pt; color: #4a4a4a; }
 .cv-updated { flex: none; margin-top: 1mm !important; font: 500 7.2pt/1 var(--mono); color: #7a7a7a; }
 .cv-contact { display: flex; flex-wrap: wrap; gap: .8mm 4.5mm; margin-top: 3mm !important; font-size: 8pt; color: #333333; }
@@ -87,10 +87,9 @@ html.cv-open { overflow: hidden; }
   .cvv-scroll { display: block; padding: 0; overflow: visible; }
   .cv-sheet { width: 210mm; height: 297mm; min-height: 0; box-shadow: none; overflow: hidden; animation: none; }
 }
-/* Narrow screens reflow the sheet in the viewer and on /cv; the copy on the board stays A4. */
 @media screen and (max-width: 840px) {
-  .cvv .cv-sheet { width: 100%; min-height: 0; padding: 22px 18px; }
-  .cvv .cv-head { flex-direction: column; gap: 6px; }
-  .cvv .cv-line { flex-direction: column; gap: 2px; }
-  .cvv .cv-skills div { grid-template-columns: 1fr; gap: 0; }
+  .cv-sheet { width: 100%; min-height: 0; padding: 22px 18px; }
+  .cv-head { flex-direction: column; gap: 6px; }
+  .cv-line { flex-direction: column; gap: 2px; }
+  .cv-skills div { grid-template-columns: 1fr; gap: 0; }
 }

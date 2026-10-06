@@ -133,17 +133,11 @@ push. Rules:
   (`src/cv/CvViewer.tsx`) over the board: the CV on the site's own desk, with Download PDF in its
   bar. `/#cv` opens it directly; `/cv` is the same design as a standalone page. The sheet itself
   is `src/cv/CvSheet.tsx`, shared by the viewer, the page and the PDF.
-- **The CV on the board.** The Contact frame ends the board with the same sheet (`preview`, so
-  its name isn't a second `h1`), nine columns of the hero grid wide, shown as a selected frame
-  like the hero photo, with View CV and Download PDF beside it. It's a picture for sighted
-  visitors (`aria-hidden`, `inert`); the buttons are the real controls. The sheet's narrow-screen
-  reflow applies only inside the viewer (`.cvv`), so the board copy stays A4 on phones.
 
 **Adding a stop**: add it to `stops.ts` (cluster, `r`, `m`, `nav`, copy). **Adding a project
 part**: add it to `FRUNT_PARTS` / `MGK_PARTS` in `products.ts`. **Moving things**: everything on the
-board is in board pixels; the world is 4760 × 6310 (`WORLD` in `stops.ts`). Both columns end at
-the same line (How I work and Contact, y 6220). Frame labels stay the same size on screen but
-never grow past ~155 board px (`.flabel` in `globals.css`), so keep at least that much clear
+board is in board pixels; the world is 4760 × 6310 (`WORLD` in `stops.ts`).
+Frame labels stay the same size on screen but never grow past ~155 board px (`.flabel` in `globals.css`), so keep at least that much clear
 space above every frame, or a zoomed-out overview lays the label over the frame above.
 
 ### Live data (do not break)

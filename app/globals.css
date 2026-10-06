@@ -307,18 +307,6 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 .hcv { z-index: 3; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; height: 64px; padding: 0 28px; border: 1.5px solid var(--strong); border-radius: var(--r-btn); background: var(--strong); color: var(--bg); white-space: nowrap; font: 500 calc(19px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); }
 .hcv svg { width: 22px; height: 22px; }
 .hcv:hover { background: transparent; color: var(--strong); }
-.hcv.ghost { background: transparent; color: var(--strong); }
-.hcv.ghost:hover { background: var(--strong); color: var(--bg); }
-
-/* Contact: the CV as a selected frame (.sel, like the hero photo), with what it is beside it. */
-.cvp-clip { position: absolute; inset: 0; overflow: hidden; }
-.cvp-clip > div { transform-origin: 0 0; }
-.cvp .cv-sheet { box-shadow: none; }
-.cvp-hit { position: absolute; inset: 0; z-index: 1; padding: 0; border: 0; background: none; cursor: pointer; }
-.cvp-side { z-index: 3; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
-.cvp-side .k { font: 500 calc(14px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--muted); }
-.cvp-side p { margin: 0 0 4px; font: 500 46px/1.08 var(--display); letter-spacing: -.02em; color: var(--strong); text-wrap: balance; }
-.cvp-side .u { margin-bottom: 14px; font: 500 18px/1 var(--mono); color: var(--muted); }
 
 .mcursor { left: 0; top: 0; z-index: 6; pointer-events: none; animation: wander 20s ease-in-out infinite; }
 .mcursor svg { display: block; width: 40px; height: 40px; overflow: visible; }

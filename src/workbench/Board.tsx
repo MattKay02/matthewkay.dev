@@ -2,9 +2,7 @@
 // a 12-column grid (column 103, gutter 24, starting at x 130).
 import type { CSSProperties } from 'react'
 import gh from '@/data/github.json'
-import { FiDownload, FiFileText } from 'react-icons/fi'
-import CvSheet from '@/cv/CvSheet'
-import { CV_FILE, CV_PDF } from '@/cv/CvViewer'
+import { FiFileText } from 'react-icons/fi'
 import { FaGithub, IconLinks } from './icons'
 import {
   Browser, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Step, Tile, Title,
@@ -212,34 +210,15 @@ function HowIWork() {
   )
 }
 
-/** The CV on the board: the real sheet (the same component as the viewer and the PDF), nine
- * columns of the hero's grid wide, shown as a selected frame like the hero photo. */
-const CVP = { x: 130, y: 4540, w: 9 * 103 + 8 * 24 }
-const A4 = { w: 793.7, ratio: 297 / 210 } // 210 mm in CSS px; the sheet's width
-
-function Contact({ onCv, updated }: { onCv: () => void; updated: string }) {
-  const h = Math.round(CVP.w * A4.ratio)
-  const side = { left: CVP.x + 9 * (103 + 24), top: CVP.y, width: 3 * 103 + 2 * 24 }
+/** Contact mirrors the hero: links on the left, View CV in the photo's column. The CV itself only opens on request. */
+function Contact({ onCv }: { onCv: () => void }) {
   return (
     <>
       <Title c="contact" x={120} y={3895} size={200}>Let&apos;s</Title>
       <Title c="contact" x={470} y={3990} size={320} outline xl>Talk</Title>
       <div className="contactline" data-c="contact" style={{ left: 130, top: 4300 }}>mattykay2002@gmail.com</div>
       <div className="hero-links" data-c="contact" style={{ left: 130, top: 4380 }}><IconLinks size="lg" /></div>
-      {/* A picture of the CV for sighted visitors; the View CV button beside it is the real control. */}
-      <figure className="sel cvp" data-c="contact" aria-hidden="true" style={{ left: CVP.x, top: CVP.y, width: CVP.w, height: h }}>
-        <div className="cvp-clip" inert><div style={{ transform: `scale(${CVP.w / A4.w})` }}><CvSheet updated={updated} preview /></div></div>
-        <button type="button" className="cvp-hit" tabIndex={-1} onClick={onCv} />
-        <i className="hd a" /><i className="hd b" /><i className="hd c" /><i className="hd d" />
-        <span className="sz">A4 · 210 × 297</span>
-      </figure>
-      <div className="cvp-side" data-c="contact" style={side}>
-        <span className="k">CV</span>
-        <p>Everything here, on one page.</p>
-        <span className="u">Updated {updated}</span>
-        <button type="button" className="hcv" onClick={onCv}>View CV<FiFileText aria-hidden="true" /></button>
-        <a className="hcv ghost" href={CV_PDF} download={CV_FILE}>Download PDF<FiDownload aria-hidden="true" /></a>
-      </div>
+      <button type="button" className="hcv" data-c="contact" onClick={onCv} style={{ left: 1273, top: 4380 }}>View CV<FiFileText aria-hidden="true" /></button>
     </>
   )
 }
@@ -265,7 +244,7 @@ function MgkWires() {
   )
 }
 
-export default function Board({ onCv, cvUpdated }: { onCv: () => void; cvUpdated: string }) {
+export default function Board({ onCv }: { onCv: () => void }) {
   return (
     <>
       <Frame c="hero" x={100} y={120} w={1560} h={1000} label="00 · Hero" />
@@ -274,7 +253,7 @@ export default function Board({ onCv, cvUpdated }: { onCv: () => void; cvUpdated
       <Frame c="mgk" x={1740} y={2070} w={2920} h={1940} label="02 · MGKFitness" />
       <Frame c="about" x={100} y={2880} w={1560} h={900} label="05 · About" />
       <Frame c="how" x={1740} y={4140} w={2920} h={2080} label="04 · How I work" />
-      <Frame c="contact" x={100} y={3860} w={1560} h={2360} label="06 · Contact" />
+      <Frame c="contact" x={100} y={3860} w={1560} h={640} label="06 · Contact" />
       <Hero onCv={onCv} />
       <Frunt />
       <MgkFitness />
@@ -282,7 +261,7 @@ export default function Board({ onCv, cvUpdated }: { onCv: () => void; cvUpdated
       <OtherWork />
       <About />
       <HowIWork />
-      <Contact onCv={onCv} updated={cvUpdated} />
+      <Contact onCv={onCv} />
     </>
   )
 }

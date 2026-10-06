@@ -121,7 +121,7 @@ export const stops: Stop[] = [
     body: 'I run MGKCodes, the studio behind frunt and MGKFitness. Away from the desk: gym, golf and gaming.',
   },
   {
-    c: 'contact', r: [100, 3860, 1560, 2360], m: [100, 3880, 1560, 1000], nav: 'Contact',
+    c: 'contact', r: [100, 3860, 1560, 640], m: [100, 3880, 1560, 600], nav: 'Contact',
     extra: 'contact',
     title: "Hiring? Let's talk.",
   },
