@@ -510,3 +510,11 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
   .browser.long:hover .bw-scr img { translate: none; }
   [data-c], .dv .scr img, .card .shot img, .bw-scr img, .knob { transition: none; }
 }
+
+/* TEMPORARY (iPhone diagnosis, 6 Oct 2026): switches set by ?lite= in layout.tsx. Remove once found. */
+[data-lite~="cursor"] .mcursor { display: none !important; }
+[data-lite~="shadow"] * { box-shadow: none !important; }
+[data-lite~="filter"] .world, [data-lite~="filter"] .world * { filter: none !important; }
+[data-lite~="blur"] * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+[data-lite~="motion"] *, [data-lite~="motion"] *::before, [data-lite~="motion"] *::after { animation: none !important; transition: none !important; }
+[data-lite~="board"] .world { display: none !important; }
