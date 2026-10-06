@@ -35,7 +35,7 @@ export default function SkillsShelf({ x, y, w }: { x: number; y: number; w: numb
       </a>
       <div className="sk-grid">
         {shown.map((s) => (
-          <a key={s.name} className="sk" href={SKILLS_REPO} target="_blank" rel="noopener" title={s.description}>
+          <a key={s.name} className="sk" href={`${SKILLS_REPO}/tree/main/${s.name}`} target="_blank" rel="noopener" title={s.description}>
             <span className="sk-l">{s.label}</span>
             <b>{s.name}</b>
             {s.stack && <span className="sk-s">{s.stack.join(' · ')}</span>}

@@ -3,7 +3,7 @@
 // don't run JavaScript would only ever get the first stop. Same words as the panel.
 import { appStatus, statusText, type AppKey } from './apps'
 import { FRUNT_PARTS, MGK_PARTS, type Part } from './products'
-import { LINKS, stops } from './stops'
+import { LINKS, SKILLS_INSTALL, stops } from './stops'
 
 const APPS: AppKey[] = ['frunt', 'run', 'lift']
 
@@ -36,6 +36,7 @@ export default function TourText() {
           )}
           {s.layers && s.c === 'frunt' && <PartList parts={FRUNT_PARTS} />}
           {s.layers && s.c === 'mgk' && <PartList parts={MGK_PARTS} />}
+          {s.extra === 'skills' && <p>Install my skills: <code>{SKILLS_INSTALL}</code> (<a href={LINKS.skills}>MattKay02/skills</a>)</p>}
         </article>
       ))}
       <p>

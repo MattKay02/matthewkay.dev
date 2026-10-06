@@ -5,7 +5,7 @@
 import { cv } from '@/data/cv'
 import { appStatus, statusText, type AppKey } from '@/workbench/apps'
 import { FRUNT_PARTS, MGK_PARTS, type Part } from '@/workbench/products'
-import { LINKS, stops } from '@/workbench/stops'
+import { LINKS, SKILLS_INSTALL, stops } from '@/workbench/stops'
 
 export const SITE = 'https://matthewkay.dev'
 export const TITLE = 'Matthew Kay · Product engineer'
@@ -87,7 +87,7 @@ export function llmsText(): string {
     `- [LinkedIn](${LINKS.linkedin})`,
     `- [X](${LINKS.x})`,
     `- [MGKCodes](${LINKS.mgkcodes}), the studio behind frunt and MGKFitness`,
-    `- [Claude Code skills](${LINKS.skills}) I build for my own workflow`,
+    `- [Claude Code skills](${LINKS.skills}) I build for my own workflow. Install: \`${SKILLS_INSTALL}\``,
     `- Email: ${LINKS.email}`,
     '',
   ].join('\n')

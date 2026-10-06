@@ -4,7 +4,7 @@
 
 export type Cluster = 'hero' | 'all' | 'frunt' | 'mgk' | 'other' | 'how' | 'about' | 'contact'
 export type Rect = [number, number, number, number]
-export type Extra = 'heroProof' | 'slots' | 'slotsOne' | 'fruntApps' | 'mgkApps' | 'contact'
+export type Extra = 'heroProof' | 'slots' | 'slotsOne' | 'fruntApps' | 'mgkApps' | 'skills' | 'contact'
 
 export interface Stop {
   c: Cluster
@@ -107,6 +107,7 @@ export const stops: Stop[] = [
     c: 'how', r: [1740, 4090, 2920, 760], m: [1770, 4120, 1100, 700], nav: 'How I work',
     title: 'I use AI to move fast. These are the checks that keep it honest.',
     body: 'Plan, decide, build, check, ship. Each step leaves something behind that you can look at, and the skills I build for my own workflow load live from GitHub.',
+    extra: 'skills',
   },
   {
     c: 'about', r: [100, 2880, 1560, 900], m: [1020, 2940, 640, 760], nav: 'About',
@@ -128,3 +129,6 @@ export const LINKS = {
   skills: 'https://github.com/MattKay02/skills',
   email: 'mattykay2002@gmail.com',
 }
+
+/** Installs every skill in any agent that supports Agent Skills (`--skill <name>` for one). */
+export const SKILLS_INSTALL = 'npx skills add MattKay02/skills'

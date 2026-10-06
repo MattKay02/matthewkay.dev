@@ -380,6 +380,10 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 .layers button:hover { border-color: var(--strong); color: var(--strong); }
 .layers button.is-on { background: var(--strong); border-color: var(--strong); color: var(--bg); }
 .mail { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.install { display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); }
+.install > span { font: 500 calc(12px * var(--ls))/1.3 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--muted); }
+.install > a { align-self: flex-start; font: 400 14px/1.3 var(--body); color: var(--text2); text-underline-offset: 3px; }
+.install > a:hover { color: var(--strong); }
 .mail code { font: 500 14px/1.3 var(--mono); color: var(--strong); user-select: all; overflow-wrap: anywhere; }
 .cap-nav { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; padding: 0 28px; }
 .nav-prev { display: flex; align-items: center; gap: 8px; height: 60px; padding: 0 20px; border: 1px solid var(--line); border-radius: var(--r-btn); font: 500 calc(12px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--text2); }
