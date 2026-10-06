@@ -8,6 +8,7 @@ import { PART_IDS } from './products'
 import { mountWorkbench, type WorkbenchApi } from './controller'
 import { FaGithub, FaLinkedin, IconLinks } from './icons'
 import { AppRow } from './apps'
+import { skillId, useSkills } from './Skills'
 import { CHAPTERS, LINKS, NAV_ITEMS, SHOW_SLOTS, SKILLS_INSTALL, stops, type Stop } from './stops'
 
 export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
@@ -143,7 +144,9 @@ function GuideBody({ stop, onCv, onGo, onTile }: {
   const copy = (text: string) => {
     navigator.clipboard?.writeText(text).then(() => setCopied('Copied'), () => setCopied('Select it above'))
   }
-  const parts = stop.layers ? PART_IDS[stop.c] : undefined
+  const { skills } = useSkills()
+  // How I work lists its skills (live from the skills repo); the products list their parts.
+  const parts = stop.layers ? (stop.c === 'how' ? skills.map((s) => ({ id: skillId(s.name), name: s.name })) : PART_IDS[stop.c]) : undefined
   return (
     <>
       {stop.kicker && <span className="kick">{stop.kicker}</span>}
@@ -151,7 +154,7 @@ function GuideBody({ stop, onCv, onGo, onTile }: {
       {stop.body && <p>{stop.body}</p>}
       {parts && (
         <div className="layers">
-          <span>{parts.length} parts · pick one to look closer</span>
+          <span>{parts.length} {stop.c === 'how' ? 'skills' : 'parts'} · pick one to look closer</span>
           <div>{parts.map((p) => <button key={p.id} type="button" data-tile={p.id} onClick={() => onTile(p.id)}>{p.name}</button>)}</div>
         </div>
       )}

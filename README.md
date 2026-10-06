@@ -16,7 +16,8 @@ or drag to look around.
   training and answers that cite their source. Shown with its manager app, staff app, website
   and the parts that run the business around it.
 - **MGKFitness**: Run and Lift, two Flutter apps on one account, and the rebuild of Liftio.
-- **Other work**, **How I work** (including the Claude Code skills I've built, read live from
+- **Other work**, **How I work** (the Claude Code skills I've built, under the step of my process
+  each one serves, with their test results and real output, read live from
   [my skills repo](https://github.com/MattKay02/skills)), **About** and **Contact**.
 - The hero carries my **GitHub contribution graph**, refreshed daily.
 - **Readable by machines too**: a text version of the whole tour in the HTML, structured data,

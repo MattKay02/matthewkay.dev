@@ -18,10 +18,11 @@ How the workbench is built, where its data comes from, and how it ships.
 app/layout.tsx            fonts, metadata, and an inline script that applies a saved theme before paint
 app/page.tsx              <Workbench />
 app/globals.css           tokens + all styles
-src/workbench/stops.ts    the tour (13 stops): cluster, camera rects, panel copy
+src/workbench/stops.ts    the tour (14 stops): cluster, camera rects, panel copy
 src/workbench/Board.tsx   the board in board pixels; FRUNT_PARTS / MGK_PARTS data
 src/workbench/parts.tsx   Frame, Title, Note, SlotBox, MacBook, IPhone, Browser, Tile, Shot, …
-src/workbench/Skills.tsx  skills shelf (live skills.json)
+src/workbench/Skills.tsx  How I work's skill cards by step (live skills.json + tests.json)
+src/workbench/skills-data.ts  skills snapshots, types and text helpers (server-safe)
 src/workbench/controller.ts  camera, rotation, focus, minimap, measurements, input
 src/workbench/Workbench.tsx  React shell: top bar, guide panel, minimap, stage
 src/workbench/products.ts the flagships' parts (tiles, chips, text version)
@@ -29,8 +30,9 @@ src/workbench/TourText.tsx the tour as hidden text for screen readers and crawle
 src/seo/describe.ts       JSON-LD and /llms.txt from the page's own data
 app/og/, app/llms.txt/    the share image's page; /llms.txt (static route handler)
 src/workbench/apps.tsx    app statuses (appStatus, liveOn) and the AppRow component
-src/data/                 github.json, skills.json and stores.json (generated); apps.json (by hand)
-scripts/fetch-github.mjs  refreshes the GitHub and skills snapshots
+src/data/                 github.json, skills.json, skill-tests.json and stores.json (generated);
+                          apps.json (by hand)
+scripts/fetch-github.mjs  refreshes the GitHub, skills and skill-tests snapshots
 scripts/fetch-stores.mjs  checks which App Store and Google Play listings are live
 public/work/              board images, the Apple frames and the app icons
 ```
@@ -95,9 +97,14 @@ If the name is ever too wide, it's scaled so at least one column stays clear bef
 - **Contribution graph**: `scripts/fetch-github.mjs` queries GitHub's GraphQL API
   (`contributionsCollection.contributionCalendar`) with `GITHUB_TOKEN` in CI or the `gh` CLI
   locally, and writes per-day counts only to `src/data/github.json`.
-- **Skills**: `Skills.tsx` fetches the skills repo's `skills.json` in the browser and falls back
-  to the committed snapshot. Adding a skill to the skills repo shows it here with no change to
-  this repo; keep that contract.
+- **Skills**: `Skills.tsx` fetches the skills repo's `skills.json` and `tests.json` in the
+  browser (one shared fetch, `useSkills`) and falls back to the committed snapshots. Adding a
+  skill to the skills repo shows it here with no change to this repo; keep that contract.
+  How I work lays the cards out as a pipeline: each skill sits under its `step`, the Build
+  column opens with the library card (install command, how many are tested), and Check is a
+  two-wide grid. A card shows the skill's `evidence` image (light and dark files; only the
+  current look's loads) or, failing that, its `flow`. `TourText` and `/llms.txt` list the
+  same skills from the snapshot, with their test results and what each picture shows.
 - **App statuses**: `scripts/fetch-stores.mjs` asks Apple's lookup API (by app id, UK store) and
   loads each Google Play listing (a 200 means it's public), then writes `src/data/stores.json`.
   `src/data/apps.json` holds the hand-written facts (names, icons, store ids, websites, and a

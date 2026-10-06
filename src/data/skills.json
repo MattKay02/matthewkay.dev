@@ -3,76 +3,158 @@
     {
       "name": "codemagic-build",
       "label": "Mobile CI",
-      "description": "Starts a Codemagic build from the terminal, polls it to completion, and reports the result with artifact download links — so \"ship a build and tell me when it lands\" doesn't mean sitting on a browser tab for twenty minutes. Reads the API token from the environment only, never the repo, and treats starting a build as a gated action because minutes are metered and a green build can upload straight to real testers.",
+      "step": "ship",
+      "summary": "Starts a CI build from the terminal and reports back when it lands.",
+      "description": "Starts a Codemagic build from the terminal, polls it to completion, and reports the result with artifact download links, so \"ship a build and tell me when it lands\" doesn't mean sitting on a browser tab for twenty minutes. Reads the API token from the environment only, never the repo, and treats starting a build as a gated action because minutes are metered and a green build can upload straight to real testers.",
       "why": "Kicking off a TestFlight build meant leaving the terminal, clicking through a UI, and coming back later to find out. The safety rails are the interesting half: a CI token is personal tooling, not project config, and it does not belong in the repo.",
       "stack": [
         "Claude Code",
         "Codemagic",
         "REST API"
+      ],
+      "flow": [
+        "a branch",
+        "a Codemagic build, confirmed first",
+        "the result and download links"
       ]
     },
     {
       "name": "ui-walk",
       "label": "UI Evidence",
-      "description": "Drives the running app with Playwright through every surface and state of a feature — empty, mid-flow, success, collapsed/expanded — saving an ordered, numbered screenshot folder that reads like a story. Idempotent: it cleans up everything it creates, so re-running after fixes regenerates the same sequence for comparison.",
-      "why": "I kept hand-writing the same walk script before every UI review — ordered captures of every state, then feed the folder to page-audit. Third time was the skill.",
+      "step": "check",
+      "summary": "Screenshots every state of a feature, in order, ready to flip through.",
+      "description": "Drives the running app with Playwright through every surface and state of a feature (empty, mid-flow, success, collapsed/expanded), saving an ordered, numbered screenshot folder that reads like a story. Idempotent: it cleans up everything it creates, so re-running after fixes regenerates the same sequence for comparison.",
+      "why": "I kept hand-writing the same walk script before every UI review: ordered captures of every state, then feed the folder to page-audit. Third time was the skill.",
       "stack": [
         "Claude Code",
         "Playwright"
-      ]
+      ],
+      "flow": [
+        "a feature",
+        "every state, driven by Playwright",
+        "numbered screenshots"
+      ],
+      "evidence": {
+        "image": "evidence.jpg",
+        "dark": "evidence-dark.jpg",
+        "caption": "A real walk of the CV viewer on matthewkay.dev, 6 Oct 2026: six numbered screenshots (opened, scrolled to the end, dark theme, a phone opening the /#cv link first, the standalone page) and the one finding, a heavy focus ring on the phone close button."
+      }
     },
     {
       "name": "page-audit",
       "label": "UI Review",
-      "description": "Audits a UI surface across seven axes and returns a prioritized P1/P2/P3 punch list — verifying every finding against the actual code (file:line citations) before reporting it. A review, not a redesign.",
-      "why": "I kept doing the same manual UI pass by eye — this makes it systematic and evidence-backed.",
+      "step": "check",
+      "summary": "Reviews a page on seven axes and returns a ranked punch list.",
+      "description": "Audits a UI surface across seven axes and returns a prioritized P1/P2/P3 punch list, verifying every finding against the actual code (file:line citations) before reporting it. A review, not a redesign.",
+      "why": "I kept doing the same manual UI pass by eye. This makes it systematic and evidence-backed.",
       "stack": [
         "Claude Code",
         "Playwright"
+      ],
+      "flow": [
+        "a page or screen",
+        "seven axes, checked against the code",
+        "P1, P2 and P3, with file:line"
       ]
     },
     {
       "name": "emulator-verify",
       "label": "Mobile QA",
-      "description": "Lets an agent confirm a Flutter app's UI on the Android emulator by driving it with adb input, capturing screenshots over adb, and reading them back with vision — so it checks its own work between turns instead of asking me to look. Shell-aware: the byte-safe screencap command differs between PowerShell and bash, and getting it wrong yields a corrupt PNG that looks fine on disk.",
+      "step": "check",
+      "summary": "Checks a Flutter change on the Android emulator by reading the screen back.",
+      "description": "Lets an agent confirm a Flutter app's UI on the Android emulator by driving it with adb input, capturing screenshots over adb, and reading them back with vision, so it checks its own work between turns instead of asking me to look. Shell-aware: the byte-safe screencap command differs between PowerShell and bash, and getting it wrong yields a corrupt PNG that looks fine on disk.",
       "why": "Closing the loop on mobile UI changes without a human in the middle every time.",
       "stack": [
         "Claude Code",
         "adb",
         "Flutter"
+      ],
+      "flow": [
+        "a Flutter change",
+        "an adb screenshot",
+        "read back and checked"
       ]
     },
     {
       "name": "lighthouse-audit",
       "label": "Web Perf",
-      "description": "Runs Lighthouse against a production build, takes the median of several mobile runs (single runs are noisy), and turns the result into an actionable punch list — category scores, Core Web Vitals, the exact failing audits, and LCP phase breakdown — with before/after support.",
-      "why": "I kept hand-running the same spin-up-preview → run-Lighthouse → diff-before/after loop on every perf pass — this makes it one repeatable, median-stable step.",
+      "step": "check",
+      "summary": "Measures a production build on mobile and says what to fix first.",
+      "description": "Runs Lighthouse against a production build, takes the median of several mobile runs (single runs are noisy), and turns the result into an actionable punch list (category scores, Core Web Vitals, the exact failing audits and the LCP phase breakdown), with before/after support.",
+      "why": "I kept hand-running the same spin-up-preview → run-Lighthouse → diff-before/after loop on every perf pass. This makes it one repeatable, median-stable step.",
       "stack": [
         "Claude Code",
         "Lighthouse",
         "Chrome"
-      ]
+      ],
+      "flow": [
+        "a production build",
+        "three mobile runs, the median",
+        "scores and a punch list"
+      ],
+      "evidence": {
+        "image": "evidence.png",
+        "dark": "evidence-dark.png",
+        "caption": "Lighthouse on matthewkay.dev, mobile, median of three runs (77, 78, 80), 6 Oct 2026: Performance 78, Accessibility, Best practices and SEO 100. Fix first: LCP 5.1 s, mostly the hero name waiting on its fade-in; defer 21 offscreen images (about 528 KiB); preconnect to the live skills data (about 330 ms)."
+      }
     },
     {
       "name": "screen-board",
       "label": "Product Map",
-      "description": "Builds a pan-and-zoom board of every screen in an app — full-page captures laid out in reading order, each paired with what that screen is FOR and what good looks like — published as one design canvas that updates in place. Records the commit each screen was captured at, so it can tell you which descriptions have gone out of date rather than just re-taking the pictures.",
-      "why": "I kept rebuilding the same board and it kept going quietly wrong — two frames were screenshots of a 404 for four days, and a panel described a feature three tools out of date. The screenshots were never the problem; the writing beside them was.",
+      "step": "plan",
+      "summary": "Lays every screen of an app on one board, each with what it's for.",
+      "description": "Builds a pan-and-zoom board of every screen in an app: full-page captures laid out in reading order, each paired with what that screen is FOR and what good looks like, published as one design canvas that updates in place. Records the commit each screen was captured at, so it can tell you which descriptions have gone out of date rather than just re-taking the pictures.",
+      "why": "I kept rebuilding the same board and it kept going quietly wrong: two frames were screenshots of a 404 for four days, and a panel described a feature three tools out of date. The screenshots were never the problem; the writing beside them was.",
       "stack": [
         "Claude Code",
         "Playwright",
         "Claude Design"
+      ],
+      "flow": [
+        "the running app",
+        "every screen, in reading order",
+        "one board that updates in place"
       ]
     },
     {
       "name": "silent-failure-sweep",
       "label": "Reliability",
-      "description": "Hunts a codebase for failures that happen without anyone being told — capped AI calls whose stop reason is never checked, errors turned into empty results, background jobs with no failure handler that leave records stuck mid-state, counts that report the same problem every run without escalating, and limits applied quietly. Produces a ranked punch list with file:line and the loud alternative, and proves the worst with a cheap live probe rather than asserting it.",
+      "step": "check",
+      "summary": "Finds failures nobody is told about, ranked by who they hurt.",
+      "description": "Hunts a codebase for failures that happen without anyone being told: capped AI calls whose stop reason is never checked, errors turned into empty results, background jobs with no failure handler that leave records stuck mid-state, counts that report the same problem every run without escalating, and limits applied quietly. Produces a ranked punch list with file:line and the loud alternative, and proves the worst with a cheap live probe rather than asserting it.",
       "why": "In one day on a production app, the same shape turned up five times: a document pipeline that silently kept only the first 17 pages of a 40-page file, background jobs that hung forever and made the UI blame the wrong thing, a usage meter counting every document as one page, and a weekly check reporting the same three failures for two months without naming them. Each was honest in its logs and silent to the person who needed to know.",
       "stack": [
         "Claude Code",
         "Static analysis",
         "SQL"
+      ],
+      "flow": [
+        "a codebase",
+        "seven silent-failure patterns",
+        "a ranked list with file:line"
+      ],
+      "evidence": {
+        "image": "evidence.png",
+        "dark": "evidence-dark.png",
+        "caption": "The sweep on a test service with five planted silent failures, all five found. Top three of eight ranked findings: allergens show as none when the database fails; orders can get stuck, run twice or crash the queue; Download all orders stops at 1,000."
+      }
+    },
+    {
+      "name": "motion-sketchbook",
+      "label": "Motion Design",
+      "step": "decide",
+      "summary": "Sketches design options as films and stills, so the choice is made by watching.",
+      "description": "Sketches a design as rendered films and stills before anything is built: several distinct options for a launch animation, store pictures or a run of social posts, drawn in Remotion from the product's real screens, type and marks, and shown side by side on one page to pick by watching. Checks every render on a contact sheet with the platform's covered areas ruled in, and leaves the Remotion API itself to Remotion's official skills.",
+      "why": "Third time building the same thing: a launch animation, then store screenshots, then a set of social posts, each with its own fonts, phone frame, render script and contact sheet. My first try at the animation drew its letters by hand and looked home-made; four options rendered as video got picked on the first look. The part worth keeping was never the React. It was the checks: a render that fails quietly, or succeeds and shows you last hour's picture.",
+      "stack": [
+        "Claude Code",
+        "Remotion",
+        "ffmpeg"
+      ],
+      "flow": [
+        "real screens, type and marks",
+        "options rendered in Remotion",
+        "side by side on one page"
       ]
     }
   ]

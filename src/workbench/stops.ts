@@ -20,7 +20,7 @@ export interface Stop {
   lock?: Record<string, number>
 }
 
-export const WORLD = { w: 4760, h: 4900 }
+export const WORLD = { w: 4760, h: 6260 }
 
 /** The dashed case-study placeholders. Off until the first case study exists. */
 export const SHOW_SLOTS = false
@@ -104,10 +104,16 @@ export const stops: Stop[] = [
     body: 'Client sites, experiments and practice projects. Hover a card to see it in colour.',
   },
   {
-    c: 'how', r: [1740, 4090, 2920, 760], m: [1770, 4120, 1100, 700], nav: 'How I work',
+    c: 'how', r: [1740, 4090, 2920, 2080], m: [1770, 4420, 940, 1260], nav: 'How I work',
     title: 'I use AI to move fast. These are the checks that keep it honest.',
-    body: 'Plan, decide, build, check, ship. Each step leaves something behind that you can look at, and the skills I build for my own workflow load live from GitHub.',
+    body: 'Plan, decide, build, check, ship. Each step leaves something behind that you can look at, and under each one are the skills I built for it, loaded live from GitHub.',
     extra: 'skills',
+  },
+  {
+    c: 'how', r: [3190, 4815, 970, 1340], m: [3205, 4830, 465, 420], nav: 'How I work: the checks',
+    layers: true,
+    title: 'Most of my skills are checks.',
+    body: "Each one is tested: it has to load when it's asked for and stay out when it isn't. The pictures are real output, not mockups. Pick one to look closer.",
   },
   {
     c: 'about', r: [100, 2880, 1560, 900], m: [1020, 2940, 640, 760], nav: 'About',

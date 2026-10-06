@@ -62,3 +62,15 @@ if (skillsRes.ok) {
 } else {
   console.warn(`skills.json not refreshed (${skillsRes.status}); keeping the committed snapshot`)
 }
+
+// Test results for the skills (generated in the skills repo from its eval runs),
+// shown on each skill's card in How I work. Same live fetch + snapshot pattern.
+const TESTS = 'https://raw.githubusercontent.com/MattKay02/skills/main/tests.json'
+const testsRes = await fetch(TESTS)
+if (testsRes.ok) {
+  const tests = await testsRes.json()
+  writeFileSync(join(dirname(out), 'skill-tests.json'), JSON.stringify(tests, null, 2) + '\n')
+  console.log(`skill-tests.json: ${Object.keys(tests.skills ?? {}).length} skills tested`)
+} else {
+  console.warn(`skill-tests.json not refreshed (${testsRes.status}); keeping the committed snapshot`)
+}
