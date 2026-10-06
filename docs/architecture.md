@@ -137,8 +137,9 @@ instead; that copy is gitignored and never deployed.
 - `daily.yml` calls a Vercel deploy hook once a day, so the graph and statuses refresh without a
   push. `GITHUB_TOKEN` (a token with no extra permissions) is set on Vercel for the graph.
 - **Domain**: `matthewkay.dev` on the Vercel project; Cloudflare DNS points at Vercel, DNS-only,
-  and Vercel issues the certificate. `.dev` only works over HTTPS. GitHub Pages keeps the domain as
-  its custom domain only so `mattkay02.github.io` links redirect to it.
+  and Vercel issues the certificate. `.dev` only works over HTTPS. The repo is
+  `MattKay02/matthewkay.dev` (renamed 6 Oct 2026); old `mattkay02.github.io` links are redirected
+  by a separate repo, `MattKay02/MattKay02.github.io`, which sends each path to matthewkay.dev.
 - `ci.yml` builds every pull request into `main` and prints the CV, so an overflowing CV fails
   the check.
 - **`main` auto-deploys**: do feature work on a branch.
