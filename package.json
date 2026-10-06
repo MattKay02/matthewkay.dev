@@ -13,7 +13,8 @@
     "stores": "node scripts/fetch-stores.mjs",
     "og": "node scripts/build-og.mjs",
     "readme": "node scripts/build-readme.mjs",
-    "frunt": "node scripts/fetch-frunt.mjs"
+    "frunt": "node scripts/fetch-frunt.mjs",
+    "screens": "node scripts/fetch-screens.mjs"
   },
   "repository": {
     "type": "git",

@@ -86,6 +86,7 @@ src/workbench/
   controller.ts        the camera and everything per-frame (imperative; returns destroy())
   Workbench.tsx        React shell: top bar, guide panel, minimap, stage
   apps.tsx             app statuses and AppRow (icon, name, status, store and website buttons)
+  screens.ts           product screens by product + id, from the products' feeds (saved copy as fallback)
   icons.tsx            link icons and the MGKCodes monogram
 app/cv/page.tsx        the standalone CV page
 app/work/frunt/page.tsx  the frunt case study as a standalone page (404 until published)
@@ -102,9 +103,11 @@ src/data/
   apps.json            app facts: names, icons, store ids, websites (edited by hand)
   stores.json          which store listings are live (generated)
   frunt-stats.json     frunt's build figures + latest answer-accuracy run (generated)
+  screens.json         each product's bare screens, from its /studio.json (generated)
 scripts/fetch-github.mjs   refreshes both snapshots: `npm run github`
 scripts/fetch-stores.mjs   checks the App Store and Google Play: `npm run stores`
 scripts/fetch-frunt.mjs    counts frunt's figures from its repo: `npm run frunt`
+scripts/fetch-screens.mjs  reads the products' screens: `npm run screens`
 scripts/build-cv.mjs       prints /cv to out/cv.pdf after a build: `npm run cv`
 scripts/build-og.mjs       photographs /og/ to out/og.png after a build: `npm run og`
 scripts/build-readme.mjs   photographs the README visuals (light + dark, 2x): `npm run readme`
@@ -118,7 +121,8 @@ docs/                  architecture, design system, screens-feed spec, storyboar
 `out/`) · `npm run cv` (print the CV PDF; run after build) · `npm run cv:private` (copy with phone
 number, see below) · `npm run github` (refresh contribution graph + skills snapshot) ·
 `npm run stores` (refresh store statuses) · `npm run frunt` (refresh frunt's figures; says
-which frunt decision records are newer than the case study) · `npm run og` (share image; run
+which frunt decision records are newer than the case study) · `npm run screens` (refresh the
+products' screens) · `npm run og` (share image; run
 after build) · `npm run preview`.
 
 ### The CV is code
@@ -193,8 +197,13 @@ board is in board pixels; the world is 4760 × 4900.
   (`VERCEL_DEPLOY_HOOK` secret). Only per-day counts are stored.
 - **frunt figures**: `src/data/frunt-stats.json`, refreshed by `npm run frunt` on every Vercel build
   (see "Case studies are code"). Counts of paths only; no code or business data leaves frunt-web.
-- **Product screens**: today they're static files in `public/work/`. The plan for screens that
-  update themselves is `docs/screens-feed.md` (implemented in the product repos, not here).
+- **Product screens update themselves** (`docs/screens-feed.md`). Each product keeps its bare
+  screens in its own `public/screens/` and lists them by id in its `/studio.json`;
+  `npm run screens` (every build) reads them into `src/data/screens.json` and the board loads each
+  image from the product's site. **Never put a product screenshot into this repo to update it**:
+  recapture it in the product (replace the file, deploy) and it changes here, on the product's
+  landing page and on mgkcodes.com. `public/work/` copies are only the fallback for an id a feed
+  doesn't list or an image that didn't load at build. Liftio 1.4 stays saved (retired).
 
 ### Verify before saying it's done
 
@@ -238,9 +247,9 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
 ## Facts (keep true; re-check before launch)
 
 - **frunt**: live SaaS. Manager web app; staff app on the App Store (June 2026) and Google Play.
-  **The staff Ask screenshot (`public/work/frunt-m-ask.webp`) is out of date**: it shows six
-  sources for a Challenge 25 answer, the over-citing fixed on 28 Sep 2026. Recapture it before the
-  case study goes public (the case study describes the fix).
+  **The staff Ask screen is out of date**: it shows six sources for a Challenge 25 answer, the
+  over-citing fixed on 28 Sep 2026. Recapture it in frunt-web (`public/screens/staff-ask.webp`)
+  before the case study goes public (the case study describes the fix).
   Instagram studio live since 21 Sep 2026. **WhatsApp is live** (Matthew, 6 Oct 2026; the live
   webhook answers, it doesn't 404, so `WHATSAPP_ENABLED` is on in production). The rota and briefs
   are frozen in frunt (ADR 0076, 24 Aug 2026): never sell them on the board. Admin console and outreach + analytics are internal: no admin screenshots until they

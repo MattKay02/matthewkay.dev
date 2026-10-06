@@ -11,6 +11,7 @@ import SkillsShelf from './Skills'
 import { SHOW_SLOTS, type Cluster } from './stops'
 import { AppRow } from './apps'
 import { FRUNT_PARTS, FRUNT_SITE_FOCUS, FRUNT_SITE_Y, MGK_PARTS, type Part } from './products'
+import { FRUNT_SCREENS, MGK_SCREENS, phone, slide } from './screens'
 import { SHOW_FRUNT } from '@/case-studies/flags'
 import { BOARD_MILESTONES, fmtShort } from '@/case-studies/frunt-board'
 
@@ -147,11 +148,12 @@ function Frunt() {
       <Browser c="frunt" x={1790} y={FRUNT_SITE_Y} w={450} url="https://frunthospitality.com/" img="site-frunt-long" iw={640} ih={3185}
         alt="frunthospitality.com, the frunt website" caption="Website · hover to scroll" long focus={FRUNT_SITE_FOCUS} />
       <MacBook c="frunt" id="frunt-a" label="Manager web app" x={2250} y={430} w={1400} slides={[
-        { img: 'frunt-home', w: 1100, h: 619, bg: '#f6f5f2', title: 'Home', alt: 'frunt manager dashboard, home' },
-        { img: 'frunt-ask', w: 1280, h: 720, bg: '#faf7ef', title: 'Ask frunt', alt: 'Ask frunt: an answer about peanut allergen controls, citing three source documents',
-          overlay: <><div className="redline" style={{ left: '37.2%', top: '46.45%', width: '33.5%', height: '6.5%' }} /><div className="tag" style={{ left: '37.2%', top: '54.5%' }}>↑ Every answer cites its source</div></> },
-        { img: 'frunt-docs', w: 1100, h: 619, bg: '#fbfcfb', title: 'Documents', alt: 'frunt documents library' },
-        { img: 'frunt-training', w: 1100, h: 619, bg: '#fefefb', title: 'Training', alt: 'frunt training courses' },
+        { ...slide(FRUNT_SCREENS.home), bg: '#f6f5f2', title: 'Home' },
+        { ...slide(FRUNT_SCREENS.ask), bg: '#faf7ef', title: 'Ask frunt',
+          // The redline is measured on the saved screenshot, so a new capture drops it.
+          overlay: FRUNT_SCREENS.ask.fromFeed ? undefined : <><div className="redline" style={{ left: '37.2%', top: '46.45%', width: '33.5%', height: '6.5%' }} /><div className="tag" style={{ left: '37.2%', top: '54.5%' }}>↑ Every answer cites its source</div></> },
+        { ...slide(FRUNT_SCREENS.documents), bg: '#fbfcfb', title: 'Documents' },
+        { ...slide(FRUNT_SCREENS.training), bg: '#fefefb', title: 'Training' },
       ]} />
       <Callout c="frunt" n="01" title="Ask" x={3720} y={400} w={332} h={240}>
         Staff ask in plain words, in the app or on WhatsApp. Every answer lists the documents it came from, so a manager can check it.
@@ -159,8 +161,8 @@ function Frunt() {
       <Callout c="frunt" n="02" title="Training" x={4090} y={400} w={332} h={240}>
         Short courses built from the restaurant&apos;s own documents, not a generic module. Each one finished is recorded, with the date it&apos;s due again.
       </Callout>
-      <IPhone c="frunt" x={3720} y={673} w={332} img="frunt-m-ask" iw={334} ih={736} alt="frunt staff app, asking a question" />
-      <IPhone c="frunt" x={4090} y={673} w={332} img="frunt-m-training" iw={334} ih={736} alt="frunt staff app, training" />
+      <IPhone c="frunt" x={3720} y={673} w={332} {...phone(FRUNT_SCREENS.staffAsk)} />
+      <IPhone c="frunt" x={4090} y={673} w={332} {...phone(FRUNT_SCREENS.staffTraining)} />
       <Parts c="frunt" prefix="ft" parts={FRUNT_PARTS} x0={1790} y0={1480} />
       {SHOW_SLOTS && !SHOW_FRUNT && <SlotBox c="frunt" x={3620} y={1480} w={1000} h={200} title="Case study" />}
       {SHOW_SLOTS && !SHOW_FRUNT && <SlotBox c="frunt" x={3620} y={1700} w={1000} h={200} title="What I learnt" />}
@@ -179,10 +181,10 @@ function MgkFitness() {
       <IPhone c="mgk" x={1780} y={2590} w={260} img="liftio-home" iw={560} ih={1212} alt="Liftio 1.4 home screen" caption="Liftio 1.4 · React Native" />
       <IPhone c="mgk" x={2060} y={2650} w={260} img="liftio-tracking" iw={560} ih={1212} alt="Liftio 1.4 workout tracking" />
       <IPhone c="mgk" x={2340} y={2590} w={260} img="liftio-detail" iw={560} ih={1212} alt="Liftio 1.4 exercise detail with a progress chart" />
-      <IPhone c="mgk" x={2820} y={2590} w={260} img="lift-log" iw={560} ih={1212} alt="Lift 2.0 logging a workout" caption="Lift · Flutter" />
-      <IPhone c="mgk" x={3100} y={2650} w={260} img="lift-plan" iw={560} ih={1212} alt="Lift 2.0 plan" />
-      <IPhone c="mgk" x={3600} y={2590} w={260} img="run-record" iw={560} ih={1214} alt="Run recording a run" caption="Run · Flutter" />
-      <IPhone c="mgk" x={3880} y={2650} w={260} img="run-plan" iw={560} ih={1214} alt="Run training plan" />
+      <IPhone c="mgk" x={2820} y={2590} w={260} {...phone(MGK_SCREENS.liftLog)} caption="Lift · Flutter" />
+      <IPhone c="mgk" x={3100} y={2650} w={260} {...phone(MGK_SCREENS.liftPlan)} />
+      <IPhone c="mgk" x={3600} y={2590} w={260} {...phone(MGK_SCREENS.runRecord)} caption="Run · Flutter" />
+      <IPhone c="mgk" x={3880} y={2650} w={260} {...phone(MGK_SCREENS.runPlan)} />
       <Note c="mgk" x={2820} y={3305} w={780} kicker="Decision 0001 · accepted 17 Aug 2026"
         quote={'"Retiring a live record to avoid an untidy string is paying a real cost for a cosmetic one."'}>
         Liftio is replaced, not relaunched.

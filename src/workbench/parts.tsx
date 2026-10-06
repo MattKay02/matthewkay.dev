@@ -43,7 +43,8 @@ export function Spec({ c, children, ...box }: Box & { c: Cluster; children: Reac
 
 // ---------- devices: Apple's MacBook Air and iPhone frames, used as supplied ----------
 
-export interface Slide { img: string; w: number; h: number; bg: string; title: string; alt: string; overlay?: ReactNode }
+/** `src` is a full image URL (a product's own screen, see screens.ts); `img` names a saved copy in public/work. */
+export interface Slide { img?: string; src?: string; w: number; h: number; bg: string; title: string; alt: string; overlay?: ReactNode }
 
 /** A MacBook that rotates through its slides; tabs and arrows under it pick one (controller.ts wires both). */
 export function MacBook({ c, id, label, slides, ...box }: Box & { c: Cluster; id: string; label: string; slides: Slide[] }) {
@@ -53,8 +54,8 @@ export function MacBook({ c, id, label, slides, ...box }: Box & { c: Cluster; id
         <img className="fr" src={IMG('macbook-air')} width={1700} height={1120} alt="" />
         <div className="scr">
           {slides.map((s, i) => (
-            <div key={s.img} className={`sl${i === 0 ? ' is-on' : ''}`} data-title={s.title} style={{ background: s.bg }}>
-              <img src={IMG(s.img)} width={s.w} height={s.h} alt={s.alt} />
+            <div key={s.title} className={`sl${i === 0 ? ' is-on' : ''}`} data-title={s.title} style={{ background: s.bg }}>
+              <img src={s.src ?? IMG(s.img ?? '')} width={s.w} height={s.h} alt={s.alt} />
               {s.overlay}
             </div>
           ))}
@@ -66,7 +67,7 @@ export function MacBook({ c, id, label, slides, ...box }: Box & { c: Cluster; id
           <button type="button" className="lp-prev" aria-label="Previous screen"><FiChevronLeft aria-hidden="true" /></button>
           <div className="lp-tabs" role="group" aria-label={`${label} screens`}>
             {slides.map((s, i) => (
-              <button key={s.img} type="button" className={`lp-tab${i === 0 ? ' is-on' : ''}`} aria-pressed={i === 0}>{s.title}</button>
+              <button key={s.title} type="button" className={`lp-tab${i === 0 ? ' is-on' : ''}`} aria-pressed={i === 0}>{s.title}</button>
             ))}
           </div>
           <button type="button" className="lp-next" aria-label="Next screen"><FiChevronRight aria-hidden="true" /></button>
@@ -105,14 +106,14 @@ export function Brief({ c, problem, story, steps, facts, ...box }: Box & {
   )
 }
 
-export function IPhone({ c, img, iw, ih, alt, caption, below, ...box }: Box & {
-  c: Cluster; img: string; iw: number; ih: number; alt: string; caption?: string; below?: { nm: string; ln: string }
+export function IPhone({ c, img, src, iw, ih, alt, caption, below, ...box }: Box & {
+  c: Cluster; img?: string; src?: string; iw: number; ih: number; alt: string; caption?: string; below?: { nm: string; ln: string }
 }) {
   return (
     <figure className={`dev iph${below ? ' below' : ''}`} data-c={c} style={at(box)}>
       <div className="dv">
         <img className="fr" src={IMG('iphone')} width={675} height={1380} alt="" />
-        <div className="scr"><img src={IMG(img)} width={iw} height={ih} alt={alt} /></div>
+        <div className="scr"><img src={src ?? IMG(img ?? '')} width={iw} height={ih} alt={alt} /></div>
       </div>
       {below
         ? <figcaption><span className="nm">{below.nm}</span><span className="ln">{below.ln}</span></figcaption>
@@ -152,10 +153,10 @@ export function Tile({ id, c, ix, name, status, live, line, tech, focus, ...box 
 }
 
 /** A plain screenshot card, for the smaller projects. */
-export function Shot({ c, img, iw, ih, alt, nm, ln, ...box }: Box & { c: Cluster; img: string; iw: number; ih: number; alt: string; nm: string; ln: string }) {
+export function Shot({ c, img, src, iw, ih, alt, nm, ln, ...box }: Box & { c: Cluster; img?: string; src?: string; iw: number; ih: number; alt: string; nm: string; ln: string }) {
   return (
     <figure className="card" data-c={c} style={at(box)}>
-      <div className="shot"><img src={IMG(img)} width={iw} height={ih} alt={alt} /></div>
+      <div className="shot"><img src={src ?? IMG(img ?? '')} width={iw} height={ih} alt={alt} /></div>
       <figcaption><span className="nm">{nm}</span><span className="ln">{ln}</span></figcaption>
     </figure>
   )
