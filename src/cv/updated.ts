@@ -15,7 +15,7 @@ function git(cmd: string): string {
 async function fromGitHub(): Promise<string> {
   const repo = process.env.VERCEL_GIT_REPO_OWNER && process.env.VERCEL_GIT_REPO_SLUG
     ? `${process.env.VERCEL_GIT_REPO_OWNER}/${process.env.VERCEL_GIT_REPO_SLUG}`
-    : 'MattKay02/MattKay02.github.io'
+    : 'MattKay02/matthewkay.dev'
   const ref = process.env.VERCEL_GIT_COMMIT_SHA || git('rev-parse HEAD') || 'main'
   const headers: Record<string, string> = { 'User-Agent': 'mattkay02-portfolio', Accept: 'application/vnd.github+json' }
   if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`

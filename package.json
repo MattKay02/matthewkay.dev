@@ -1,5 +1,5 @@
 {
-  "name": "mattkay02.github.io",
+  "name": "matthewkay.dev",
   "version": "2.0.0",
   "private": true,
   "type": "module",
@@ -18,14 +18,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MattKay02/MattKay02.github.io.git"
+    "url": "git+https://github.com/MattKay02/matthewkay.dev.git"
   },
   "author": "Matthew Kay <mattykay2002@gmail.com> (https://mgkcodes.com)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/MattKay02/MattKay02.github.io/issues"
+    "url": "https://github.com/MattKay02/matthewkay.dev/issues"
   },
-  "homepage": "https://github.com/MattKay02/MattKay02.github.io#readme",
+  "homepage": "https://github.com/MattKay02/matthewkay.dev#readme",
   "description": "Matthew Kay's portfolio: a workbench of real work you move through by scrolling.",
   "dependencies": {
     "next": "^16.3.8",
