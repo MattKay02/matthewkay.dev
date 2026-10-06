@@ -8,14 +8,14 @@ How the workbench is built, where its data comes from, and how it ships.
   into `out/` and built and served by **Vercel**.
 - **React 19** renders the board and the guide panel; a small imperative controller
   (`src/workbench/controller.ts`) drives everything that changes every frame.
-- **Global CSS with tokens** (`app/globals.css`). Three looks (Paper, Studio, Brutalist) are token
-  sets switched by `data-style` on `<html>`.
+- **Global CSS with tokens** (`app/globals.css`). Light tokens on `:root`; the dark theme overrides
+  them under `data-theme="dark"` on `<html>`.
 - **next/font** for Space Grotesk, Inter and IBM Plex Mono. **react-icons** for link icons.
 
 ## Structure
 
 ```
-app/layout.tsx            fonts, metadata, and an inline script that applies a saved look before paint
+app/layout.tsx            fonts, metadata, and an inline script that applies a saved theme before paint
 app/page.tsx              <Workbench />
 app/globals.css           tokens + all styles
 src/workbench/stops.ts    the tour (13 stops): cluster, camera rects, panel copy
@@ -82,11 +82,9 @@ dot is clicked. The label above it updates with the slide title.
 
 ## The hero's measurements
 
-Everything in the hero is measured from the real type after fonts load (and again when the look
-changes): the name's width, the cap-height and baseline (a zero-size inline probe plus canvas
+Everything in the hero is measured from the real type after fonts load: the name's width, the cap-height and baseline (a zero-size inline probe plus canvas
 `measureText`), and the gap to the photo. The photo's top edge is placed on the cap-height line.
-If a look's type is too wide (Brutalist is uppercase), the name is scaled so at least one
-column stays clear before the photo.
+If the name is ever too wide, it's scaled so at least one column stays clear before the photo.
 
 ## Live data
 

@@ -25,14 +25,14 @@ export const viewport: Viewport = {
   themeColor: '#ebebeb',
 }
 
-// Applies a saved or linked look (#paper, #studio, #brutal) before first paint, so it never flashes.
-const lookScript = `try{var s=location.hash.slice(1);if(!/^(paper|studio|brutal)$/.test(s))s=localStorage.getItem("wb-style");if(/^(paper|studio|brutal)$/.test(s))document.documentElement.dataset.style=s}catch(e){}`
+// Applies a saved dark theme before first paint, so the page never flashes light first.
+const themeScript = `try{if(localStorage.getItem("wb-theme")==="dark")document.documentElement.dataset.theme="dark"}catch(e){}`
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-GB" className={`${display.variable} ${body.variable} ${mono.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: lookScript }} />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>{children}</body>
     </html>

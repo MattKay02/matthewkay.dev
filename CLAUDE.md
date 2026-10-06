@@ -25,8 +25,11 @@ About → Contact. frunt is the main project and leads.
 
 ## Design rules
 
-- **Paper look by default**: light greyscale desk. Studio (dark) and Brutalist (v1) are kept as
-  alternates behind the top-bar switch; decide whether to keep the switch before launch.
+- **Paper, in light and dark**: one design, a greyscale desk, with a sun/moon toggle in the top
+  bar. Light is the default; a visitor's choice is remembered (`wb-theme` in localStorage) and
+  applied before first paint. Dark is the same design with dark tokens (`:root[data-theme="dark"]`
+  in `globals.css`), never a different look. The old Studio/Brutalist switch was a prototype
+  device and is gone.
 - **Greyscale only. Colour comes only from the work**: screens are greyscale until their project
   is the current stop or hovered.
 - **Neat and precise.** Matthew is a neat, precise person: grids, alignment, measured spacing,
@@ -35,9 +38,8 @@ About → Contact. frunt is the main project and leads.
 - **The hero is a design spec** on a 12-column grid (column 103px, gutter 24px, from x 130):
   live-measured cap-height and baseline guides, name width and name-to-photo gap, the photo as a
   selected frame, the live GitHub contribution graph, and large icon links. No numbered note boxes.
-- **Type**: Space Grotesk (display), Inter (body), IBM Plex Mono (data; labels in Brutalist).
-  Two-line headings: a solid line, then an offset second line (grey fill in Paper/Studio, outline
-  in Brutalist).
+- **Type**: Space Grotesk (display), Inter (body), IBM Plex Mono (data).
+  Two-line headings: a solid line, then an offset second line in grey.
 - **Devices are Apple's own Product Bezels** (MacBook Air M5 13" Silver, iPhone 18 Pro Black),
   used under Apple's rules: upright, never overlapping, no added shadows or reflections, never
   animate the device itself, same relative scale within a group (iPhone ≈ 0.237 × MacBook
@@ -62,9 +64,9 @@ you haven't checked (see the block at the end of this file).
 
 ```
 app/
-  layout.tsx           fonts, metadata, the no-flash look script
+  layout.tsx           fonts, metadata, the no-flash theme script
   page.tsx             renders <Workbench />
-  globals.css          tokens for the three looks + every style on the page
+  globals.css          tokens (light, plus dark overrides) + every style on the page
 src/workbench/
   stops.ts             the tour: camera rects (desktop r, phone m), panel copy, links
   Board.tsx            the board layout in board pixels, plus the product "parts" data

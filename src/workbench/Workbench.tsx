@@ -1,10 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { FiFileText } from 'react-icons/fi'
+import { FiFileText, FiMoon, FiSun } from 'react-icons/fi'
 import { CvViewer } from '@/cv/CvViewer'
 import Board, { PART_IDS } from './Board'
-import { mountWorkbench, LOOKS, type Look, type WorkbenchApi } from './controller'
+import { mountWorkbench, type WorkbenchApi } from './controller'
 import { FaGithub, FaLinkedin, IconLinks } from './icons'
 import { AppRow } from './apps'
 import { CHAPTERS, LINKS, NAV_ITEMS, SHOW_SLOTS, stops, type Stop } from './stops'
@@ -23,7 +23,7 @@ export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
   const api = useRef<WorkbenchApi | null>(null)
 
   const [shown, setShown] = useState(0)
-  const [look, setLook] = useState<Look>('paper')
+  const [dark, setDark] = useState(false)
   const [cvOpen, setCvOpen] = useState(false)
   const openCv = useCallback(() => setCvOpen(true), [])
   const closeCv = useCallback(() => setCvOpen(false), [])
@@ -36,13 +36,19 @@ export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
     if (Object.values(els).some((el) => !el)) return
     const a = mountWorkbench(els as { [K in keyof typeof els]: NonNullable<(typeof els)[K]> }, stops, setShown)
     api.current = a
-    const current = document.documentElement.dataset.style as Look | undefined
-    if (current && LOOKS.includes(current)) setLook(current)
+    if (document.documentElement.dataset.theme === 'dark') { setDark(true); paintThemeColor(true) }
     if (location.hash === '#cv') setCvOpen(true) // a shareable link straight to the CV
     return () => { a.destroy(); api.current = null }
   }, [])
 
-  const chooseLook = (l: Look) => { setLook(l); api.current?.setLook(l) }
+  const toggleTheme = () => {
+    const next = !dark
+    setDark(next)
+    if (next) document.documentElement.dataset.theme = 'dark'
+    else delete document.documentElement.dataset.theme
+    paintThemeColor(next)
+    try { localStorage.setItem('wb-theme', next ? 'dark' : 'light') } catch { /* private window: the choice just isn't remembered */ }
+  }
   const stop = stops[shown]
 
   return (
@@ -65,13 +71,12 @@ export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
             ))}
           </nav>
           <div className="bar-right">
-            <div className="looks" role="group" aria-label="Look">
-              {LOOKS.map((l) => (
-                <button key={l} type="button" aria-pressed={look === l} onClick={() => chooseLook(l)}>
-                  {l === 'brutal' ? 'Brutalist' : l[0].toUpperCase() + l.slice(1)}
-                </button>
-              ))}
-            </div>
+            <button type="button" className="theme" role="switch" aria-checked={dark} aria-label="Dark theme"
+              title={dark ? 'Switch to light' : 'Switch to dark'} onClick={toggleTheme}>
+              <FiSun className="t-sun" aria-hidden="true" />
+              <FiMoon className="t-moon" aria-hidden="true" />
+              <i className="knob" aria-hidden="true"><FiSun className="k-sun" /><FiMoon className="k-moon" /></i>
+            </button>
             <a className="ibtn" href={LINKS.github} target="_blank" rel="noopener" aria-label="GitHub"><FaGithub aria-hidden="true" /></a>
             <a className="ibtn" href={LINKS.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn"><FaLinkedin aria-hidden="true" /></a>
             <button type="button" className="btn solid" onClick={openCv}>CV <FiFileText aria-hidden="true" /></button>
@@ -112,6 +117,11 @@ export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
       </div>
     </>
   )
+}
+
+/** Matches the phone browser's toolbar to the theme's desk colour. */
+function paintThemeColor(dark: boolean) {
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#101010' : '#ebebeb')
 }
 
 function Slots({ one }: { one?: boolean }) {
