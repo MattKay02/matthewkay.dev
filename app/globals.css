@@ -537,3 +537,10 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
   .install, .cap.hero .icon-links { display: none; }
   .cap-nav { position: sticky; bottom: 0; padding-top: 8px; background: var(--panel-bg); }
 }
+
+/* Explore (Explore.tsx): the whole board as a picture to pinch and drag, for touch screens. */
+.xp-area { position: relative; flex: 1; overflow: hidden; touch-action: none; cursor: grab; }
+.xp-area img { position: absolute; left: 0; top: 0; max-width: none; opacity: 0; transform-origin: 0 0; will-change: transform; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+.xp-wait { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; font: 500 13px/1 var(--mono); color: var(--muted); }
+.ctas.explore { display: none; }
+@media (hover: none) and (pointer: coarse) { .ctas.explore { display: flex; } }

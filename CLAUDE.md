@@ -56,10 +56,14 @@ pipeline, then the checks) → About → Contact. frunt is the main project and 
 - **Motion carries meaning**: pin and play, never hijack scroll speed. Reduced motion means cuts,
   no rotation, no cursor animation. Phones get a bottom-sheet guide and framing that favours
   phone screens.
-- **Touch devices get the light board** (`(hover: none) and (pointer: coarse)`): the reduced-motion
-  camera (cuts), a board that isn't a GPU layer, no frosted-glass blur, no wandering cursor, no fades
-  and light shadows. iPhone Safari stalled and crashed on the full version (6 Oct 2026). The camera
-  loop writes to the page only when a value changes, so a resting page does no work.
+- **Touch devices get the light board** (`(hover: none) and (pointer: coarse)`): a board that isn't a
+  GPU layer at rest, no frosted-glass blur, no wandering cursor, no fades and light shadows. iPhone
+  Safari stalled and crashed on the full version (6 Oct 2026). Between stops the board glides as one
+  CSS transition (GPU); the first glide is timed, and a phone that can't keep up (or crashed mid-glide,
+  marked by `wb-glide: trying` in localStorage) gets a directional slide instead, for good. **Explore
+  the board** (on the whole-board stop, touch only) opens a pinch-and-drag picture of the whole board,
+  photographed on every deploy (`npm run board`). The camera loop writes to the page only when a value
+  changes, so a resting page does no work.
 - **The phone guide card never needs scrolling** at iPhone 13 Pro size with Safari's bar showing
   (390 x 664): chip lists are one sideways-swipe row, the skills install line and the Intro's link
   icons are hidden on phones, and Back/Next stay pinned to the card's bottom. Re-check all stops at
@@ -99,6 +103,7 @@ src/workbench/
   apps.tsx             app statuses and AppRow (icon, name, status, store and website buttons)
   screens.ts           product screens by product + id, from the products' feeds (saved copy as fallback)
   icons.tsx            link icons and the MGKCodes monogram
+  Explore.tsx          Explore the board: the whole-board picture to pinch and drag (touch screens)
 app/cv/page.tsx        the standalone CV page
 app/work/frunt/page.tsx  the frunt case study as a standalone page (404 until published)
 src/case-studies/      frunt.ts (the case study as data), frunt-board.ts (the board stop's
@@ -122,6 +127,7 @@ scripts/fetch-frunt.mjs    counts frunt's figures from its repo: `npm run frunt`
 scripts/fetch-screens.mjs  reads the products' screens: `npm run screens`
 scripts/build-cv.mjs       prints /cv to out/cv.pdf after a build: `npm run cv`
 scripts/build-og.mjs       photographs /og/ to out/og.png after a build: `npm run og`
+scripts/build-board.mjs    photographs the whole board to out/board-{light,dark}.jpg: `npm run board`
 scripts/build-readme.mjs   photographs the README visuals (light + dark, 2x): `npm run readme`
 scripts/headless.mjs       shared by both: serves out/ and launches headless Chrome
 scripts/vercel-*.sh        Vercel's install and build steps (see vercel.json)
