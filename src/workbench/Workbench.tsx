@@ -8,7 +8,7 @@ import { PART_IDS } from './products'
 import { mountWorkbench, type WorkbenchApi } from './controller'
 import { FaGithub, FaLinkedin, IconLinks } from './icons'
 import { AppRow } from './apps'
-import { CHAPTERS, LINKS, NAV_ITEMS, SHOW_SLOTS, stops, type Stop } from './stops'
+import { CHAPTERS, LINKS, NAV_ITEMS, SHOW_SLOTS, SKILLS_INSTALL, stops, type Stop } from './stops'
 
 export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
   const world = useRef<HTMLDivElement>(null)
@@ -140,8 +140,8 @@ function GuideBody({ stop, onCv, onGo, onTile }: {
   stop: Stop; onCv: () => void; onGo: (c: Stop['c']) => void; onTile: (id: string) => void
 }) {
   const [copied, setCopied] = useState('')
-  const copy = () => {
-    navigator.clipboard?.writeText(LINKS.email).then(() => setCopied('Copied'), () => setCopied('Select it above'))
+  const copy = (text: string) => {
+    navigator.clipboard?.writeText(text).then(() => setCopied('Copied'), () => setCopied('Select it above'))
   }
   const parts = stop.layers ? PART_IDS[stop.c] : undefined
   return (
@@ -169,9 +169,16 @@ function GuideBody({ stop, onCv, onGo, onTile }: {
       {stop.extra === 'mgkApps' && <div className="apps"><AppRow app="run" /><AppRow app="lift" /></div>}
       {stop.extra === 'slots' && <Slots />}
       {stop.extra === 'slotsOne' && <Slots one />}
+      {stop.extra === 'skills' && (
+        <div className="install">
+          <span>Install them in Claude Code, Cursor or Codex</span>
+          <div className="mail"><code>{SKILLS_INSTALL}</code><button type="button" className="btn ghost" onClick={() => copy(SKILLS_INSTALL)}>{copied || 'Copy'}</button></div>
+          <a href={`${LINKS.skills}#install`} target="_blank" rel="noopener">One at a time, or as Claude Code plugins ↗</a>
+        </div>
+      )}
       {stop.extra === 'contact' && (
         <>
-          <div className="mail"><code>{LINKS.email}</code><button type="button" className="btn ghost" onClick={copy}>{copied || 'Copy'}</button></div>
+          <div className="mail"><code>{LINKS.email}</code><button type="button" className="btn ghost" onClick={() => copy(LINKS.email)}>{copied || 'Copy'}</button></div>
           <IconLinks />
           <div className="ctas">
             <button type="button" className="btn solid" onClick={onCv}>View CV</button>
