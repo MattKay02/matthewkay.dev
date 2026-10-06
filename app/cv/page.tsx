@@ -9,6 +9,6 @@ export const metadata: Metadata = {
   description: 'CV of Matthew Kay, product engineer and founder of MGKCodes.',
 }
 
-export default function CvPage() {
-  return <CvPageShell updated={cvUpdated()} />
+export default async function CvPage() {
+  return <CvPageShell updated={await cvUpdated()} />
 }

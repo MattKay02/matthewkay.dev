@@ -1,8 +1,8 @@
 name: CI
 
-# Build check for pull requests. deploy.yml only runs on push to main (which
-# auto-deploys), so this gates PRs: a build-breaking change shows red here
-# before it can merge into the auto-deploying branch.
+# Build check for pull requests into main, which Vercel deploys to production:
+# a build-breaking change, or a CV that runs past one A4 page, shows red here
+# before it can merge.
 on:
   pull_request:
     branches: [main]

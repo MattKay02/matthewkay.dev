@@ -1,0 +1,23 @@
+name: Daily rebuild
+
+# Vercel builds on every push. This rebuilds production once a day as well, so
+# the GitHub contribution graph and the app store statuses stay current between
+# pushes. VERCEL_DEPLOY_HOOK is the project's deploy hook for main (Vercel:
+# Settings → Git → Deploy Hooks).
+on:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger the Vercel deploy hook
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then echo "::warning::VERCEL_DEPLOY_HOOK is not set"; exit 0; fi
+          curl -fsS -X POST "$HOOK" > /dev/null

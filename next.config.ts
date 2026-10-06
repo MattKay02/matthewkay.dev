@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next'
 
-// Static export: `next build` writes plain files to out/, which GitHub Pages
-// serves as-is (see .github/workflows/deploy.yml).
+// Static export: `next build` writes plain files to out/, which Vercel serves
+// as-is (see vercel.json and scripts/vercel-build.sh).
 const nextConfig: NextConfig = {
   output: 'export',
   trailingSlash: true,
