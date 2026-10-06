@@ -132,7 +132,8 @@ instead; that copy is gitignored and never deployed.
     Amazon Linux build image (`dnf`), then `npm ci` and Playwright's headless Chrome.
   - `scripts/vercel-build.sh`: `npm run github` → `npm run stores` (both allowed to fail; the
     committed snapshots are used) → `npm run build` → `npm run cv` → `npm run og` (photographs
-    `/og/` into `out/og.png`, the link-preview image).
+    `/og/` into `out/og.png`, the link-preview image) → `npm run readme` (photographs
+    `/readme/<product>/` into the case-study README images, light and dark).
 - `daily.yml` calls a Vercel deploy hook once a day, so the graph and statuses refresh without a
   push. `GITHUB_TOKEN` (a token with no extra permissions) is set on Vercel for the graph.
 - **Domain**: `matthewkay.dev` on the Vercel project; Cloudflare DNS points at Vercel, DNS-only,

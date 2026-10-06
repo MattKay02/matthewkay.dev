@@ -68,6 +68,7 @@ app/
   page.tsx             renders <Workbench />, the hidden text version and the JSON-LD
   globals.css          tokens (light, plus dark overrides) + every style on the page
   og/                  the share image's page (photographed into /og.png; noindex)
+  readme/<product>/    README visuals for the case-study repos (photographed; noindex)
   llms.txt/route.ts    /llms.txt, written at build time
 src/workbench/
   stops.ts             the tour: camera rects (desktop r, phone m), panel copy, links
@@ -94,6 +95,7 @@ scripts/fetch-github.mjs   refreshes both snapshots: `npm run github`
 scripts/fetch-stores.mjs   checks the App Store and Google Play: `npm run stores`
 scripts/build-cv.mjs       prints /cv to out/cv.pdf after a build: `npm run cv`
 scripts/build-og.mjs       photographs /og/ to out/og.png after a build: `npm run og`
+scripts/build-readme.mjs   photographs the README visuals (light + dark, 2x): `npm run readme`
 scripts/headless.mjs       shared by both: serves out/ and launches headless Chrome
 scripts/vercel-*.sh        Vercel's install and build steps (see vercel.json)
 public/work/           every image on the board, the Apple frames and the app icons
@@ -164,6 +166,11 @@ Everything here is generated from the same data as the page; never hand-write an
 - **Share image**: `app/og/page.tsx` (real CSS, light Paper), photographed at 1200 × 630 into
   `/og.png` on every deploy by `scripts/build-og.mjs`; used for Open Graph and X cards.
 - Canonical URLs on `/` and `/cv/`; `sitemap.xml` lists both.
+- **Case-study README visuals**: `app/readme/<product>/` lays out fixed-size canvases from the
+  board's own pieces (Apple frames, part tiles, live store status). `scripts/build-readme.mjs`
+  photographs each in light and dark at 2x into `/readme/<product>/<name>-<theme>.png`, and the
+  case-study READMEs on GitHub (e.g. `MattKay02/frunt`) link to those URLs with `<picture>`, so
+  their images keep this design and stay current with no commits to those repos.
 
 ## Statuses are never typed by hand
 

@@ -11,7 +11,8 @@
     "github": "node scripts/fetch-github.mjs",
     "preview": "npx --yes serve out",
     "stores": "node scripts/fetch-stores.mjs",
-    "og": "node scripts/build-og.mjs"
+    "og": "node scripts/build-og.mjs",
+    "readme": "node scripts/build-readme.mjs"
   },
   "repository": {
     "type": "git",
