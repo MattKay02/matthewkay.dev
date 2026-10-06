@@ -11,6 +11,8 @@ import SkillsShelf from './Skills'
 import { SHOW_SLOTS, type Cluster } from './stops'
 import { AppRow } from './apps'
 import { FRUNT_PARTS, MGK_PARTS, type Part } from './products'
+import { SHOW_FRUNT } from '@/case-studies/flags'
+import { BOARD_MILESTONES, fmtShort } from '@/case-studies/frunt-board'
 
 const d = (delay: string) => ({ '--d': delay }) as CSSProperties
 
@@ -84,6 +86,51 @@ function Hero({ onCv }: { onCv: () => void }) {
   )
 }
 
+// ---------- frunt: how it was built, on a dated ruler ----------
+// Each marker sits at its real date, so the pace shows: the May–June build, the
+// summer away, the second wave. Markers too close to share a row step up a level.
+const TL_INSET = 30, TL_AXIS = 940, TL_LEVEL = 32
+const day = (iso: string) => Date.parse(iso + 'T00:00:00Z')
+
+function BuildTimeline() {
+  const first = new Date(day(BOARD_MILESTONES[0].date))
+  const last = new Date(day(BOARD_MILESTONES[BOARD_MILESTONES.length - 1].date))
+  const start = Date.UTC(first.getUTCFullYear(), first.getUTCMonth(), 1)
+  const end = Date.UTC(last.getUTCFullYear(), last.getUTCMonth() + 2, 1)
+  const xAt = (t: number) => TL_INSET + ((t - start) / (end - start)) * TL_AXIS
+
+  const months: { x: number; label: string }[] = []
+  for (let m = new Date(start); m.getTime() <= end; m.setUTCMonth(m.getUTCMonth() + 1)) {
+    months.push({ x: xAt(m.getTime()), label: m.toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' }) })
+  }
+  const lastX: number[] = []
+  const marks = BOARD_MILESTONES.map((m) => {
+    const x = xAt(day(m.date))
+    let level = 0
+    while (lastX[level] !== undefined && x - lastX[level] < 30) level++
+    lastX[level] = x
+    return { x, level }
+  })
+
+  return (
+    <div className="tl" data-c="frunt" style={{ left: 3620, top: 1480, width: 1000, height: 420 }}>
+      <div className="tl-head"><b>How it was built</b><span>Dates from frunt&apos;s git history · {first.getUTCFullYear()}</span></div>
+      <div className="tl-axis" aria-hidden="true">
+        <i className="tl-line" />
+        {months.map((m) => <span key={m.x} className="tl-month" style={{ left: m.x }}>{m.label}</span>)}
+        {marks.map((mk, i) => (
+          <b key={i} className="tl-mk" style={{ left: mk.x, bottom: 44 + mk.level * TL_LEVEL, '--stem': `${8 + mk.level * TL_LEVEL}px` } as CSSProperties}>{i + 1}</b>
+        ))}
+      </div>
+      <ol className="tl-list">
+        {BOARD_MILESTONES.map((m, i) => (
+          <li key={m.date + m.label}><b>{String(i + 1).padStart(2, '0')}</b><time dateTime={m.date}>{fmtShort(m.date)}</time><span>{m.label}</span></li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+
 function Frunt() {
   return (
     <>
@@ -95,15 +142,15 @@ function Frunt() {
           overlay: <><div className="redline" style={{ left: '37.2%', top: '46.45%', width: '33.5%', height: '6.5%' }} /><div className="tag" style={{ left: '37.2%', top: '54.5%' }}>↑ Every answer cites its source</div></> },
         { img: 'frunt-docs', w: 1100, h: 619, bg: '#fbfcfb', title: 'Documents', alt: 'frunt documents library' },
         { img: 'frunt-training', w: 1100, h: 619, bg: '#fefefb', title: 'Training', alt: 'frunt training courses' },
-        { img: 'frunt-rota', w: 1100, h: 619, bg: '#faf7ef', title: 'Rota', alt: 'frunt rota' },
       ]} />
       <IPhone c="frunt" x={3720} y={673} w={332} img="frunt-m-ask" iw={334} ih={736} alt="frunt staff app, asking a question" caption="Staff app · Ask" />
       <IPhone c="frunt" x={4090} y={673} w={332} img="frunt-m-training" iw={334} ih={736} alt="frunt staff app, training" caption="Staff app · Training" />
       <Browser c="frunt" x={3720} y={110} w={700} url="https://frunthospitality.com/" img="site-frunt-long" iw={640} ih={3185}
         alt="frunthospitality.com, the frunt website" caption="Website · hover to scroll" long focus="3700,70,740,560" />
       <Parts c="frunt" prefix="ft" parts={FRUNT_PARTS} x0={1790} y0={1480} />
-      {SHOW_SLOTS && <SlotBox c="frunt" x={3620} y={1480} w={1000} h={200} title="Case study" />}
-      {SHOW_SLOTS && <SlotBox c="frunt" x={3620} y={1700} w={1000} h={200} title="What I learnt" />}
+      {SHOW_SLOTS && !SHOW_FRUNT && <SlotBox c="frunt" x={3620} y={1480} w={1000} h={200} title="Case study" />}
+      {SHOW_SLOTS && !SHOW_FRUNT && <SlotBox c="frunt" x={3620} y={1700} w={1000} h={200} title="What I learnt" />}
+      {SHOW_FRUNT && <BuildTimeline />}
       <img className="brand-mark" data-c="frunt" src={IMG('frunt-icon')} width={256} height={256} alt="frunt" style={{ left: 1790, top: 110, width: 110, height: 110 }} />
       <AppRow app="frunt" web={false} c="frunt" className="release" style={{ left: 3720, top: 1372 }} />
     </>

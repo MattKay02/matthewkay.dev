@@ -2,6 +2,7 @@
 // search engines, and /llms.txt for AI tools. Both are built from the same data
 // as the page (the tour, the parts, the store statuses, the CV), so they can't
 // drift from what visitors read.
+import { FRUNT_PUBLISHED } from '@/case-studies/flags'
 import { cv } from '@/data/cv'
 import { appStatus, statusText, type AppKey } from '@/workbench/apps'
 import { FRUNT_PARTS, MGK_PARTS, type Part } from '@/workbench/products'
@@ -83,6 +84,7 @@ export function llmsText(): string {
     '## CV and links',
     '',
     `- [CV](${SITE}/cv/): the full CV as a web page, also as a [PDF](${SITE}/cv.pdf)`,
+    ...(FRUNT_PUBLISHED ? [`- [frunt case study](${SITE}/work/frunt/): why I built it, the decisions, what went wrong and what I learnt`] : []),
     `- [GitHub](${LINKS.github})`,
     `- [LinkedIn](${LINKS.linkedin})`,
     `- [X](${LINKS.x})`,

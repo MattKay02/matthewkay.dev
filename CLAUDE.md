@@ -82,6 +82,10 @@ src/workbench/
   apps.tsx             app statuses and AppRow (icon, name, status, store and website buttons)
   icons.tsx            link icons and the MGKCodes monogram
 app/cv/page.tsx        the standalone CV page
+app/work/frunt/page.tsx  the frunt case study as a standalone page (404 until published)
+src/case-studies/      frunt.ts (the case study as data), frunt-board.ts (the board stop's
+                       milestones + decisions), flags.ts (published?), CaseStudySheet,
+                       CaseStudyViewer (viewer over the board + page shell), case-study.css
 src/cv/                CvSheet (the A4 CV), CvViewer (viewer over the board + page shell),
                        updated.ts (git date of cv.ts), cv.css
 src/seo/describe.ts    JSON-LD and /llms.txt, built from the same data as the page
@@ -91,8 +95,10 @@ src/data/
   skills.json          skills manifest snapshot (generated; the live fetch overrides it)
   apps.json            app facts: names, icons, store ids, websites (edited by hand)
   stores.json          which store listings are live (generated)
+  frunt-stats.json     frunt's build figures + latest answer-accuracy run (generated)
 scripts/fetch-github.mjs   refreshes both snapshots: `npm run github`
 scripts/fetch-stores.mjs   checks the App Store and Google Play: `npm run stores`
+scripts/fetch-frunt.mjs    counts frunt's figures from its repo: `npm run frunt`
 scripts/build-cv.mjs       prints /cv to out/cv.pdf after a build: `npm run cv`
 scripts/build-og.mjs       photographs /og/ to out/og.png after a build: `npm run og`
 scripts/build-readme.mjs   photographs the README visuals (light + dark, 2x): `npm run readme`
@@ -105,8 +111,9 @@ docs/                  architecture, design system, screens-feed spec, storyboar
 **Commands**: `npm run dev` (dev server, http://localhost:3000) · `npm run build` (static site in
 `out/`) · `npm run cv` (print the CV PDF; run after build) · `npm run cv:private` (copy with phone
 number, see below) · `npm run github` (refresh contribution graph + skills snapshot) ·
-`npm run stores` (refresh store statuses) · `npm run og` (share image; run after build) ·
-`npm run preview`.
+`npm run stores` (refresh store statuses) · `npm run frunt` (refresh frunt's figures; says
+which frunt decision records are newer than the case study) · `npm run og` (share image; run
+after build) · `npm run preview`.
 
 ### The CV is code
 
@@ -130,6 +137,39 @@ push. Rules:
   bar. `/#cv` opens it directly; `/cv` is the same design as a standalone page. The sheet itself
   is `src/cv/CvSheet.tsx`, shared by the viewer, the page and the PDF.
 
+### Case studies are code
+
+`src/case-studies/frunt.ts` is the **only** source of the frunt case study (approved by Matthew,
+6 Oct 2026). It renders as `CaseStudySheet`, opened over the board by "Read the case study" on the
+**frunt: how it was built** stop (and by `/#frunt`), and as the standalone `/work/frunt`. That
+stop shows a dated ruler of milestones on the board (`frunt-board.ts`) and three decisions in the
+panel. Format: TL;DR, what I made, why, what I aimed for, timeline, challenges and decisions
+(dated cards with their ADR numbers), where it landed, how I build it with AI, what I learnt.
+
+- **Hidden until published.** `FRUNT_PUBLISHED` in `flags.ts` is `false`: the stop, the viewer and
+  the page exist only in `npm run dev` (the bar says "draft, not published"); the built site has
+  none of them, `/work/frunt/` renders the 404 with `noindex`, and the case study's text is never
+  in the build (it's passed from `app/page.tsx` only while visible). The board stop's short strings
+  (`frunt-board.ts`) are in the JS bundle regardless, unrendered, so only public-ready copy goes there.
+- **Why it's hidden (Matthew, 6 Oct):** the case study quotes the answer-accuracy eval *after* the
+  allergen-gate fix in frunt-web (`docs/allergen-gate-unmatched-dish.md` there), with "the eval's
+  first run found a real safety gap" as a decision card.
+- **Figures are counted, never typed**: `npm run frunt` (and every Vercel build) counts decision
+  records, API routes, migrations and test files from frunt-web's `main`, and reads the latest eval
+  record (`evals/answers/results/latest.json`, main or develop), into `src/data/frunt-stats.json`.
+  frunt-web is private, so the token needs read access to `MGKCodes/frunt-web`; without it the
+  committed snapshot is used. The page prints the date and commit they were counted at.
+- **Keeping it true:** `checked` is the day the words were last verified against frunt, and
+  `lastAdrRead` the last frunt decision record read. To update, read frunt-web's ADRs after
+  `lastAdrRead` and its commits after `checked`, then move both. `npm run frunt` lists the newer
+  records. Statuses still come from `stores.json`; same copy rules as the site.
+
+**Publishing checklist (frunt):** gate fix merged and live in frunt; `npm run eval:answers` in
+frunt-web shows safety floor 8 of 8 and the record is committed; add the eval decision card to
+`frunt.ts` (what the first run found, the fix, the date); `npm run frunt`; set `FRUNT_PUBLISHED =
+true`; add `/work/frunt/` to `public/sitemap.xml`; build, check desktop + 390px + dark; point the
+`MattKay02/frunt` README at the page.
+
 **Adding a stop**: add it to `stops.ts` (cluster, `r`, `m`, `nav`, copy). **Adding a project
 part**: add it to `FRUNT_PARTS` / `MGK_PARTS` in `products.ts`. **Moving things**: everything on the
 board is in board pixels; the world is 4760 × 4900.
@@ -144,6 +184,8 @@ board is in board pixels; the world is 4760 × 4900.
   `GITHUB_TOKEN` env var on Vercel; without one the committed snapshot is used), and
   `.github/workflows/daily.yml` triggers a rebuild each day through a Vercel deploy hook
   (`VERCEL_DEPLOY_HOOK` secret). Only per-day counts are stored.
+- **frunt figures**: `src/data/frunt-stats.json`, refreshed by `npm run frunt` on every Vercel build
+  (see "Case studies are code"). Counts of paths only; no code or business data leaves frunt-web.
 - **Product screens**: today they're static files in `public/work/`. The plan for screens that
   update themselves is `docs/screens-feed.md` (implemented in the product repos, not here).
 
@@ -189,8 +231,9 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
 ## Facts (keep true; re-check before launch)
 
 - **frunt**: live SaaS. Manager web app; staff app on the App Store (June 2026) and Google Play.
-  Instagram studio live since 21 Sep 2026. **WhatsApp is built but switched off; never list it as
-  live.** Admin console and outreach + analytics are internal: no admin screenshots until they
+  Instagram studio live since 21 Sep 2026. **WhatsApp is live** (Matthew, 6 Oct 2026; the live
+  webhook answers, it doesn't 404, so `WHATSAPP_ENABLED` is on in production). The rota and briefs
+  are frozen in frunt (ADR 0076, 24 Aug 2026): never sell them on the board. Admin console and outreach + analytics are internal: no admin screenshots until they
   can be captured from the demo restaurant, never a real customer's data.
 - **MGKFitness**: Run and Lift are both live on Google Play (Lift since 6 Oct 2026). Their App
   Store listings show up on the site by themselves once Apple approves them (Run was in review on
@@ -211,8 +254,8 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
   from GitHub Pages to Vercel on 6 Oct 2026 after GitHub never started its certificate request;
   Vercel is where Matthew hosts everything else. GitHub Pages keeps matthewkay.dev as its custom
   domain only so old mattkay02.github.io links redirect there. `.dev` is HTTPS-only.
-- **Case studies**: the dashed "Case study" and "What I learnt" slots. Agreed format: what I made
-  → why → what I aimed for → challenges and decisions → where it landed → what I learnt.
+- **Case studies**: frunt is built and approved, waiting on its eval (see "Case studies are code").
+  MGKFitness next, then How I work, in the same format and the same data-first way.
 - **How I work** and **About** are first ideas.
 - **CV numbers**: deliberately none for now (Matthew, 5 Oct: "nothing yet worth putting on").
   Don't push for metrics; suggest them only when a real milestone lands (e.g. Run's first month

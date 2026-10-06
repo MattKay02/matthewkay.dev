@@ -7,8 +7,8 @@ import type { Cluster } from './stops'
 export interface Part { name: string; status: string; live?: boolean; line: string; tech: string; focus: string }
 
 export const FRUNT_PARTS: Part[] = [
-  { name: 'Manager app', status: 'Live', live: true, line: 'Documents in; training, a rota and sourced answers out.', tech: 'Next.js · Supabase pgvector · Claude · Inngest · Stripe', focus: '2230,400,1440,980' },
-  { name: 'Staff app', status: 'Live', live: true, line: 'Ask, read, sign off and train from a phone. On the App Store and Google Play.', tech: 'Flutter · Firebase messaging', focus: '3700,640,740,740' },
+  { name: 'Manager app', status: 'Live', live: true, line: 'Documents in; cited answers and training out.', tech: 'Next.js · Supabase pgvector · Claude · Inngest · Stripe', focus: '2230,400,1440,980' },
+  { name: 'Staff app', status: 'Live', live: true, line: 'Ask, read, sign off and train from a phone, or ask on WhatsApp. On the App Store and Google Play.', tech: 'Flutter · Firebase messaging', focus: '3700,640,740,740' },
   { name: 'Website', status: 'Live', live: true, line: 'Marketing site, pricing and ten UK-law guides, built to be found.', tech: 'Next.js · structured data · llms.txt', focus: '3700,70,740,560' },
   { name: 'Admin console', status: 'In use', line: 'How I run the business: customers, revenue, AI cost per feature, health checks.', tech: 'Stripe · PostHog · Sentry · GitHub + Vercel APIs', focus: 'self' },
   { name: 'Instagram studio', status: 'Live', live: true, line: 'Claude proposes posts and I approve them; they render, schedule, publish and report back.', tech: 'Instagram API · Inngest · Satori', focus: 'self' },
