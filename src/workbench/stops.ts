@@ -22,7 +22,7 @@ export interface Stop {
   lock?: Record<string, number>
 }
 
-export const WORLD = { w: 4760, h: 6260 }
+export const WORLD = { w: 4760, h: 6310 }
 
 /** The dashed case-study placeholders. Off until the first case study exists. */
 export const SHOW_SLOTS = false
@@ -125,13 +125,13 @@ export const stops: Stop[] = [
     body: 'Client sites, experiments and practice projects. Hover a card to see it in colour.',
   },
   {
-    c: 'how', r: [1740, 4090, 2920, 2080], m: [1770, 4420, 940, 1260], nav: 'How I work',
+    c: 'how', r: [1740, 4140, 2920, 2080], m: [1770, 4470, 940, 1260], nav: 'How I work',
     title: 'I use AI to move fast. These are the checks that keep it honest.',
     body: 'Plan, decide, build, check, ship. Each step leaves something behind that you can look at, and under each one are the skills I built for it, loaded live from GitHub.',
     extra: 'skills',
   },
   {
-    c: 'how', r: [3190, 4815, 970, 1340], m: [3205, 4830, 465, 420], nav: 'How I work: the checks',
+    c: 'how', r: [3190, 4865, 970, 1340], m: [3205, 4880, 465, 420], nav: 'How I work: the checks',
     layers: true,
     title: 'Most of my skills are checks.',
     body: "Each one is tested: it has to load when it's asked for and stay out when it isn't. The pictures are real output, not mockups. Pick one to look closer.",
@@ -142,7 +142,7 @@ export const stops: Stop[] = [
     body: 'I run MGKCodes, the studio behind frunt and MGKFitness. Away from the desk: gym, golf and gaming.',
   },
   {
-    c: 'contact', r: [100, 3860, 1560, 640], m: [110, 3880, 1240, 520], nav: 'Contact',
+    c: 'contact', r: [100, 3860, 1560, 640], m: [100, 3880, 1560, 600], nav: 'Contact',
     extra: 'contact',
     title: "Hiring? Let's talk.",
   },

@@ -236,7 +236,7 @@ function About() {
 }
 
 /** How I work: the five steps as column heads, each skill under the step it serves. */
-export const HOW = { x0: 1790, col: 445, gap: 30, stepY: 4470, stepH: 330, cardY: 4840, cardH: 400 }
+export const HOW = { x0: 1790, col: 445, gap: 30, stepY: 4520, stepH: 330, cardY: 4890, cardH: 400 }
 const hx = (i: number) => HOW.x0 + i * (HOW.col + HOW.gap)
 
 function HowIWork() {
@@ -255,12 +255,12 @@ function HowIWork() {
   const step = (i: number, w = HOW.col) => ({ x: hx(i), y: HOW.stepY, w, h: HOW.stepH })
   return (
     <>
-      <Title c="how" x={1760} y={4135} size={150}>How I</Title>
-      <Title c="how" x={2290} y={4200} size={230} outline>Work</Title>
+      <Title c="how" x={1760} y={4185} size={150}>How I</Title>
+      <Title c="how" x={2290} y={4250} size={230} outline>Work</Title>
       <svg className="wire" width={4760} height={WORLD.h} viewBox={`0 0 4760 ${WORLD.h}`} aria-hidden="true">
         <g data-c="how" className="mute" strokeWidth={2}>
-          <line x1={hx(0)} y1={4440} x2={hx(5) + HOW.col} y2={4440} />
-          {ticks.map((x) => <line key={x} x1={x} y1={4426} x2={x} y2={4454} />)}
+          <line x1={hx(0)} y1={4490} x2={hx(5) + HOW.col} y2={4490} />
+          {ticks.map((x) => <line key={x} x1={x} y1={4476} x2={x} y2={4504} />)}
         </g>
       </svg>
       <Step c="how" {...step(0)} n="01" title="Plan" text="Every screen laid out on one board, each with what it's for." ev="e.g. Lift screen board, v11" />
@@ -273,13 +273,15 @@ function HowIWork() {
   )
 }
 
-function Contact() {
+/** Contact mirrors the hero: links on the left, View CV in the photo's column. The CV itself only opens on request. */
+function Contact({ onCv }: { onCv: () => void }) {
   return (
     <>
       <Title c="contact" x={120} y={3895} size={200}>Let&apos;s</Title>
       <Title c="contact" x={470} y={3990} size={320} outline xl>Talk</Title>
       <div className="contactline" data-c="contact" style={{ left: 130, top: 4300 }}>mattykay2002@gmail.com</div>
       <div className="hero-links" data-c="contact" style={{ left: 130, top: 4380 }}><IconLinks size="lg" /></div>
+      <button type="button" className="hcv" data-c="contact" onClick={onCv} style={{ left: 1273, top: 4380 }}>View CV<FiFileText aria-hidden="true" /></button>
     </>
   )
 }
@@ -313,7 +315,7 @@ export default function Board({ onCv }: { onCv: () => void }) {
       <Frame c="other" x={100} y={1320} w={1560} h={1440} label="03 · Other work" />
       <Frame c="mgk" x={1740} y={2070} w={2920} h={1940} label="02 · MGKFitness" />
       <Frame c="about" x={100} y={2880} w={1560} h={900} label="05 · About" />
-      <Frame c="how" x={1740} y={4090} w={2920} h={2080} label="04 · How I work" />
+      <Frame c="how" x={1740} y={4140} w={2920} h={2080} label="04 · How I work" />
       <Frame c="contact" x={100} y={3860} w={1560} h={640} label="06 · Contact" />
       <Hero onCv={onCv} />
       <Frunt />
@@ -322,7 +324,7 @@ export default function Board({ onCv }: { onCv: () => void }) {
       <OtherWork />
       <About />
       <HowIWork />
-      <Contact />
+      <Contact onCv={onCv} />
     </>
   )
 }

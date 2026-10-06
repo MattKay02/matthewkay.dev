@@ -191,7 +191,9 @@ the `MattKay02/frunt` README at `/work/frunt/`. `/work/frunt/` joins the sitemap
 
 **Adding a stop**: add it to `stops.ts` (cluster, `r`, `m`, `nav`, copy). **Adding a project
 part**: add it to `FRUNT_PARTS` / `MGK_PARTS` in `products.ts`. **Moving things**: everything on the
-board is in board pixels; the world is 4760 × 6260 (`WORLD` in `stops.ts`).
+board is in board pixels; the world is 4760 × 6310 (`WORLD` in `stops.ts`).
+Frame labels stay the same size on screen but never grow past ~155 board px (`.flabel` in `globals.css`), so keep at least that much clear
+space above every frame, or a zoomed-out overview lays the label over the frame above.
 
 ### Live data (do not break)
 

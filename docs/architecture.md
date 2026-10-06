@@ -39,7 +39,7 @@ public/work/              board images, the Apple frames and the app icons
 
 ## The board and the camera
 
-The board (`.world`) is one absolutely positioned element, **4760 × 6260 board pixels**. Every
+The board (`.world`) is one absolutely positioned element, **4760 × 6310 board pixels**. Every
 item on it is placed in board pixels. The camera is a single CSS transform on the board:
 `translate3d(tx, ty, 0) scale(z)`.
 
