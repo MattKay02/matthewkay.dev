@@ -2,7 +2,9 @@
 // a 12-column grid (column 103, gutter 24, starting at x 130).
 import type { CSSProperties } from 'react'
 import gh from '@/data/github.json'
-import { FiFileText } from 'react-icons/fi'
+import { FiDownload, FiFileText } from 'react-icons/fi'
+import CvSheet from '@/cv/CvSheet'
+import { CV_FILE, CV_PDF } from '@/cv/CvViewer'
 import { FaGithub, IconLinks } from './icons'
 import {
   Browser, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Step, Tile, Title,
@@ -173,7 +175,7 @@ function About() {
 }
 
 /** How I work: the five steps as column heads, each skill under the step it serves. */
-export const HOW = { x0: 1790, col: 445, gap: 30, stepY: 4470, stepH: 330, cardY: 4840, cardH: 400 }
+export const HOW = { x0: 1790, col: 445, gap: 30, stepY: 4520, stepH: 330, cardY: 4890, cardH: 400 }
 const hx = (i: number) => HOW.x0 + i * (HOW.col + HOW.gap)
 
 function HowIWork() {
@@ -192,12 +194,12 @@ function HowIWork() {
   const step = (i: number, w = HOW.col) => ({ x: hx(i), y: HOW.stepY, w, h: HOW.stepH })
   return (
     <>
-      <Title c="how" x={1760} y={4135} size={150}>How I</Title>
-      <Title c="how" x={2290} y={4200} size={230} outline>Work</Title>
+      <Title c="how" x={1760} y={4185} size={150}>How I</Title>
+      <Title c="how" x={2290} y={4250} size={230} outline>Work</Title>
       <svg className="wire" width={4760} height={WORLD.h} viewBox={`0 0 4760 ${WORLD.h}`} aria-hidden="true">
         <g data-c="how" className="mute" strokeWidth={2}>
-          <line x1={hx(0)} y1={4440} x2={hx(5) + HOW.col} y2={4440} />
-          {ticks.map((x) => <line key={x} x1={x} y1={4426} x2={x} y2={4454} />)}
+          <line x1={hx(0)} y1={4490} x2={hx(5) + HOW.col} y2={4490} />
+          {ticks.map((x) => <line key={x} x1={x} y1={4476} x2={x} y2={4504} />)}
         </g>
       </svg>
       <Step c="how" {...step(0)} n="01" title="Plan" text="Every screen laid out on one board, each with what it's for." ev="e.g. Lift screen board, v11" />
@@ -210,13 +212,34 @@ function HowIWork() {
   )
 }
 
-function Contact() {
+/** The CV on the board: the real sheet (the same component as the viewer and the PDF), nine
+ * columns of the hero's grid wide, shown as a selected frame like the hero photo. */
+const CVP = { x: 130, y: 4540, w: 9 * 103 + 8 * 24 }
+const A4 = { w: 793.7, ratio: 297 / 210 } // 210 mm in CSS px; the sheet's width
+
+function Contact({ onCv, updated }: { onCv: () => void; updated: string }) {
+  const h = Math.round(CVP.w * A4.ratio)
+  const side = { left: CVP.x + 9 * (103 + 24), top: CVP.y, width: 3 * 103 + 2 * 24 }
   return (
     <>
       <Title c="contact" x={120} y={3895} size={200}>Let&apos;s</Title>
       <Title c="contact" x={470} y={3990} size={320} outline xl>Talk</Title>
       <div className="contactline" data-c="contact" style={{ left: 130, top: 4300 }}>mattykay2002@gmail.com</div>
       <div className="hero-links" data-c="contact" style={{ left: 130, top: 4380 }}><IconLinks size="lg" /></div>
+      {/* A picture of the CV for sighted visitors; the View CV button beside it is the real control. */}
+      <figure className="sel cvp" data-c="contact" aria-hidden="true" style={{ left: CVP.x, top: CVP.y, width: CVP.w, height: h }}>
+        <div className="cvp-clip" inert><div style={{ transform: `scale(${CVP.w / A4.w})` }}><CvSheet updated={updated} preview /></div></div>
+        <button type="button" className="cvp-hit" tabIndex={-1} onClick={onCv} />
+        <i className="hd a" /><i className="hd b" /><i className="hd c" /><i className="hd d" />
+        <span className="sz">A4 · 210 × 297</span>
+      </figure>
+      <div className="cvp-side" data-c="contact" style={side}>
+        <span className="k">CV</span>
+        <p>Everything here, on one page.</p>
+        <span className="u">Updated {updated}</span>
+        <button type="button" className="hcv" onClick={onCv}>View CV<FiFileText aria-hidden="true" /></button>
+        <a className="hcv ghost" href={CV_PDF} download={CV_FILE}>Download PDF<FiDownload aria-hidden="true" /></a>
+      </div>
     </>
   )
 }
@@ -242,7 +265,7 @@ function MgkWires() {
   )
 }
 
-export default function Board({ onCv }: { onCv: () => void }) {
+export default function Board({ onCv, cvUpdated }: { onCv: () => void; cvUpdated: string }) {
   return (
     <>
       <Frame c="hero" x={100} y={120} w={1560} h={1000} label="00 · Hero" />
@@ -250,8 +273,8 @@ export default function Board({ onCv }: { onCv: () => void }) {
       <Frame c="other" x={100} y={1320} w={1560} h={1440} label="03 · Other work" />
       <Frame c="mgk" x={1740} y={2070} w={2920} h={1940} label="02 · MGKFitness" />
       <Frame c="about" x={100} y={2880} w={1560} h={900} label="05 · About" />
-      <Frame c="how" x={1740} y={4090} w={2920} h={2080} label="04 · How I work" />
-      <Frame c="contact" x={100} y={3860} w={1560} h={640} label="06 · Contact" />
+      <Frame c="how" x={1740} y={4140} w={2920} h={2080} label="04 · How I work" />
+      <Frame c="contact" x={100} y={3860} w={1560} h={2360} label="06 · Contact" />
       <Hero onCv={onCv} />
       <Frunt />
       <MgkFitness />
@@ -259,7 +282,7 @@ export default function Board({ onCv }: { onCv: () => void }) {
       <OtherWork />
       <About />
       <HowIWork />
-      <Contact />
+      <Contact onCv={onCv} updated={cvUpdated} />
     </>
   )
 }

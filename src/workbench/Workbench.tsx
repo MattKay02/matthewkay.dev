@@ -58,7 +58,7 @@ export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
       <div id="track" ref={track} aria-hidden="true" />
       <div className="stage" ref={stage}>
         <div className="world" ref={world}>
-          <Board onCv={openCv} />
+          <Board onCv={openCv} cvUpdated={cvUpdated} />
         </div>
       </div>
       <div className="you" ref={you} aria-hidden="true">You</div>

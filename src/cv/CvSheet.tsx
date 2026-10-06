@@ -3,12 +3,14 @@
 import { cv } from '@/data/cv'
 import './cv.css'
 
-export default function CvSheet({ updated }: { updated: string }) {
+/** `preview` is the copy on the board: same sheet, but its name isn't the page's heading. */
+export default function CvSheet({ updated, preview }: { updated: string; preview?: boolean }) {
+  const Name = preview ? 'p' : 'h1'
   return (
     <article className="cv-sheet">
       <header className="cv-head">
         <div>
-          <h1>{cv.name}</h1>
+          <Name className="cv-name">{cv.name}</Name>
           <p className="cv-role">{cv.headline}</p>
         </div>
         <p className="cv-updated">Updated {updated}</p>
