@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { FiFileText, FiMoon, FiSun } from 'react-icons/fi'
 import { CvViewer } from '@/cv/CvViewer'
-import Board, { PART_IDS } from './Board'
+import Board from './Board'
+import { PART_IDS } from './products'
 import { mountWorkbench, type WorkbenchApi } from './controller'
 import { FaGithub, FaLinkedin, IconLinks } from './icons'
 import { AppRow } from './apps'
@@ -99,8 +100,8 @@ export default function Workbench({ cvUpdated }: { cvUpdated: string }) {
           <GuideBody stop={stop} onCv={openCv} onGo={(c) => api.current?.goCluster(c)} onTile={(id) => api.current?.focusTile(id)} />
         </div>
         <div className="cap-nav">
-          <button type="button" className="nav-prev" disabled={shown === 0} onClick={() => api.current?.prev()} aria-label="Previous stop">← Back</button>
-          <button type="button" className="nav-next" onClick={() => api.current?.next()} aria-label="Next stop">
+          <button type="button" className="nav-prev" disabled={shown === 0} onClick={() => api.current?.prev()}><span aria-hidden="true">←</span> Back</button>
+          <button type="button" className="nav-next" onClick={() => api.current?.next()}>
             <small>{shown === stops.length - 1 ? 'Done' : 'Next'}</small>
             <span>{shown === stops.length - 1 ? 'Back to the start' : stops[shown + 1].nav}</span>
             <i aria-hidden="true">{shown === stops.length - 1 ? '↑' : '→'}</i>

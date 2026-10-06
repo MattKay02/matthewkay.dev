@@ -19,6 +19,9 @@ or drag to look around.
 - **Other work**, **How I work** (including the Claude Code skills I've built, read live from
   [my skills repo](https://github.com/MattKay02/skills)), **About** and **Contact**.
 - The hero carries my **GitHub contribution graph**, refreshed daily.
+- **Readable by machines too**: a text version of the whole tour in the HTML, structured data,
+  [`/llms.txt`](https://matthewkay.dev/llms.txt) and a share image, all generated from the same
+  data as the page.
 - **App statuses are checked, not typed.** Every deploy asks the App Store and Google Play which
   listings are live, so an app shows as live, with a button for each store, the day it's approved.
 - My **CV** is generated from the same repo: [`src/data/cv.ts`](src/data/cv.ts) renders
@@ -44,6 +47,7 @@ npm install
 npm run dev       # http://localhost:3000
 npm run build     # static site in out/
 npm run cv        # print the CV to out/cv.pdf (after build)
+npm run og        # the share image, out/og.png (after build)
 npm run github    # refresh the contribution graph and the skills snapshot
 npm run stores    # check which App Store and Google Play listings are live
 npm run preview   # serve out/ locally

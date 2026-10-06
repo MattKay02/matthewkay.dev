@@ -9,38 +9,10 @@ import {
 } from './parts'
 import SkillsShelf from './Skills'
 import { SHOW_SLOTS, type Cluster } from './stops'
-import { AppRow, appStatus } from './apps'
+import { AppRow } from './apps'
+import { FRUNT_PARTS, MGK_PARTS, type Part } from './products'
 
 const d = (delay: string) => ({ '--d': delay }) as CSSProperties
-
-export interface Part { name: string; status: string; live?: boolean; line: string; tech: string; focus: string }
-
-export const FRUNT_PARTS: Part[] = [
-  { name: 'Manager app', status: 'Live', live: true, line: 'Documents in; training, a rota and sourced answers out.', tech: 'Next.js · Supabase pgvector · Claude · Inngest · Stripe', focus: '2230,400,1440,980' },
-  { name: 'Staff app', status: 'Live', live: true, line: 'Ask, read, sign off and train from a phone. On the App Store and Google Play.', tech: 'Flutter · Firebase messaging', focus: '3700,640,740,740' },
-  { name: 'Website', status: 'Live', live: true, line: 'Marketing site, pricing and ten UK-law guides, built to be found.', tech: 'Next.js · structured data · llms.txt', focus: '3700,70,740,560' },
-  { name: 'Admin console', status: 'In use', line: 'How I run the business: customers, revenue, AI cost per feature, health checks.', tech: 'Stripe · PostHog · Sentry · GitHub + Vercel APIs', focus: 'self' },
-  { name: 'Instagram studio', status: 'Live', live: true, line: 'Claude proposes posts and I approve them; they render, schedule, publish and report back.', tech: 'Instagram API · Inngest · Satori', focus: 'self' },
-  { name: 'Outreach + analytics', status: 'In use', line: 'Sourcing, email, calls and visits, with PostHog and Search Console showing what works.', tech: 'Notion · Gmail · Vercel cron · Search Console', focus: 'self' },
-]
-
-const run = appStatus('run'), lift = appStatus('lift')
-const appState = (live: boolean) => (live ? 'Live' : 'In development')
-
-export const MGK_PARTS: Part[] = [
-  { name: 'Run', status: appState(run.live), live: run.live, line: 'Running tracker with an AI training coach.', tech: 'Flutter · GPS · shared design system', focus: '3580,2560,580,650' },
-  { name: 'Lift', status: appState(lift.live), live: lift.live, line: 'Strength log with a coach of its own. The rebuild of Liftio.', tech: 'Flutter · shared design system', focus: '2800,2560,580,650' },
-  { name: 'Backend + AI coach', status: run.live ? 'Live' : 'Built', live: run.live, line: 'One account across both apps. The coach plans around your whole week.', tech: 'Supabase · Edge Functions · OpenRouter · RevenueCat', focus: 'self' },
-  { name: 'Website', status: 'Live', live: true, line: 'Scroll film, waiting list, support and legal pages. No tracking, by design.', tech: 'Next.js 16 · Replicate clips', focus: '3860,2080,660,470' },
-  { name: 'Social', status: 'In development', line: "Posts drawn in Remotion from the site's own words, published through the Instagram API.", tech: 'Remotion · Instagram API', focus: 'self' },
-  { name: 'Release ops', status: 'In use', line: 'Store listings and submissions run from Claude Code; builds on Codemagic.', tech: 'App Store Connect · Google Play · Codemagic', focus: 'self' },
-]
-
-/** Tile ids per cluster, so the guide panel can offer them as chips. */
-export const PART_IDS: Partial<Record<Cluster, { id: string; name: string }[]>> = {
-  frunt: FRUNT_PARTS.map((p, i) => ({ id: `ft${i + 1}`, name: p.name })),
-  mgk: MGK_PARTS.map((p, i) => ({ id: `mt${i + 1}`, name: p.name })),
-}
 
 function Parts({ c, prefix, parts, x0, y0 }: { c: Cluster; prefix: string; parts: Part[]; x0: number; y0: number }) {
   return (
@@ -94,7 +66,7 @@ function Hero({ onCv }: { onCv: () => void }) {
       <div className="guide hx" data-c="hero" id="gCap" aria-hidden="true" style={{ left: 100, top: 230, width: 1560, ...d('.15s') }}><span>Cap height</span></div>
       <div className="guide hx" data-c="hero" id="gBase" aria-hidden="true" style={{ left: 100, top: 380, width: 1560, ...d('.15s') }}><span>Baseline</span></div>
       <div className="measure hx" data-c="hero" id="measure" aria-hidden="true" style={{ left: 130, top: 150, width: 967, ...d('.25s') }}><span id="measureLbl">967</span></div>
-      <h1 className="ttl hx" data-c="hero" id="heroName" style={{ left: 130, top: 190, fontSize: 250, zIndex: 2, ...d('.1s') }}>Matthew<span className="bl" /></h1>
+      <h1 className="ttl hx" data-c="hero" id="heroName" style={{ left: 130, top: 190, fontSize: 250, zIndex: 2, ...d('.1s') }}>Matthew<span className="bl" /><span className="sr-only"> Kay</span></h1>
       <div className="ttl o xl hx" data-c="hero" style={{ left: 511, top: 410, fontSize: 300, zIndex: 2, ...d('.2s') }}>Kay</div>
       <div className="measure hx" data-c="hero" id="gGap" aria-hidden="true" style={{ left: 1097, top: 300, width: 176, ...d('.35s') }}><span id="gGapLbl">176</span></div>
       <figure className="sel hx" data-c="hero" id="heroPhoto" style={{ left: 1273, top: 230, width: 357, height: 446, ...d('.3s') }}>

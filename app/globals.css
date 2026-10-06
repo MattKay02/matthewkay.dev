@@ -44,6 +44,8 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+/* Read by screen readers and crawlers, not shown: the full name in the hero's h1, the text version of the tour. */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 html { background: var(--bg); }
 body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--body); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
@@ -344,9 +346,10 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 .cap-chap { font: 500 calc(12px * var(--ls))/1.2 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--strong); }
 .cap-idx { font: 500 calc(11px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); color: var(--muted); font-variant-numeric: tabular-nums; }
 .ticks { display: flex; gap: 3px; padding: 10px 28px 0; }
-.tick { position: relative; flex: 1; height: 16px; }
+/* A 24px-tall hit area around a 4px bar (WCAG target size); the margins keep the layout as it was. */
+.tick { position: relative; flex: 1; height: 24px; margin: -4px 0; }
 .tick.gap { margin-left: 7px; }
-.tick::before, .tick i { content: ""; position: absolute; left: 0; top: 6px; height: 4px; border-radius: calc(var(--r-btn) * .01); }
+.tick::before, .tick i { content: ""; position: absolute; left: 0; top: 10px; height: 4px; border-radius: calc(var(--r-btn) * .01); }
 .tick::before { right: 0; background: var(--line); }
 .tick i { width: calc(var(--p, 0) * 100%); background: var(--strong); }
 .tick:hover::before { background: var(--outline); }

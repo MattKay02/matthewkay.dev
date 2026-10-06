@@ -7,6 +7,7 @@ import { cvUpdated } from '@/cv/updated'
 export const metadata: Metadata = {
   title: 'Matthew Kay · CV',
   description: 'CV of Matthew Kay, product engineer and founder of MGKCodes.',
+  alternates: { canonical: '/cv/' },
 }
 
 export default async function CvPage() {

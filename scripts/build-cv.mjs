@@ -6,11 +6,10 @@
 //                           CV_PHONE; for sending directly, never deployed
 //
 // Fails if the CV runs past one A4 page, so it can't quietly overflow.
-import { createServer } from 'node:http'
-import { readFile, copyFile, mkdir, stat } from 'node:fs/promises'
-import { join, extname, dirname } from 'node:path'
+import { copyFile, mkdir } from 'node:fs/promises'
+import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { chromium } from 'playwright'
+import { launch, serveOut } from './headless.mjs'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const outDir = join(root, 'out')
@@ -18,30 +17,13 @@ const isPrivate = process.argv.includes('--private')
 const phone = process.env.CV_PHONE?.trim()
 if (isPrivate && !phone) throw new Error('Set CV_PHONE to make the private copy, e.g. CV_PHONE="+44 ..." npm run cv:private')
 
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.json': 'application/json', '.txt': 'text/plain' }
-const server = createServer(async (req, res) => {
-  let p = decodeURIComponent(new URL(req.url, 'http://x').pathname)
-  if (p.endsWith('/')) p += 'index.html'
-  try {
-    const file = join(outDir, p)
-    if ((await stat(file)).isDirectory()) throw new Error('dir')
-    res.writeHead(200, { 'content-type': TYPES[extname(file)] || 'application/octet-stream' })
-    res.end(await readFile(file))
-  } catch {
-    res.writeHead(404); res.end()
-  }
-})
-await new Promise((r) => server.listen(0, r))
-const port = server.address().port
+const { origin, close } = await serveOut(outDir)
 
-// Without this, headless Chrome on Linux (Vercel) rounds every glyph to whole
-// pixels: letters get uneven gaps ("Sof tware") and lines run wider than on
-// Windows or macOS, so the CV wraps more and can spill past one page.
-const browser = await chromium.launch({ args: ['--font-render-hinting=none'] })
+const browser = await launch()
 try {
   const page = await browser.newPage()
   await page.emulateMedia({ media: 'print' })
-  await page.goto(`http://localhost:${port}/cv/`, { waitUntil: 'networkidle' })
+  await page.goto(`${origin}/cv/`, { waitUntil: 'networkidle' })
   await page.evaluate(() => document.fonts.ready)
 
   if (isPrivate) {
@@ -91,5 +73,5 @@ try {
   console.log(`CV: ${target} (${Math.round((content / pageH) * 100)}% of the page used)`)
 } finally {
   await browser.close()
-  server.close()
+  close()
 }

@@ -24,3 +24,4 @@ jobs:
       # Print the CV too: fails the check if it runs past one A4 page.
       - run: npx playwright install --with-deps chromium
       - run: npm run cv
+      - run: npm run og
