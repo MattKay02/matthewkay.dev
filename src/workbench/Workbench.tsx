@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { FiFileText, FiMoon, FiSun } from 'react-icons/fi'
 import { CvViewer } from '@/cv/CvViewer'
 import { CaseStudyViewer } from '@/case-studies/CaseStudyViewer'
@@ -13,6 +13,14 @@ import { FaGithub, FaLinkedin, IconLinks } from './icons'
 import { AppRow } from './apps'
 import { skillId, useSkills } from './Skills'
 import { CHAPTERS, LINKS, NAV_ITEMS, SHOW_SLOTS, SKILLS_INSTALL, stops, type Stop } from './stops'
+
+/** The progress bar's buttons: one per run of stops in the same cluster, so each is at least 24px
+ * wide (the WCAG target size) however many stops there are. Each stop is still its own bar. */
+const TICK_RUNS = stops.reduce<number[][]>((runs, s, j) => {
+  if (j > 0 && s.c === stops[j - 1].c) runs[runs.length - 1].push(j)
+  else runs.push([j])
+  return runs
+}, [])
 
 /** `caseStudy` is passed only while it is visible (published, or a draft in dev), so unpublished copy never reaches the built site. */
 export default function Workbench({ cvUpdated, caseStudy = null }: { cvUpdated: string; caseStudy?: CaseStudy | null }) {
@@ -100,9 +108,12 @@ export default function Workbench({ cvUpdated, caseStudy = null }: { cvUpdated: 
           <span className="cap-idx">{String(shown + 1).padStart(2, '0')} / {String(stops.length).padStart(2, '0')}</span>
         </div>
         <div className="ticks" ref={ticks} role="group" aria-label="Stops">
-          {stops.map((s, j) => (
-            <button key={j} type="button" className={`tick${j > 0 && s.c !== stops[j - 1].c ? ' gap' : ''}`}
-              title={s.nav} aria-label={`Go to ${s.nav}`} onClick={() => api.current?.goStop(j)}><i /></button>
+          {TICK_RUNS.map((ch) => (
+            <button key={ch[0]} type="button" className="tgroup" style={{ '--n': ch.length } as CSSProperties}
+              title={stops[ch[0]].nav} aria-label={`Go to ${stops[ch[0]].nav}`}
+              onClick={(e) => api.current?.goStop(Number((e.target as Element).closest<HTMLElement>('.tick')?.dataset.j ?? ch[0]))}>
+              {ch.map((j) => <span key={j} className="tick" data-j={j} title={stops[j].nav}><i /></span>)}
+            </button>
           ))}
         </div>
         <div className="cap-body swap" key={shown} aria-live="polite">

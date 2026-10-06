@@ -123,7 +123,7 @@ body.overview:not(.dragging) .world [data-c] { cursor: pointer; }
 .slotbox span { font: 500 calc(15px * var(--ls))/1.3 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--muted); }
 .spec { white-space: nowrap; font: 500 calc(16px * var(--ls))/1.5 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--muted); }
 
-.wire { left: 0; top: 0; overflow: visible; pointer-events: none; z-index: 3; }
+.wire { overflow: visible; pointer-events: none; z-index: 3; }
 .wire line, .wire polyline { stroke: var(--wire); }
 .wire .mute, .wire .mute line { stroke: var(--wire-muted); }
 .wire marker path { fill: var(--wire); }
@@ -299,6 +299,10 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 .hx { animation: rise .7s cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: var(--d, 0s); }
 @keyframes rise { from { opacity: 0; translate: 0 14px; } }
 .cols.hx, .guide.hx { animation-name: fadein; }
+/* The hero name only slides: starting it transparent would hold back its first paint (the page's LCP)
+   until the main thread repaints it after start-up, seconds later on a slow phone. */
+.hx.lift { animation-name: lift; }
+@keyframes lift { from { translate: 0 14px; } }
 @keyframes fadein { from { opacity: 0; } }
 .cols { z-index: 0; pointer-events: none; background: repeating-linear-gradient(90deg, var(--colfill) 0 103px, transparent 103px 127px); }
 .guide { z-index: 1; height: 0; border-top: 1px dashed var(--outline); pointer-events: none; }
@@ -408,11 +412,12 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 .cap-chap { font: 500 calc(12px * var(--ls))/1.2 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--strong); }
 .cap-idx { font: 500 calc(11px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); color: var(--muted); font-variant-numeric: tabular-nums; }
 .ticks { display: flex; padding: 10px 28px 0; }
-/* Hit areas sit edge to edge (at least 24 × 24px wherever the panel shows, the WCAG target size);
-   the gaps between bars, and the wider gap between chapters, are drawn inside each tick.
-   The vertical margins keep the layout as it was. */
-.tick { --l: 1.5px; --r: 1.5px; position: relative; flex: 1; height: 24px; margin: -4px 0; }
-.tick.gap { --l: 5px; }
+/* One button per chapter (.tgroup), one bar per stop (.tick). Buttons sit edge to edge and are at
+   least 24 × 24px (the WCAG target size) however many stops there are; the gaps between bars, and
+   the wider gap between chapters, are drawn inside each tick. The vertical margins keep the layout. */
+.tgroup { display: flex; flex: var(--n) 1 0; min-width: 24px; height: 24px; margin: -4px 0; }
+.tick { --l: 1.5px; --r: 1.5px; position: relative; flex: 1; }
+.tgroup + .tgroup .tick:first-child { --l: 5px; }
 .tick::before, .tick i { content: ""; position: absolute; left: var(--l); top: 10px; height: 4px; border-radius: calc(var(--r-btn) * .01); }
 .tick::before { right: var(--r); background: var(--line); }
 .tick i { width: calc((100% - var(--l) - var(--r)) * var(--p, 0)); background: var(--strong); }

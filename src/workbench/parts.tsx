@@ -51,11 +51,11 @@ export function MacBook({ c, id, label, slides, ...box }: Box & { c: Cluster; id
   return (
     <figure className="dev mac" data-c={c} data-lap={id} data-label={label} style={at(box)}>
       <div className="dv">
-        <img className="fr" src={IMG('macbook-air')} width={1700} height={1120} alt="" />
+        <img loading="lazy" decoding="async" className="fr" src={IMG('macbook-air')} width={1700} height={1120} alt="" />
         <div className="scr">
           {slides.map((s, i) => (
             <div key={s.title} className={`sl${i === 0 ? ' is-on' : ''}`} data-title={s.title} style={{ background: s.bg }}>
-              <img src={s.src ?? IMG(s.img ?? '')} width={s.w} height={s.h} alt={s.alt} />
+              <img loading="lazy" decoding="async" src={s.src ?? IMG(s.img ?? '')} width={s.w} height={s.h} alt={s.alt} />
               {s.overlay}
             </div>
           ))}
@@ -112,8 +112,8 @@ export function IPhone({ c, img, src, iw, ih, alt, caption, below, ...box }: Box
   return (
     <figure className={`dev iph${below ? ' below' : ''}`} data-c={c} style={at(box)}>
       <div className="dv">
-        <img className="fr" src={IMG('iphone')} width={675} height={1380} alt="" />
-        <div className="scr"><img src={src ?? IMG(img ?? '')} width={iw} height={ih} alt={alt} /></div>
+        <img loading="lazy" decoding="async" className="fr" src={IMG('iphone')} width={675} height={1380} alt="" />
+        <div className="scr"><img loading="lazy" decoding="async" src={src ?? IMG(img ?? '')} width={iw} height={ih} alt={alt} /></div>
       </div>
       {below
         ? <figcaption><span className="nm">{below.nm}</span><span className="ln">{below.ln}</span></figcaption>
@@ -133,7 +133,7 @@ export function Browser({ c, url, img, iw, ih, alt, caption, long, focus, ...box
         <span>{url.replace('https://', '').replace(/\/$/, '')}</span>
         <a href={url} target="_blank" rel="noopener">Open ↗</a>
       </div>
-      <div className="bw-scr"><img src={IMG(img)} width={iw} height={ih} alt={alt} /></div>
+      <div className="bw-scr"><img loading="lazy" decoding="async" src={IMG(img)} width={iw} height={ih} alt={alt} /></div>
       <figcaption>{caption}</figcaption>
     </figure>
   )
@@ -156,7 +156,7 @@ export function Tile({ id, c, ix, name, status, live, line, tech, focus, ...box 
 export function Shot({ c, img, src, iw, ih, alt, nm, ln, ...box }: Box & { c: Cluster; img?: string; src?: string; iw: number; ih: number; alt: string; nm: string; ln: string }) {
   return (
     <figure className="card" data-c={c} style={at(box)}>
-      <div className="shot"><img src={src ?? IMG(img ?? '')} width={iw} height={ih} alt={alt} /></div>
+      <div className="shot"><img loading="lazy" decoding="async" src={src ?? IMG(img ?? '')} width={iw} height={ih} alt={alt} /></div>
       <figcaption><span className="nm">{nm}</span><span className="ln">{ln}</span></figcaption>
     </figure>
   )
@@ -165,7 +165,7 @@ export function Shot({ c, img, src, iw, ih, alt, nm, ln, ...box }: Box & { c: Cl
 export function PassionCard({ c, img, ix, label, rot = 0, ...box }: Box & { c: Cluster; img: string; ix: string; label: string; rot?: number }) {
   return (
     <figure className="pcard" data-c={c} style={at(box, rot ? { transform: `rotate(${rot}deg)` } : undefined)}>
-      <img src={IMG(img)} width={420} height={560} alt={label} />
+      <img loading="lazy" decoding="async" src={IMG(img)} width={420} height={560} alt={label} />
       <figcaption><i>{ix}</i><b>{label}</b></figcaption>
     </figure>
   )

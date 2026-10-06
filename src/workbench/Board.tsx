@@ -1,6 +1,6 @@
 // The board: every cluster laid out in board pixels. Columns in the hero follow
 // a 12-column grid (column 103, gutter 24, starting at x 130).
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import gh from '@/data/github.json'
 import { FiFileText } from 'react-icons/fi'
 import { FaGithub, IconLinks } from './icons'
@@ -8,7 +8,7 @@ import {
   Brief, Browser, Callout, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Step, Tile, Title,
 } from './parts'
 import SkillsPipeline, { type Column } from './Skills'
-import { SHOW_SLOTS, WORLD, type Cluster } from './stops'
+import { SHOW_SLOTS, type Cluster } from './stops'
 import { AppRow } from './apps'
 import { FRUNT_PARTS, FRUNT_SITE_FOCUS, FRUNT_SITE_Y, MGK_PARTS, type Part } from './products'
 import { FRUNT_SCREENS, MGK_SCREENS, phone, slide } from './screens'
@@ -69,7 +69,7 @@ function Hero({ onCv }: { onCv: () => void }) {
       <div className="guide hx" data-c="hero" id="gCap" aria-hidden="true" style={{ left: 100, top: 230, width: 1560, ...d('.15s') }}><span>Cap height</span></div>
       <div className="guide hx" data-c="hero" id="gBase" aria-hidden="true" style={{ left: 100, top: 380, width: 1560, ...d('.15s') }}><span>Baseline</span></div>
       <div className="measure hx" data-c="hero" id="measure" aria-hidden="true" style={{ left: 130, top: 150, width: 967, ...d('.25s') }}><span id="measureLbl">967</span></div>
-      <h1 className="ttl hx" data-c="hero" id="heroName" style={{ left: 130, top: 190, fontSize: 250, zIndex: 2, ...d('.1s') }}>Matthew<span className="bl" /><span className="sr-only"> Kay</span></h1>
+      <h1 className="ttl hx lift" data-c="hero" id="heroName" style={{ left: 130, top: 190, fontSize: 250, zIndex: 2, ...d('.1s') }}>Matthew<span className="bl" /><span className="sr-only"> Kay</span></h1>
       <div className="ttl o xl hx" data-c="hero" style={{ left: 511, top: 410, fontSize: 300, zIndex: 2, ...d('.2s') }}>Kay</div>
       <div className="measure hx" data-c="hero" id="gGap" aria-hidden="true" style={{ left: 1097, top: 300, width: 176, ...d('.35s') }}><span id="gGapLbl">176</span></div>
       <figure className="sel hx" data-c="hero" id="heroPhoto" style={{ left: 1273, top: 230, width: 357, height: 446, ...d('.3s') }}>
@@ -167,7 +167,7 @@ function Frunt() {
       {SHOW_SLOTS && !SHOW_FRUNT && <SlotBox c="frunt" x={3620} y={1480} w={1000} h={200} title="Case study" />}
       {SHOW_SLOTS && !SHOW_FRUNT && <SlotBox c="frunt" x={3620} y={1700} w={1000} h={200} title="What I learnt" />}
       {SHOW_FRUNT && <BuildTimeline />}
-      <img className="brand-mark" data-c="frunt" src={IMG('frunt-icon')} width={256} height={256} alt="frunt" style={{ left: 1790, top: 110, width: 110, height: 110 }} />
+      <img loading="lazy" decoding="async" className="brand-mark" data-c="frunt" src={IMG('frunt-icon')} width={256} height={256} alt="frunt" style={{ left: 1790, top: 110, width: 110, height: 110 }} />
       <AppRow app="frunt" web={false} c="frunt" className="release" style={{ left: 3720, top: 1372 }} />
     </>
   )
@@ -191,7 +191,7 @@ function MgkFitness() {
       </Note>
       {SHOW_SLOTS && <SlotBox c="mgk" x={3650} y={3290} w={470} h={200} title="Case study" />}
       {SHOW_SLOTS && <SlotBox c="mgk" x={4150} y={3290} w={470} h={200} title="What I learnt" />}
-      <img className="brand-mark" data-c="mgk" src={IMG('mgkfitness-icon')} width={256} height={256} alt="MGKFitness" style={{ left: 2250, top: 2105, width: 110, height: 110 }} />
+      <img loading="lazy" decoding="async" className="brand-mark" data-c="mgk" src={IMG('mgkfitness-icon')} width={256} height={256} alt="MGKFitness" style={{ left: 2250, top: 2105, width: 110, height: 110 }} />
       <AppRow app="lift" web={false} c="mgk" className="release" style={{ left: 2820, top: 3200 }} />
       <AppRow app="run" web={false} c="mgk" className="release" style={{ left: 3600, top: 3215 }} />
       <Browser c="mgk" x={3880} y={2105} w={620} url="https://mgkfitness.mgkcodes.com/" img="site-mgkfitness" iw={1000} ih={625}
@@ -229,7 +229,7 @@ function About() {
       <PassionCard c="about" x={1050} y={3010} img="gym" ix="01" label="Gym" rot={-8} />
       <PassionCard c="about" x={1210} y={2975} img="golf" ix="02" label="Golf" />
       <PassionCard c="about" x={1370} y={3010} img="gaming" ix="03" label="Gaming" rot={8} />
-      <img data-c="about" src="/work/mgk-logo.svg" width={1500} height={935} alt="MGKCodes" style={{ position: 'absolute', left: 1060, top: 3420, width: 220, height: 'auto' }} />
+      <img loading="lazy" decoding="async" data-c="about" src="/work/mgk-logo.svg" width={1500} height={935} alt="MGKCodes" style={{ position: 'absolute', left: 1060, top: 3420, width: 220, height: 'auto' }} />
       <Spec c="about" x={1060} y={3580}>MGKCodes · the studio<br />behind frunt + MGKFitness</Spec>
     </>
   )
@@ -257,12 +257,12 @@ function HowIWork() {
     <>
       <Title c="how" x={1760} y={4185} size={150}>How I</Title>
       <Title c="how" x={2290} y={4250} size={230} outline>Work</Title>
-      <svg className="wire" width={4760} height={WORLD.h} viewBox={`0 0 4760 ${WORLD.h}`} aria-hidden="true">
+      <Wire box={[hx(0) - 10, 4466, hx(5) + HOW.col - hx(0) + 20, 48]}>
         <g data-c="how" className="mute" strokeWidth={2}>
           <line x1={hx(0)} y1={4490} x2={hx(5) + HOW.col} y2={4490} />
           {ticks.map((x) => <line key={x} x1={x} y1={4476} x2={x} y2={4504} />)}
         </g>
-      </svg>
+      </Wire>
       <Step c="how" {...step(0)} n="01" title="Plan" text="Every screen laid out on one board, each with what it's for." ev="e.g. Lift screen board, v11" />
       <Step c="how" {...step(1)} n="02" title="Decide" text="Big calls written down with the reasoning, so they can be checked." ev="e.g. Decision 0001" />
       <Step c="how" {...step(2)} n="03" title="Build" text="AI does the typing. My own skills library sets how it works." ev="e.g. github.com/MattKay02/skills" />
@@ -286,10 +286,21 @@ function Contact({ onCv }: { onCv: () => void }) {
   )
 }
 
+/** A drawing on the board in board coordinates, sized to just the area it covers ([x, y, w, h]).
+ * Never make one the size of the board: the wires sit above the hero's intro animation, so Safari
+ * gives each its own GPU layer, and a board-sized one is enough to crash an iPhone. */
+function Wire({ box: [x, y, w, h], children }: { box: [number, number, number, number]; children: ReactNode }) {
+  return (
+    <svg className="wire" width={w} height={h} viewBox={`${x} ${y} ${w} ${h}`} style={{ left: x, top: y }} aria-hidden="true">
+      {children}
+    </svg>
+  )
+}
+
 /** Arrows between the MGKFitness phones: Liftio → Lift, and Lift ↔ Run. */
 function MgkWires() {
   return (
-    <svg className="wire" width={4760} height={4900} viewBox="0 0 4760 4900" aria-hidden="true">
+    <Wire box={[2590, 2820, 1030, 600]}>
       <defs>
         <marker id="ah" viewBox="0 0 10 10" refX={9} refY={5} markerWidth={9} markerHeight={9} orient="auto-start-reverse">
           <path d="M0 0 L10 5 L0 10 z" />
@@ -303,7 +314,7 @@ function MgkWires() {
         <text x={3386} y={2902}>Shares</text>
         <text x={3386} y={2952}>your week</text>
       </g>
-    </svg>
+    </Wire>
   )
 }
 
