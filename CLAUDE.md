@@ -15,13 +15,13 @@ Its job is to get Matthew interviews. Winning clients is mgkcodes.com's job, not
 
 ## The concept: the Workbench
 
-One board of real work. Native page scroll moves a camera through 13 stops; a guide panel on the
+One board of real work. Native page scroll moves a camera through 14 stops; a guide panel on the
 left (a bottom sheet on phones) tells the story. Visitors can click a frame to jump, click a
 product "part" to zoom to it, drag to look around (springs back), use ← → keys, or the minimap.
 
 Order: Hero → the whole board → **frunt** (problem, sourced answers, the whole system) →
-**MGKFitness** (Liftio, the rebuild, the suite, the whole system) → Other work → How I work →
-About → Contact. frunt is the main project and leads.
+**MGKFitness** (Liftio, the rebuild, the suite, the whole system) → Other work → **How I work** (the
+pipeline, then the checks) → About → Contact. frunt is the main project and leads.
 
 ## Design rules
 
@@ -76,7 +76,10 @@ src/workbench/
   products.ts          each flagship's "parts" (tile copy, statuses, focus rects)
   TourText.tsx         the whole tour as hidden text, for screen readers and crawlers
   parts.tsx            building blocks: Frame, Title, Note, MacBook, IPhone, Browser, Tile, Shot…
-  Skills.tsx           skills shelf, read live from the skills repo's skills.json
+  Skills.tsx           How I work's skill cards, laid out under each step; read live from the
+                       skills repo's skills.json and tests.json (useSkills)
+  skills-data.ts       the skills snapshots, types and text helpers (server-safe, used by
+                       TourText and /llms.txt as well as the board)
   controller.ts        the camera and everything per-frame (imperative; returns destroy())
   Workbench.tsx        React shell: top bar, guide panel, minimap, stage
   apps.tsx             app statuses and AppRow (icon, name, status, store and website buttons)
@@ -89,9 +92,10 @@ src/data/
   cv.ts                Matthew's CV as data: the single source for /cv and /cv.pdf
   github.json          contribution calendar (generated)
   skills.json          skills manifest snapshot (generated; the live fetch overrides it)
+  skill-tests.json     the skills' eval results snapshot (generated; same)
   apps.json            app facts: names, icons, store ids, websites (edited by hand)
   stores.json          which store listings are live (generated)
-scripts/fetch-github.mjs   refreshes both snapshots: `npm run github`
+scripts/fetch-github.mjs   refreshes the graph and skills snapshots: `npm run github`
 scripts/fetch-stores.mjs   checks the App Store and Google Play: `npm run stores`
 scripts/build-cv.mjs       prints /cv to out/cv.pdf after a build: `npm run cv`
 scripts/build-og.mjs       photographs /og/ to out/og.png after a build: `npm run og`
@@ -136,10 +140,15 @@ board is in board pixels; the world is 4760 × 4900.
 
 ### Live data (do not break)
 
-- **Skills**: `Skills.tsx` fetches
-  `https://raw.githubusercontent.com/MattKay02/skills/main/skills.json` in the browser. Matthew's
+- **Skills**: `Skills.tsx` fetches `skills.json` and `tests.json` from
+  `https://raw.githubusercontent.com/MattKay02/skills/main/` in the browser. Matthew's
   publishing loop depends on this: adding a skill to the skills repo must show here with no
-  change to this repo. Keep the fetch contract and the snapshot fallback.
+  change to this repo. Keep the fetch contract and the snapshot fallback. Each skill's `step`
+  (plan, decide, build, check, ship) picks its column under How I work; `evidence`
+  (`{ image, dark?, caption }`) shows real output on its card, drawn at the card's size
+  (404 × 196) in both looks, with the caption as its alt text. Without evidence the card shows
+  `flow` (in, does, out). The test line comes from `tests.json`, which the skills repo
+  generates from its eval results; never type it by hand.
 - **GitHub graph**: built from `src/data/github.json`. Every Vercel build refreshes it (needs a
   `GITHUB_TOKEN` env var on Vercel; without one the committed snapshot is used), and
   `.github/workflows/daily.yml` triggers a rebuild each day through a Vercel deploy hook

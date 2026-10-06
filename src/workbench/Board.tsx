@@ -7,8 +7,8 @@ import { FaGithub, IconLinks } from './icons'
 import {
   Browser, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Step, Tile, Title,
 } from './parts'
-import SkillsShelf from './Skills'
-import { SHOW_SLOTS, type Cluster } from './stops'
+import SkillsPipeline, { type Column } from './Skills'
+import { SHOW_SLOTS, WORLD, type Cluster } from './stops'
 import { AppRow } from './apps'
 import { FRUNT_PARTS, MGK_PARTS, type Part } from './products'
 
@@ -172,24 +172,40 @@ function About() {
   )
 }
 
+/** How I work: the five steps as column heads, each skill under the step it serves. */
+export const HOW = { x0: 1790, col: 445, gap: 30, stepY: 4470, stepH: 330, cardY: 4840, cardH: 400 }
+const hx = (i: number) => HOW.x0 + i * (HOW.col + HOW.gap)
+
 function HowIWork() {
-  const ticks = [1790, 2360, 2930, 3500, 4070, 4590]
+  const cols: Column[] = [
+    { step: 'plan', x: hx(0) },
+    { step: 'decide', x: hx(1), after: (x, y) => (
+      <Note c="how" x={x} y={y} w={HOW.col} kicker="Decision records">
+        Every big call written down: what I chose, the obvious alternative, what it costs, and what would change my mind.
+      </Note>
+    ) },
+    { step: 'build', x: hx(2) },
+    { step: 'check', x: hx(3), sub: 2 },
+    { step: 'ship', x: hx(5) },
+  ]
+  const ticks = [hx(0), hx(1), hx(2), hx(3), hx(5), hx(5) + HOW.col]
+  const step = (i: number, w = HOW.col) => ({ x: hx(i), y: HOW.stepY, w, h: HOW.stepH })
   return (
     <>
       <Title c="how" x={1760} y={4135} size={150}>How I</Title>
       <Title c="how" x={2290} y={4200} size={230} outline>Work</Title>
-      <svg className="wire" width={4760} height={4900} viewBox="0 0 4760 4900" aria-hidden="true">
+      <svg className="wire" width={4760} height={WORLD.h} viewBox={`0 0 4760 ${WORLD.h}`} aria-hidden="true">
         <g data-c="how" className="mute" strokeWidth={2}>
-          <line x1={1790} y1={4440} x2={4590} y2={4440} />
+          <line x1={hx(0)} y1={4440} x2={hx(5) + HOW.col} y2={4440} />
           {ticks.map((x) => <line key={x} x1={x} y1={4426} x2={x} y2={4454} />)}
         </g>
       </svg>
-      <SkillsShelf x={2960} y={4140} w={1630} />
-      <Step c="how" x={1790} y={4470} w={530} h={330} n="01" title="Plan" text="Every screen laid out on one board, each with what it's for." ev="e.g. Lift screen board, v11" />
-      <Step c="how" x={2360} y={4470} w={530} h={330} n="02" title="Decide" text="Big calls written down with the reasoning, so they can be checked." ev="e.g. Decision 0001" />
-      <Step c="how" x={2930} y={4470} w={530} h={330} n="03" title="Build" text="AI does the typing. My own skills library sets how it works." ev="e.g. github.com/MattKay02/skills" />
-      <Step c="how" x={3500} y={4470} w={530} h={330} n="04" title="Check" text="Screens checked by eye, design reviews, a build check on every PR." ev="e.g. 19 findings, 30 Sept review" />
-      <Step c="how" x={4070} y={4470} w={520} h={330} n="05" title="Ship" text="Store submissions with a written record of what went out." ev="e.g. Run 1.0, 2 Oct 2026" />
+      <Step c="how" {...step(0)} n="01" title="Plan" text="Every screen laid out on one board, each with what it's for." ev="e.g. Lift screen board, v11" />
+      <Step c="how" {...step(1)} n="02" title="Decide" text="Big calls written down with the reasoning, so they can be checked." ev="e.g. Decision 0001" />
+      <Step c="how" {...step(2)} n="03" title="Build" text="AI does the typing. My own skills library sets how it works." ev="e.g. github.com/MattKay02/skills" />
+      <Step c="how" {...step(3, HOW.col * 2 + HOW.gap)} n="04" title="Check" text="Screens checked by eye, design reviews, a build check on every PR, and most of my skills." ev="e.g. 19 findings, 30 Sept review" />
+      <Step c="how" {...step(5)} n="05" title="Ship" text="Store submissions with a written record of what went out." ev="e.g. Run 1.0, 2 Oct 2026" />
+      <SkillsPipeline cols={cols} y={HOW.cardY} card={{ w: HOW.col, h: HOW.cardH }} gap={HOW.gap} />
     </>
   )
 }
@@ -234,7 +250,7 @@ export default function Board({ onCv }: { onCv: () => void }) {
       <Frame c="other" x={100} y={1320} w={1560} h={1440} label="03 · Other work" />
       <Frame c="mgk" x={1740} y={2070} w={2920} h={1940} label="02 · MGKFitness" />
       <Frame c="about" x={100} y={2880} w={1560} h={900} label="05 · About" />
-      <Frame c="how" x={1740} y={4090} w={2920} h={760} label="04 · How I work" />
+      <Frame c="how" x={1740} y={4090} w={2920} h={2080} label="04 · How I work" />
       <Frame c="contact" x={100} y={3860} w={1560} h={640} label="06 · Contact" />
       <Hero onCv={onCv} />
       <Frunt />

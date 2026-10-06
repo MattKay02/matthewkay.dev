@@ -4,6 +4,7 @@
 import { appStatus, statusText, type AppKey } from './apps'
 import { FRUNT_PARTS, MGK_PARTS, type Part } from './products'
 import { LINKS, SKILLS_INSTALL, stops } from './stops'
+import { SKILLS, skillText } from './skills-data'
 
 const APPS: AppKey[] = ['frunt', 'run', 'lift']
 
@@ -36,7 +37,12 @@ export default function TourText() {
           )}
           {s.layers && s.c === 'frunt' && <PartList parts={FRUNT_PARTS} />}
           {s.layers && s.c === 'mgk' && <PartList parts={MGK_PARTS} />}
-          {s.extra === 'skills' && <p>Install my skills: <code>{SKILLS_INSTALL}</code> (<a href={LINKS.skills}>MattKay02/skills</a>)</p>}
+          {s.extra === 'skills' && (
+            <>
+              <p>Install my skills: <code>{SKILLS_INSTALL}</code> (<a href={LINKS.skills}>MattKay02/skills</a>)</p>
+              <ul>{SKILLS.map((k) => <li key={k.name}>{skillText(k)}</li>)}</ul>
+            </>
+          )}
         </article>
       ))}
       <p>

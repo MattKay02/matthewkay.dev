@@ -1,0 +1,181 @@
+{
+  "generated": "2026-10-06",
+  "skills": {
+    "codemagic-build": {
+      "lastRun": "2026-10-06",
+      "cases": [
+        {
+          "name": "fires-on-a-plain-request",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        },
+        {
+          "name": "stays-out-of-a-near-miss",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        }
+      ]
+    },
+    "ui-walk": {
+      "lastRun": "2026-10-06",
+      "cases": [
+        {
+          "name": "fires-on-a-plain-request",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        },
+        {
+          "name": "stays-out-of-a-near-miss",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        }
+      ]
+    },
+    "page-audit": {
+      "lastRun": "2026-10-06",
+      "cases": [
+        {
+          "name": "fires-on-a-plain-request",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        },
+        {
+          "name": "stays-out-of-a-near-miss",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        }
+      ]
+    },
+    "emulator-verify": {
+      "lastRun": "2026-10-06",
+      "cases": [
+        {
+          "name": "fires-on-a-plain-request",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        },
+        {
+          "name": "stays-out-of-a-near-miss",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        }
+      ]
+    },
+    "lighthouse-audit": {
+      "lastRun": "2026-10-06",
+      "cases": [
+        {
+          "name": "fires-on-a-plain-request",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        },
+        {
+          "name": "stays-out-of-a-near-miss",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        }
+      ]
+    },
+    "screen-board": {
+      "lastRun": "2026-10-06",
+      "cases": [
+        {
+          "name": "fires-on-a-plain-request",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        },
+        {
+          "name": "stays-out-of-a-near-miss",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        }
+      ]
+    },
+    "silent-failure-sweep": {
+      "lastRun": "2026-10-06",
+      "cases": [
+        {
+          "name": "fires-on-quiet-failures",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        },
+        {
+          "name": "stays-out-of-a-loud-bug",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        },
+        {
+          "name": "finds-planted-failures",
+          "kind": "behaviour",
+          "runs": 3,
+          "with": 0.92,
+          "without": 0.88,
+          "date": "2026-10-06"
+        }
+      ]
+    },
+    "motion-sketchbook": {
+      "lastRun": "2026-10-06",
+      "cases": [
+        {
+          "name": "fires-on-a-plain-request",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        },
+        {
+          "name": "stays-out-of-a-near-miss",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": null,
+          "date": "2026-10-06"
+        }
+      ]
+    }
+  }
+}

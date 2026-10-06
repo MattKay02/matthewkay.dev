@@ -6,6 +6,7 @@ import { cv } from '@/data/cv'
 import { appStatus, statusText, type AppKey } from '@/workbench/apps'
 import { FRUNT_PARTS, MGK_PARTS, type Part } from '@/workbench/products'
 import { LINKS, SKILLS_INSTALL, stops } from '@/workbench/stops'
+import { SKILLS, skillText } from '@/workbench/skills-data'
 
 export const SITE = 'https://matthewkay.dev'
 export const TITLE = 'Matthew Kay · Product engineer'
@@ -79,6 +80,12 @@ export function llmsText(): string {
     'The site is one board that a camera moves across as you scroll. This is the text of each stop.',
     '',
     tour.join('\n\n'),
+    '',
+    '## My Claude Code skills',
+    '',
+    `Open source, each one tested with Claude Code's evals. Install: \`${SKILLS_INSTALL}\``,
+    '',
+    ...SKILLS.map((k) => `- ${skillText(k)}`),
     '',
     '## CV and links',
     '',
