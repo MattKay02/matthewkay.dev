@@ -194,6 +194,10 @@ part**: add it to `FRUNT_PARTS` / `MGK_PARTS` in `products.ts`. **Moving things*
 board is in board pixels; the world is 4760 × 6310 (`WORLD` in `stops.ts`).
 Frame labels stay the same size on screen but never grow past ~155 board px (`.flabel` in `globals.css`), so keep at least that much clear
 space above every frame, or a zoomed-out overview lays the label over the frame above.
+**Keep big elements off the board.** Size every drawing to its content (`Wire` in `Board.tsx`),
+never to the board: anything that overlaps the hero's intro animation and sits above it gets its own
+GPU layer in Safari, and two board-sized SVGs crashed iPhones on 6 Oct 2026. Board images are
+`loading="lazy"` except the hero photo.
 
 ### Live data (do not break)
 

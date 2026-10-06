@@ -6,6 +6,7 @@
 // here with no change to this repo, and new eval results show once tests.json is
 // regenerated. The committed snapshots render first and stay if GitHub is unreachable.
 import { Fragment, useEffect, useState, type ReactNode } from 'react'
+import { preconnect } from 'react-dom'
 import { FiArrowUpRight, FiTerminal } from 'react-icons/fi'
 import { SKILLS_INSTALL } from './stops'
 import { RAW, SKILLS, SKILLS_REPO, STEP_LABEL, TESTS, skillId, testLine, type Skill, type Step, type Tests } from './skills-data'
@@ -17,6 +18,9 @@ let live: Promise<{ skills: Skill[]; tests: Tests }> | undefined
 const getJson = (path: string) => fetch(`${RAW}/${path}`, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
 
 export function useSkills() {
+  // Open the connections early: one for the fetches below (CORS), one for the evidence images.
+  preconnect('https://raw.githubusercontent.com', { crossOrigin: 'anonymous' })
+  preconnect('https://raw.githubusercontent.com')
   const [data, setData] = useState<{ skills: Skill[]; tests: Tests }>({ skills: SKILLS, tests: TESTS })
   useEffect(() => {
     live ??= Promise.all([getJson('skills.json'), getJson('tests.json').catch(() => TESTS)]).then(([m, t]) => ({

@@ -25,13 +25,15 @@ function Bar({ updated, children }: { updated: string; children: ReactNode }) {
 }
 
 export function CvViewer({ open, onClose, updated }: { open: boolean; onClose: () => void; updated: string }) {
-  const closeBtn = useRef<HTMLButtonElement>(null)
+  const dialog = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!open) return
     const root = document.documentElement
     root.classList.add('cv-open')
-    closeBtn.current?.focus()
+    // Focus the dialog, not its close button: opened from a link (/#cv) with no tap yet, the
+    // browser would draw a keyboard focus ring on the button. Tab still reaches the buttons first.
+    dialog.current?.focus()
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
     addEventListener('keydown', onKey)
     return () => { root.classList.remove('cv-open'); removeEventListener('keydown', onKey) }
@@ -39,9 +41,9 @@ export function CvViewer({ open, onClose, updated }: { open: boolean; onClose: (
 
   if (!open) return null
   return (
-    <div className="cvv" role="dialog" aria-modal="true" aria-label="Matthew Kay's CV">
+    <div ref={dialog} tabIndex={-1} className="cvv" role="dialog" aria-modal="true" aria-label="Matthew Kay's CV">
       <Bar updated={updated}>
-        <button ref={closeBtn} type="button" className="ibtn" onClick={onClose} aria-label="Close the CV"><FiX aria-hidden="true" /></button>
+        <button type="button" className="ibtn" onClick={onClose} aria-label="Close the CV"><FiX aria-hidden="true" /></button>
       </Bar>
       {/* Clicking the desk around the sheet closes the viewer. */}
       <div className="cvv-scroll" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
