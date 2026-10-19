@@ -151,7 +151,7 @@ export const stops: Stop[] = [
 export const LINKS = {
   linkedin: 'https://linkedin.com/in/matthew-kay-',
   github: 'https://github.com/MattKay02',
-  x: 'https://x.com/mattykay2002',
+  x: 'https://x.com/matthewkaydev',
   mgkcodes: 'https://mgkcodes.com',
   skills: 'https://github.com/MattKay02/skills',
   email: 'mattykay2002@gmail.com',

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   icons: { icon: '/favicon.svg' },
   openGraph: { title: TITLE, description: SHARE, type: 'website', siteName: 'Matthew Kay', locale: 'en_GB', images: [OG_IMAGE] },
-  twitter: { card: 'summary_large_image', title: TITLE, description: SHARE, creator: '@mattykay2002', images: [OG_IMAGE] },
+  twitter: { card: 'summary_large_image', title: TITLE, description: SHARE, creator: '@matthewkaydev', images: [OG_IMAGE] },
 }
 
 export const viewport: Viewport = {
