@@ -321,7 +321,7 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
 ## Developer
 
 Matthew Kay · github.com/MattKay02 · mgkcodes.com · mattykay2002@gmail.com ·
-linkedin.com/in/matthew-kay- · x.com/mattykay2002
+linkedin.com/in/matthew-kay- · x.com/matthewkaydev
 
 <!-- BEGIN:nextjs-agent-rules -->
 
