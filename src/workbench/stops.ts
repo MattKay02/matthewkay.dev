@@ -152,6 +152,10 @@ export const LINKS = {
   linkedin: 'https://linkedin.com/in/matthew-kay-',
   github: 'https://github.com/MattKay02',
   x: 'https://x.com/matthewkaydev',
+  // Social accounts, linked from /connect only: the board stays for recruiters.
+  instagram: 'https://www.instagram.com/matthewkaydev/',
+  threads: 'https://www.threads.com/@matthewkaydev',
+  tiktok: 'https://www.tiktok.com/@matthewkaydev',
   mgkcodes: 'https://mgkcodes.com',
   skills: 'https://github.com/MattKay02/skills',
   email: 'mattykay2002@gmail.com',
