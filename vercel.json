@@ -4,5 +4,32 @@
   "installCommand": "sh scripts/vercel-install.sh",
   "buildCommand": "sh scripts/vercel-build.sh",
   "outputDirectory": "out",
-  "trailingSlash": true
+  "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/ig/",
+      "destination": "https://social.mgkcodes.com/go/matt-ig",
+      "permanent": false
+    },
+    {
+      "source": "/th/",
+      "destination": "https://social.mgkcodes.com/go/matt-th",
+      "permanent": false
+    },
+    {
+      "source": "/x/",
+      "destination": "https://social.mgkcodes.com/go/matt-x",
+      "permanent": false
+    },
+    {
+      "source": "/tt/",
+      "destination": "https://social.mgkcodes.com/go/matt-tt",
+      "permanent": false
+    },
+    {
+      "source": "/in/",
+      "destination": "https://social.mgkcodes.com/go/matt-in",
+      "permanent": false
+    }
+  ]
 }
