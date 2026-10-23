@@ -6,7 +6,7 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import { FaGithub, FaInstagram, FaLinkedin, FaTiktok } from 'react-icons/fa'
 import { FaThreads, FaXTwitter } from 'react-icons/fa6'
-import { FiArrowUpRight, FiFileText, FiMail } from 'react-icons/fi'
+import { FiArrowUpRight, FiMail } from 'react-icons/fi'
 import { MGKIcon } from '@/workbench/icons'
 import { LINKS } from '@/workbench/stops'
 import './connect.css'
@@ -38,9 +38,10 @@ const LOOK: Row[] = [
   { label: 'GitHub', detail: 'Code, and my Claude Code skills', href: LINKS.github, icon: <FaGithub aria-hidden="true" /> },
 ]
 
+// No CV here (Matthew, 23 Oct 2026): the card is for people arriving from social, and the CV
+// stays with the portfolio for the recruiters it was made for.
 const HIRE: Row[] = [
   { label: 'LinkedIn', detail: 'Work history, and the best place to talk work', href: LINKS.linkedin, icon: <FaLinkedin aria-hidden="true" /> },
-  { label: 'CV', detail: 'One page, with a PDF', href: '/cv/', icon: <FiFileText aria-hidden="true" />, here: true },
   { label: 'Email', detail: LINKS.email, href: `mailto:${LINKS.email}`, icon: <FiMail aria-hidden="true" />, here: true },
 ]
 
