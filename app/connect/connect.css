@@ -19,7 +19,11 @@
   margin: 0; font: var(--ttl-weight) 36px/1.02 var(--display); letter-spacing: var(--ttl-track); color: var(--strong);
 }
 .cx-head h1 span { display: block; padding-left: 24px; color: var(--ttl2); }
-.cx-lede { margin: 24px 0 32px; font: 400 16px/1.55 var(--body); color: var(--text2); }
+.cx-intro { margin: 24px 0 32px; }
+.cx-intro p { margin: 0 0 12px; font: 400 16px/1.55 var(--body); color: var(--text2); }
+.cx-intro p:first-child { font-size: 17px; color: var(--strong); }
+.cx-intro p:last-child { margin-bottom: 0; }
+.cx-intro a { color: var(--strong); text-decoration: underline; text-decoration-color: var(--outline); text-underline-offset: 3px; }
 h2.cx-k { margin-top: 32px; }
 .cx-rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
 .cx-rows a {

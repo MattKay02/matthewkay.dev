@@ -74,7 +74,14 @@ export default function ConnectPage() {
             </h1>
           </div>
         </header>
-        <p className="cx-lede">Founder of MGKCodes. Building frunt for restaurants and two open source fitness apps.</p>
+        {/* So a scan lands on a person, not a list (Matthew, 23 Oct 2026). Lines the site and the bios already use. */}
+        <div className="cx-intro">
+          <p>Hi, I&rsquo;m Matt. I&rsquo;m a developer in London, and I run MGKCodes, the studio behind frunt and MGKFitness.</p>
+          <p>
+            This is the quick version: where I post and what I&rsquo;m building. On Instagram, Threads, X and TikTok I share the
+            standards I keep, building and training. The full portfolio is at <a href="/">matthewkay.dev</a>.
+          </p>
+        </div>
 
         <h2 className="cx-k">Follow</h2>
         <Rows rows={FOLLOW} />
