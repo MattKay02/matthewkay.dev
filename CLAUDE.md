@@ -131,6 +131,8 @@ scripts/build-board.mjs    photographs the whole board to out/board-{light,dark}
 scripts/build-readme.mjs   photographs the README visuals (light + dark, 2x): `npm run readme`
 scripts/headless.mjs       shared by both: serves out/ and launches headless Chrome
 scripts/vercel-*.sh        Vercel's install and build steps (see vercel.json)
+vercel.json                also the bios' short links: /ig /th /x /tt /in go to social.mgkcodes.com/go/matt-*,
+                           which counts the click for the desk and lands on /connect (or / for LinkedIn)
 public/work/           every image on the board, the Apple frames and the app icons
 docs/                  architecture, design system, screens-feed spec, storyboard history
 ```
