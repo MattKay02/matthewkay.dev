@@ -1,5 +1,7 @@
 /* /connect: one card on the dotted desk, in the site's tokens, so it follows the light/dark toggle
-   saved by the board. Measured spacing on an 8px rhythm; no motion. */
+   saved by the board. The design-tool vocabulary of the hero, kept small: the photo as a selected
+   frame with handles, numbered sections like layers. Measured spacing on an 8px rhythm; no motion
+   beyond a hover. */
 .cx {
   min-height: 100svh; display: flex; justify-content: center; align-items: flex-start;
   padding: 48px 16px 40px; box-sizing: border-box;
@@ -9,27 +11,49 @@
   width: 100%; max-width: 520px; box-sizing: border-box; padding: 32px 32px 24px;
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-panel); box-shadow: var(--shadow-panel);
 }
-.cx-head { display: flex; align-items: center; gap: 24px; }
-.cx-photo { flex: none; width: 96px; height: 96px; border-radius: 50%; object-fit: cover; box-shadow: var(--ring); }
+
+/* Header: the photo as a selected frame, then the two-line heading. */
+.cx-head { display: flex; align-items: center; gap: 28px; }
+.cx-frame { position: relative; flex: none; margin: 0; padding: 6px; border: 1px solid var(--outline); }
+.cx-frame .h { position: absolute; width: 7px; height: 7px; background: var(--surface); border: 1px solid var(--strong); }
+.cx-frame .tl { left: -4px; top: -4px; } .cx-frame .tr { right: -4px; top: -4px; }
+.cx-frame .bl { left: -4px; bottom: -4px; } .cx-frame .br { right: -4px; bottom: -4px; }
+.cx-photo { display: block; width: 96px; height: 96px; border-radius: 50%; object-fit: cover; }
 .cx-k {
   display: block; margin: 0 0 8px; font: 500 calc(12px * var(--ls))/1 var(--mono); letter-spacing: .08em;
   text-transform: uppercase; color: var(--muted);
 }
-.cx-head h1 {
-  margin: 0; font: var(--ttl-weight) 36px/1.02 var(--display); letter-spacing: var(--ttl-track); color: var(--strong);
-}
+.cx-head h1 { margin: 0; font: var(--ttl-weight) 36px/1.02 var(--display); letter-spacing: var(--ttl-track); color: var(--strong); }
 .cx-head h1 span { display: block; padding-left: 24px; color: var(--ttl2); }
-.cx-intro { margin: 24px 0 32px; }
+
+/* The intro: a person first. */
+.cx-intro { margin: 28px 0 0; }
 .cx-intro p { margin: 0 0 12px; font: 400 16px/1.55 var(--body); color: var(--text2); }
 .cx-intro p:first-child { font-size: 17px; color: var(--strong); }
 .cx-intro p:last-child { margin-bottom: 0; }
 .cx-intro a { color: var(--strong); text-decoration: underline; text-decoration-color: var(--outline); text-underline-offset: 3px; }
-h2.cx-k { margin-top: 32px; }
-.cx-rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
-.cx-rows a {
-  display: flex; align-items: center; gap: 16px; min-height: 56px; padding: 8px 0;
-  border-bottom: 1px solid var(--line); text-decoration: none; color: var(--text);
+.cx-handle { margin: 16px 0 0; font: 400 13px/1 var(--body); color: var(--muted); }
+.cx-handle span {
+  display: inline-block; margin-right: 6px; padding: 5px 9px; border: 1px solid var(--line); border-radius: var(--r-btn);
+  font: 500 13px/1 var(--mono); color: var(--strong);
 }
+
+/* Sections, numbered like layers in a design file. */
+.cx-sec { margin-top: 32px; }
+.cx-sh {
+  display: flex; align-items: baseline; gap: 10px; margin: 0 0 8px;
+  font: 500 calc(12px * var(--ls))/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+}
+.cx-sh span { color: var(--strong); }
+/* The list reaches 8px past the text on each side, so a hovered row's fill has room and every
+   divider, the top one included, runs the same width. */
+.cx-rows { list-style: none; margin: 0 -8px; padding: 0; border-top: 1px solid var(--line); }
+.cx-rows a {
+  display: flex; align-items: center; gap: 16px; min-height: 60px; padding: 10px 8px;
+  border-bottom: 1px solid var(--line); text-decoration: none; color: var(--text);
+  transition: background .2s;
+}
+.cx-rows a:hover { background: var(--colfill); }
 .cx-icon {
   flex: none; width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--line);
   border-radius: 50%; color: var(--strong); font-size: 17px;
@@ -37,23 +61,29 @@ h2.cx-k { margin-top: 32px; }
 .cx-icon .mgk { width: 22px; height: auto; }
 /* A product's own app icon fills its circle: colour comes only from the work. */
 .cx-icon img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-.cx-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.cx-text b { font: 500 16px/1.3 var(--body); color: var(--strong); }
-.cx-text span { font: 400 13px/1.35 var(--body); color: var(--muted); }
+.cx-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.cx-text b { display: flex; align-items: center; gap: 8px; font: 500 16px/1.3 var(--body); color: var(--strong); }
+.cx-text > span { font: 400 13px/1.4 var(--body); color: var(--muted); }
+.cx-start {
+  font: 500 10px/1 var(--mono); font-style: normal; letter-spacing: .08em; text-transform: uppercase;
+  padding: 4px 7px; border-radius: var(--r-btn); background: var(--strong); color: var(--surface);
+}
 .cx-go { flex: none; color: var(--outline); transition: color .2s, transform .2s; }
 .cx-rows a:hover .cx-go { color: var(--strong); transform: translate(2px, -2px); }
-.cx-mail {
-  display: inline-flex; align-items: center; gap: 10px; margin-top: 32px; font: 500 15px/1 var(--mono);
-  color: var(--text); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 4px;
+
+.cx-foot {
+  display: flex; justify-content: space-between; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--line);
+  font: 500 13px/1 var(--mono); color: var(--muted);
 }
-.cx-foot { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--line); }
-.cx-foot a { font: 500 13px/1 var(--mono); color: var(--muted); text-decoration: none; }
+.cx-foot a { color: var(--muted); text-decoration: none; }
+
 @media (max-width: 420px) {
   .cx { padding-top: 24px; }
   .cx-card { padding: 24px 20px 20px; }
-  .cx-head { gap: 16px; }
+  /* On a phone the frame sits above the name, so "Building with AI" keeps its one line. */
+  .cx-head { flex-direction: column; align-items: flex-start; gap: 20px; }
   .cx-photo { width: 80px; height: 80px; }
-  .cx-head h1 { font-size: 30px; }
-  .cx-head h1 span { padding-left: 16px; }
+  .cx-head h1 { font-size: 32px; }
+  .cx-head h1 span { padding-left: 20px; }
 }
-@media (prefers-reduced-motion: reduce) { .cx-go { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .cx-rows a, .cx-go { transition: none; } }
