@@ -7,27 +7,27 @@
   "trailingSlash": true,
   "redirects": [
     {
-      "source": "/ig",
+      "source": "/ig/",
       "destination": "https://social.mgkcodes.com/go/matt-ig",
       "permanent": false
     },
     {
-      "source": "/th",
+      "source": "/th/",
       "destination": "https://social.mgkcodes.com/go/matt-th",
       "permanent": false
     },
     {
-      "source": "/x",
+      "source": "/x/",
       "destination": "https://social.mgkcodes.com/go/matt-x",
       "permanent": false
     },
     {
-      "source": "/tt",
+      "source": "/tt/",
       "destination": "https://social.mgkcodes.com/go/matt-tt",
       "permanent": false
     },
     {
-      "source": "/in",
+      "source": "/in/",
       "destination": "https://social.mgkcodes.com/go/matt-in",
       "permanent": false
     }
