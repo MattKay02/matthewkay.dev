@@ -26,8 +26,8 @@ export const FRUNT_SCREENS = {
   ask: screen('frunt', 'ask', { img: 'frunt-ask', w: 1280, h: 720, alt: 'Ask frunt: an answer about peanut allergen controls, citing three source documents' }),
   documents: screen('frunt', 'documents', { img: 'frunt-docs', w: 1100, h: 619, alt: 'frunt documents library' }),
   training: screen('frunt', 'training', { img: 'frunt-training', w: 1100, h: 619, alt: 'frunt training courses' }),
-  staffAsk: screen('frunt', 'staff-ask', { img: 'frunt-m-ask', w: 334, h: 736, alt: 'frunt staff app, asking a question' }),
-  staffTraining: screen('frunt', 'staff-training', { img: 'frunt-m-training', w: 334, h: 736, alt: 'frunt staff app, training' }),
+  staffAsk: screen('frunt', 'staff-ask', { img: 'frunt-m-ask', w: 560, h: 1214, alt: 'frunt staff app, answering a question with the documents it came from' }),
+  staffTraining: screen('frunt', 'staff-training', { img: 'frunt-m-training', w: 560, h: 1214, alt: 'frunt staff app, training: courses passed and the course up next' }),
 }
 
 /** MGKFitness's screens on the board, by its ids (mgk-fitness web/app/studio.json/screens.ts). Liftio 1.4 is retired and stays saved. */

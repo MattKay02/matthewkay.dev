@@ -203,7 +203,7 @@ panel. Format: TL;DR, what I made, why, what I aimed for, timeline, challenges a
 **Publishing (frunt):** automatic once the passing eval record is on frunt-web's `main` and this
 site rebuilds (daily, or any deploy). When it goes public, check desktop + 390px + dark, and point
 the `MattKay02/frunt` README at `/work/frunt/`. `/work/frunt/` joins the sitemap by itself
-(`app/sitemap.ts`). Recapture the staff Ask screen (frunt-web `public/screens/staff-ask.webp`).
+(`app/sitemap.ts`).
 
 **Adding a stop**: add it to `stops.ts` (cluster, `r`, `m`, `nav`, copy). **Adding a project
 part**: add it to `FRUNT_PARTS` / `MGK_PARTS` in `products.ts`. **Moving things**: everything on the
