@@ -8,8 +8,8 @@ import Link from 'next/link'
 import { FiExternalLink, FiX } from 'react-icons/fi'
 import '@/cv/cv.css' // the viewer shell (.cvv) is shared with the CV
 import CaseStudySheet, { checkedLabel } from './CaseStudySheet'
-import { FRUNT_PUBLISHED } from './flags'
-import type { CaseStudy } from './frunt'
+import { PUBLISHED } from './flags'
+import type { CaseStudy } from './types'
 
 function Bar({ study, children }: { study: CaseStudy; children: ReactNode }) {
   return (
@@ -17,7 +17,7 @@ function Bar({ study, children }: { study: CaseStudy; children: ReactNode }) {
       <span className="logo">MK.</span>
       <span className="cvv-title">
         <b>{study.name} · case study</b>
-        <span>{checkedLabel(study)}{!FRUNT_PUBLISHED && ' · draft, not published'}</span>
+        <span>{checkedLabel(study)}{!PUBLISHED[study.slug] && ' · draft, not published'}</span>
       </span>
       <div className="cvv-actions">{children}</div>
     </header>
@@ -31,7 +31,7 @@ export function CaseStudyViewer({ study, open, onClose }: { study: CaseStudy | n
     if (!open) return
     const root = document.documentElement
     root.classList.add('cv-open')
-    // Focus the dialog, not its close button: opened from a link (/#frunt) with no tap yet, the
+    // Focus the dialog, not its close button: opened from a link (/#<slug>) with no tap yet, the
     // browser would draw a keyboard focus ring on the button. Tab still reaches the buttons first.
     dialog.current?.focus()
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }

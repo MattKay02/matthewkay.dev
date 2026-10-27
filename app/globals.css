@@ -536,6 +536,9 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
   .layers button { flex: none; }
   .install, .cap.hero .icon-links { display: none; }
   .cap-nav { position: sticky; bottom: 0; padding-top: 8px; background: var(--panel-bg); }
+  /* A case study's three decisions, tighter, so "Read the case study" clears Back and Next. */
+  .calls li { padding-block: 7px; font-size: 14px; line-height: 1.4; }
+  .calls li::before { top: 9px; }
 }
 
 /* Explore (Explore.tsx): the whole board as a picture to pinch and drag, for touch screens. */

@@ -15,6 +15,7 @@
     "board": "node scripts/build-board.mjs",
     "readme": "node scripts/build-readme.mjs",
     "frunt": "node scripts/fetch-frunt.mjs",
+    "mgk": "node scripts/fetch-mgk.mjs",
     "screens": "node scripts/fetch-screens.mjs"
   },
   "repository": {
