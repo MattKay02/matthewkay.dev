@@ -297,7 +297,7 @@ function Wire({ box: [x, y, w, h], children }: { box: [number, number, number, n
   )
 }
 
-/** Arrows between the MGKFitness phones: Liftio → Lift, and Lift ↔ Run. */
+/** Arrows between the MGKFitness phones: Liftio → Lift, and Lift ↔ Run (one account; neither app reads the other's training yet). */
 function MgkWires() {
   return (
     <Wire box={[2590, 2820, 1030, 600]}>
@@ -311,8 +311,8 @@ function MgkWires() {
         <text x={2620} y={2862}>Rebuilt</text>
         <polyline className="mute" points="2695,2896 2695,3390 2814,3390" fill="none" strokeWidth={2} strokeDasharray="8 8" />
         <line x1={3376} y1={2920} x2={3584} y2={2920} strokeWidth={3} markerStart="url(#ah)" markerEnd="url(#ah)" />
-        <text x={3386} y={2902}>Shares</text>
-        <text x={3386} y={2952}>your week</text>
+        <text x={3386} y={2902}>One</text>
+        <text x={3386} y={2952}>account</text>
       </g>
     </Wire>
   )
