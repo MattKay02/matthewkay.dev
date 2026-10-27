@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "cv": "node scripts/build-cv.mjs",
-    "cv:private": "node scripts/build-cv.mjs --private",
+    "cv": "node scripts/build-cv.mjs --build",
+    "cv:private": "node scripts/build-cv.mjs --build --private",
     "github": "node scripts/fetch-github.mjs",
     "preview": "npx --yes serve out",
     "stores": "node scripts/fetch-stores.mjs",

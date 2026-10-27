@@ -25,9 +25,9 @@ or drag to look around.
   data as the page.
 - **App statuses are checked, not typed.** Every deploy asks the App Store and Google Play which
   listings are live, so an app shows as live, with a button for each store, the day it's approved.
-- My **CV** is generated from the same repo: [`src/data/cv.ts`](src/data/cv.ts) renders
-  [`/cv`](https://matthewkay.dev/cv/), and every deploy prints it to `/cv.pdf`, dated by
-  when the CV last changed.
+- My **CV** is generated from the same repo: [`src/data/cv.ts`](src/data/cv.ts) renders an A4
+  page that's printed to a PDF, dated by when the CV last changed. It's sent on request, not
+  published, so every pull request checks it still fits one page.
 
 ## Design
 
@@ -47,7 +47,7 @@ data work.
 npm install
 npm run dev       # http://localhost:3000
 npm run build     # static site in out/
-npm run cv        # print the CV to out/cv.pdf (after build)
+npm run cv        # build with the CV in it, then print it to out/cv.pdf
 npm run og        # the share image, out/og.png (after build)
 npm run github    # refresh the contribution graph and the skills snapshot
 npm run stores    # check which App Store and Google Play listings are live
