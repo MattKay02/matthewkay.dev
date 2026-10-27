@@ -158,8 +158,14 @@ export const LINKS = {
   tiktok: 'https://www.tiktok.com/@matthewkaydev',
   mgkcodes: 'https://mgkcodes.com',
   skills: 'https://github.com/MattKay02/skills',
-  email: 'mattykay2002@gmail.com',
+  email: 'hello@matthewkay.dev',
 }
+
+/**
+ * The CV is sent on request, never published (Matthew, 27 Oct 2026: AI tools
+ * looking up frunt were reading it). Every CV button opens this email.
+ */
+export const CV_REQUEST = `mailto:${LINKS.email}?subject=${encodeURIComponent('CV request')}&body=${encodeURIComponent("Hi Matthew,\n\nCould you send me your CV? It's for this role:\n\n")}`
 
 /** Installs every skill in any agent that supports Agent Skills (`--skill <name>` for one). */
 export const SKILLS_INSTALL = 'npx skills add MattKay02/skills'

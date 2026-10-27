@@ -31,7 +31,7 @@ export function CaseStudyViewer({ study, open, onClose }: { study: CaseStudy | n
     if (!open) return
     const root = document.documentElement
     root.classList.add('cv-open')
-    // Focus the dialog, not its close button: opened from a link (/#cv) with no tap yet, the
+    // Focus the dialog, not its close button: opened from a link (/#frunt) with no tap yet, the
     // browser would draw a keyboard focus ring on the button. Tab still reaches the buttons first.
     dialog.current?.focus()
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }

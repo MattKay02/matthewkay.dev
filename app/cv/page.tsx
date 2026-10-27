@@ -1,15 +1,17 @@
-// The standalone CV page: the same viewer design as on the workbench. Printed by
-// scripts/build-cv.mjs to /cv.pdf.
+// The CV as a page, printed by scripts/build-cv.mjs to the PDF that's emailed
+// on request. Not on the public site: there it renders the 404 (src/cv/flags.ts).
 import type { Metadata } from 'next'
-import { CvPageShell } from '@/cv/CvViewer'
+import { notFound } from 'next/navigation'
+import { CvPageShell } from '@/cv/CvPage'
+import { SHOW_CV } from '@/cv/flags'
 import { cvUpdated } from '@/cv/updated'
 
 export const metadata: Metadata = {
   title: 'Matthew Kay · CV',
-  description: 'CV of Matthew Kay, product engineer and founder of MGKCodes.',
-  alternates: { canonical: '/cv/' },
+  robots: { index: false, follow: false },
 }
 
 export default async function CvPage() {
+  if (!SHOW_CV) notFound()
   return <CvPageShell updated={await cvUpdated()} />
 }

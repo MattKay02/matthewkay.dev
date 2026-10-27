@@ -104,16 +104,16 @@ src/workbench/
   screens.ts           product screens by product + id, from the products' feeds (saved copy as fallback)
   icons.tsx            link icons and the MGKCodes monogram
   Explore.tsx          Explore the board: the whole-board picture to pinch and drag (touch screens)
-app/cv/page.tsx        the standalone CV page
+app/cv/page.tsx        the CV page (dev, previews and CV_BUILD=1 only; the 404 on the public site)
 app/work/frunt/page.tsx  the frunt case study as a standalone page (404 until published)
 src/case-studies/      frunt.ts (the case study as data), frunt-board.ts (the board stop's
                        milestones + decisions), flags.ts (published?), CaseStudySheet,
                        CaseStudyViewer (viewer over the board + page shell), case-study.css
-src/cv/                CvSheet (the A4 CV), CvViewer (viewer over the board + page shell),
+src/cv/                CvSheet (the A4 CV), CvPage (the page shell), flags.ts (SHOW_CV),
                        updated.ts (git date of cv.ts), cv.css
 src/seo/describe.ts    JSON-LD and /llms.txt, built from the same data as the page
 src/data/
-  cv.ts                Matthew's CV as data: the single source for /cv and /cv.pdf
+  cv.ts                Matthew's CV as data: the single source for /cv and the PDF
   github.json          contribution calendar (generated)
   skills.json          skills manifest snapshot (generated; the live fetch overrides it)
   skill-tests.json     the skills' eval results snapshot (generated; same)
@@ -125,7 +125,7 @@ scripts/fetch-github.mjs   refreshes the graph and skills snapshots: `npm run gi
 scripts/fetch-stores.mjs   checks the App Store and Google Play: `npm run stores`
 scripts/fetch-frunt.mjs    counts frunt's figures from its repo: `npm run frunt`
 scripts/fetch-screens.mjs  reads the products' screens: `npm run screens`
-scripts/build-cv.mjs       prints /cv to out/cv.pdf after a build: `npm run cv`
+scripts/build-cv.mjs       builds with the CV in it and prints /cv to out/cv.pdf: `npm run cv`
 scripts/build-og.mjs       photographs /og/ to out/og.png after a build: `npm run og`
 scripts/build-board.mjs    photographs the whole board to out/board-{light,dark}.jpg: `npm run board`
 scripts/build-readme.mjs   photographs the README visuals (light + dark, 2x): `npm run readme`
@@ -138,7 +138,7 @@ docs/                  architecture, design system, screens-feed spec, storyboar
 ```
 
 **Commands**: `npm run dev` (dev server, http://localhost:3000) · `npm run build` (static site in
-`out/`) · `npm run cv` (print the CV PDF; run after build) · `npm run cv:private` (copy with phone
+`out/`) · `npm run cv` (build with the CV in it, then print the PDF) · `npm run cv:private` (copy with phone
 number, see below) · `npm run github` (refresh contribution graph + skills snapshot) ·
 `npm run stores` (refresh store statuses) · `npm run frunt` (refresh frunt's figures; says
 which frunt decision records are newer than the case study) · `npm run screens` (refresh the
@@ -148,24 +148,32 @@ after build) · `npm run preview`.
 ### The CV is code
 
 `src/data/cv.ts` is the **only** source of Matthew's CV. `/cv` renders it as an A4 page and
-`scripts/build-cv.mjs` prints that page to `/cv.pdf` on every deploy, stamped "Updated" with the
-date `cv.ts` last changed in git, not the build date (from GitHub's API when the build's clone is
-shallow, as on Vercel). To update the CV: edit `cv.ts`, commit,
-push. Rules:
+`scripts/build-cv.mjs` prints that page to a PDF, stamped "Updated" with the date `cv.ts` last
+changed in git, not the build date (from GitHub's API when the build's clone is shallow, as on
+Vercel). To update the CV: edit `cv.ts`, commit, push; CI and the Vercel preview print it on the
+pull request. Rules:
 
+- **Never on the public site** (Matthew, 27 Oct 2026: AI tools looking up frunt were reading the
+  CV, including "looking for a junior role" next to frunt). Every CV button says "Request CV" and
+  opens an email (`CV_REQUEST` in `stops.ts`); Matthew replies with the PDF from
+  `npm run cv:private`. `/cv` exists only in dev, on Vercel previews (behind Vercel's login) and
+  with `CV_BUILD=1` (`SHOW_CV` in `src/cv/flags.ts`); on the public site it's the 404, `noindex`,
+  and there's no `/cv.pdf`. The page is a server component so the CV's text never reaches a
+  script bundle; keep it that way (no `'use client'` on anything that imports `cv.ts`). The search
+  data and `/llms.txt` describe Matthew with `SUMMARY` in `src/seo/describe.ts`, never
+  `cv.profile`. After a change, check the production build: `grep -r "De La Salle" out/` must
+  find nothing.
 - **One A4 page.** The CV build fails, with how many pixels it's over, if it overflows. Trim
   content rather than shrinking type. Vercel prints it on Linux, where text can wrap a little
   differently, so keep a few percent spare locally (the script reports the real fill and warns
   above 98%). Every weight the CV uses must be loaded in `app/layout.tsx`; a faked weight renders
   at different widths on different systems.
-- **Never commit a phone number.** The public PDF has none. `CV_PHONE="…" npm run cv:private`
-  writes a copy with it to `private/` (gitignored) for sending directly.
+- **Never commit a phone number.** `$env:CV_PHONE="…"; npm run cv:private` (PowerShell) writes
+  the copy to send, with it, to `private/` (gitignored).
 - Same copy rules as the site: true statuses, no em dashes, specific results. Links come from
   `LINKS` in `stops.ts`, so they can't drift from the site.
-- **View, then download.** Every CV button on the site says "View CV" and opens the viewer
-  (`src/cv/CvViewer.tsx`) over the board: the CV on the site's own desk, with Download PDF in its
-  bar. `/#cv` opens it directly; `/cv` is the same design as a standalone page. The sheet itself
-  is `src/cv/CvSheet.tsx`, shared by the viewer, the page and the PDF.
+- Old `/#cv` links land on the Contact stop, next to Request CV. The sheet is
+  `src/cv/CvSheet.tsx`, shared by the page and the PDF.
 
 ### Case studies are code
 
@@ -258,7 +266,8 @@ Everything here is generated from the same data as the page; never hand-write an
   everyone and points to it.
 - **Share image**: `app/og/page.tsx` (real CSS, light Paper), photographed at 1200 × 630 into
   `/og.png` on every deploy by `scripts/build-og.mjs`; used for Open Graph and X cards.
-- Canonical URLs on `/` and `/cv/`; `sitemap.xml` lists both.
+- A canonical URL on `/`; `sitemap.xml` lists it (and `/work/frunt/` once published). No CV
+  (see "The CV is code").
 - **Case-study README visuals**: `app/readme/<product>/` lays out fixed-size canvases from the
   board's own pieces (Apple frames, part tiles, live store status). `scripts/build-readme.mjs`
   photographs each in light and dark at 2x into `/readme/<product>/<name>-<theme>.png`, and the

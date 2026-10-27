@@ -1,8 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
-import { FiFileText, FiMoon, FiSun } from 'react-icons/fi'
-import { CvViewer } from '@/cv/CvViewer'
+import { FiMail, FiMoon, FiSun } from 'react-icons/fi'
 import { ExploreViewer } from './Explore'
 import { CaseStudyViewer } from '@/case-studies/CaseStudyViewer'
 import { BOARD_DECISIONS } from '@/case-studies/frunt-board'
@@ -13,7 +12,7 @@ import { mountWorkbench, type WorkbenchApi } from './controller'
 import { FaGithub, FaLinkedin, IconLinks } from './icons'
 import { AppRow } from './apps'
 import { skillId, useSkills } from './Skills'
-import { CHAPTERS, LINKS, NAV_ITEMS, SHOW_SLOTS, SKILLS_INSTALL, stops, type Stop } from './stops'
+import { CHAPTERS, CV_REQUEST, LINKS, NAV_ITEMS, SHOW_SLOTS, SKILLS_INSTALL, stops, type Stop } from './stops'
 
 /** The progress bar's buttons: one per run of stops in the same cluster, so each is at least 24px
  * wide (the WCAG target size) however many stops there are. Each stop is still its own bar. */
@@ -24,7 +23,7 @@ const TICK_RUNS = stops.reduce<number[][]>((runs, s, j) => {
 }, [])
 
 /** `caseStudy` is passed only while it is visible (published, or a draft in dev), so unpublished copy never reaches the built site. */
-export default function Workbench({ cvUpdated, caseStudy = null }: { cvUpdated: string; caseStudy?: CaseStudy | null }) {
+export default function Workbench({ caseStudy = null }: { caseStudy?: CaseStudy | null }) {
   const world = useRef<HTMLDivElement>(null)
   const stage = useRef<HTMLDivElement>(null)
   const track = useRef<HTMLDivElement>(null)
@@ -39,9 +38,6 @@ export default function Workbench({ cvUpdated, caseStudy = null }: { cvUpdated: 
 
   const [shown, setShown] = useState(0)
   const [dark, setDark] = useState(false)
-  const [cvOpen, setCvOpen] = useState(false)
-  const openCv = useCallback(() => setCvOpen(true), [])
-  const closeCv = useCallback(() => setCvOpen(false), [])
   const [exploreOpen, setExploreOpen] = useState(false)
   const openExplore = useCallback(() => setExploreOpen(true), [])
   const closeExplore = useCallback(() => setExploreOpen(false), [])
@@ -58,7 +54,7 @@ export default function Workbench({ cvUpdated, caseStudy = null }: { cvUpdated: 
     const a = mountWorkbench(els as { [K in keyof typeof els]: NonNullable<(typeof els)[K]> }, stops, setShown)
     api.current = a
     if (document.documentElement.dataset.theme === 'dark') { setDark(true); paintThemeColor(true) }
-    if (location.hash === '#cv') setCvOpen(true) // a shareable link straight to the CV
+    if (location.hash === '#cv') a.goCluster('contact') // old links to the CV land where it can be requested
     if (location.hash === '#frunt' && caseStudy) setCaseOpen(true) // and to the case study
     return () => { a.destroy(); api.current = null }
   }, [])
@@ -78,7 +74,7 @@ export default function Workbench({ cvUpdated, caseStudy = null }: { cvUpdated: 
       <div id="track" ref={track} aria-hidden="true" />
       <div className="stage" ref={stage}>
         <div className="world" ref={world}>
-          <Board onCv={openCv} />
+          <Board />
         </div>
       </div>
       <div className="you" ref={you} aria-hidden="true">You</div>
@@ -101,7 +97,7 @@ export default function Workbench({ cvUpdated, caseStudy = null }: { cvUpdated: 
             </button>
             <a className="ibtn" href={LINKS.github} target="_blank" rel="noopener" aria-label="GitHub"><FaGithub aria-hidden="true" /></a>
             <a className="ibtn" href={LINKS.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn"><FaLinkedin aria-hidden="true" /></a>
-            <button type="button" className="btn solid" onClick={openCv}>CV <FiFileText aria-hidden="true" /></button>
+            <a className="btn solid" href={CV_REQUEST}>Request CV <FiMail aria-hidden="true" /></a>
           </div>
         </div>
       </header>
@@ -121,7 +117,7 @@ export default function Workbench({ cvUpdated, caseStudy = null }: { cvUpdated: 
           ))}
         </div>
         <div className="cap-body swap" key={shown} aria-live="polite">
-          <GuideBody stop={stop} onCv={openCv} onCase={openCase} onExplore={openExplore} onGo={(c) => api.current?.goCluster(c)} onTile={(id) => api.current?.focusTile(id)} />
+          <GuideBody stop={stop} onCase={openCase} onExplore={openExplore} onGo={(c) => api.current?.goCluster(c)} onTile={(id) => api.current?.focusTile(id)} />
         </div>
         <div className="cap-nav">
           <button type="button" className="nav-prev" disabled={shown === 0} onClick={() => api.current?.prev()}><span aria-hidden="true">←</span> Back</button>
@@ -134,7 +130,6 @@ export default function Workbench({ cvUpdated, caseStudy = null }: { cvUpdated: 
         <p className="hint">Scroll, use the ← → keys, or drag to look around</p>
       </aside>
 
-      <CvViewer open={cvOpen} onClose={closeCv} updated={cvUpdated} />
       <ExploreViewer open={exploreOpen} onClose={closeExplore} />
       <CaseStudyViewer study={caseStudy} open={caseOpen} onClose={closeCase} />
 
@@ -162,8 +157,8 @@ function Slots({ one }: { one?: boolean }) {
   )
 }
 
-function GuideBody({ stop, onCv, onCase, onExplore, onGo, onTile }: {
-  stop: Stop; onCv: () => void; onCase: () => void; onExplore: () => void; onGo: (c: Stop['c']) => void; onTile: (id: string) => void
+function GuideBody({ stop, onCase, onExplore, onGo, onTile }: {
+  stop: Stop; onCase: () => void; onExplore: () => void; onGo: (c: Stop['c']) => void; onTile: (id: string) => void
 }) {
   const [copied, setCopied] = useState('')
   const copy = (text: string) => {
@@ -189,7 +184,7 @@ function GuideBody({ stop, onCv, onCase, onExplore, onGo, onTile }: {
         <>
           <div className="apps"><AppRow app="frunt" /><AppRow app="run" /><AppRow app="lift" /></div>
           <div className="ctas">
-            <button type="button" className="btn solid" onClick={onCv}>View CV</button>
+            <a className="btn solid" href={CV_REQUEST}>Request CV</a>
             <button type="button" className="btn ghost" onClick={() => onGo('contact')}>Get in touch</button>
           </div>
           <IconLinks />
@@ -217,7 +212,7 @@ function GuideBody({ stop, onCv, onCase, onExplore, onGo, onTile }: {
           <div className="mail"><code>{LINKS.email}</code><button type="button" className="btn ghost" onClick={() => copy(LINKS.email)}>{copied || 'Copy'}</button></div>
           <IconLinks />
           <div className="ctas">
-            <button type="button" className="btn solid" onClick={onCv}>View CV</button>
+            <a className="btn solid" href={CV_REQUEST}>Request CV</a>
           </div>
         </>
       )}

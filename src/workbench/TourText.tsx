@@ -3,7 +3,7 @@
 // don't run JavaScript would only ever get the first stop. Same words as the panel.
 import { appStatus, statusText, type AppKey } from './apps'
 import { FRUNT_PARTS, MGK_PARTS, type Part } from './products'
-import { LINKS, SKILLS_INSTALL, stops } from './stops'
+import { CV_REQUEST, LINKS, SKILLS_INSTALL, stops } from './stops'
 import { BOARD_DECISIONS } from '@/case-studies/frunt-board'
 import { SKILLS, skillText } from './skills-data'
 
@@ -53,7 +53,7 @@ export default function TourText() {
         </article>
       ))}
       <p>
-        <a href="/cv/">CV</a> (<a href="/cv.pdf">PDF</a>) · <a href={LINKS.github}>GitHub</a> ·{' '}
+        <a href={CV_REQUEST}>CV on request</a> · <a href={LINKS.github}>GitHub</a> ·{' '}
         <a href={LINKS.linkedin}>LinkedIn</a> · <a href={LINKS.x}>X</a> · <a href={LINKS.mgkcodes}>MGKCodes</a> ·{' '}
         <a href={`mailto:${LINKS.email}`}>{LINKS.email}</a>
       </p>

@@ -2,13 +2,13 @@
 // a 12-column grid (column 103, gutter 24, starting at x 130).
 import type { CSSProperties, ReactNode } from 'react'
 import gh from '@/data/github.json'
-import { FiFileText } from 'react-icons/fi'
+import { FiMail } from 'react-icons/fi'
 import { FaGithub, IconLinks } from './icons'
 import {
   Brief, Browser, Callout, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Step, Tile, Title,
 } from './parts'
 import SkillsPipeline, { type Column } from './Skills'
-import { SHOW_SLOTS, type Cluster } from './stops'
+import { CV_REQUEST, LINKS, SHOW_SLOTS, type Cluster } from './stops'
 import { AppRow } from './apps'
 import { FRUNT_PARTS, FRUNT_SITE_FOCUS, FRUNT_SITE_Y, MGK_PARTS, type Part } from './products'
 import { FRUNT_SCREENS, MGK_SCREENS, phone, slide } from './screens'
@@ -62,7 +62,7 @@ function GitHubGraph() {
   )
 }
 
-function Hero({ onCv }: { onCv: () => void }) {
+function Hero() {
   return (
     <>
       <div className="cols hx" data-c="hero" aria-hidden="true" style={{ left: 130, top: 130, width: 1500, height: 970, ...d('0s') }} />
@@ -79,7 +79,7 @@ function Hero({ onCv }: { onCv: () => void }) {
       </figure>
       <GitHubGraph />
       <div className="hero-links hx" data-c="hero" style={{ left: 130, top: 990, ...d('.55s') }}><IconLinks size="lg" /></div>
-      <button type="button" className="hcv hx" data-c="hero" onClick={onCv} style={{ left: 1273, top: 990, ...d('.6s') }}>View CV<FiFileText aria-hidden="true" /></button>
+      <a className="hcv hx" data-c="hero" href={CV_REQUEST} style={{ left: 1273, top: 990, ...d('.6s') }}>Request CV<FiMail aria-hidden="true" /></a>
       <div className="mcursor" data-c="hero" aria-hidden="true">
         <svg viewBox="0 0 24 24"><path d="M4 2.5 L20 11.2 L12.6 13.1 L9.2 20.8 Z" /></svg><span>Matthew</span>
       </div>
@@ -273,15 +273,15 @@ function HowIWork() {
   )
 }
 
-/** Contact mirrors the hero: links on the left, View CV in the photo's column. The CV itself only opens on request. */
-function Contact({ onCv }: { onCv: () => void }) {
+/** Contact mirrors the hero: links on the left, Request CV in the photo's column. The CV is emailed on request, never published. */
+function Contact() {
   return (
     <>
       <Title c="contact" x={120} y={3895} size={200}>Let&apos;s</Title>
       <Title c="contact" x={470} y={3990} size={320} outline xl>Talk</Title>
-      <div className="contactline" data-c="contact" style={{ left: 130, top: 4300 }}>mattykay2002@gmail.com</div>
+      <div className="contactline" data-c="contact" style={{ left: 130, top: 4300 }}>{LINKS.email}</div>
       <div className="hero-links" data-c="contact" style={{ left: 130, top: 4380 }}><IconLinks size="lg" /></div>
-      <button type="button" className="hcv" data-c="contact" onClick={onCv} style={{ left: 1273, top: 4380 }}>View CV<FiFileText aria-hidden="true" /></button>
+      <a className="hcv" data-c="contact" href={CV_REQUEST} style={{ left: 1273, top: 4380 }}>Request CV<FiMail aria-hidden="true" /></a>
     </>
   )
 }
@@ -318,7 +318,7 @@ function MgkWires() {
   )
 }
 
-export default function Board({ onCv }: { onCv: () => void }) {
+export default function Board() {
   return (
     <>
       <Frame c="hero" x={100} y={120} w={1560} h={1000} label="00 · Hero" />
@@ -328,14 +328,14 @@ export default function Board({ onCv }: { onCv: () => void }) {
       <Frame c="about" x={100} y={2880} w={1560} h={900} label="05 · About" />
       <Frame c="how" x={1740} y={4140} w={2920} h={2080} label="04 · How I work" />
       <Frame c="contact" x={100} y={3860} w={1560} h={640} label="06 · Contact" />
-      <Hero onCv={onCv} />
+      <Hero />
       <Frunt />
       <MgkFitness />
       <MgkWires />
       <OtherWork />
       <About />
       <HowIWork />
-      <Contact onCv={onCv} />
+      <Contact />
     </>
   )
 }

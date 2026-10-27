@@ -1,11 +1,18 @@
-// Prints the /cv page to a PDF. Run after `next build`.
+// Prints the /cv page to a PDF. The public site has no CV (src/cv/flags.ts):
+// it's emailed on request, so this is how the copy to send gets made.
 //
-//   npm run cv            → out/cv.pdf (public, no phone number), plus a copy in
+//   npm run cv            → builds the site with the CV in it (CV_BUILD=1), then
+//                           out/cv.pdf (no phone number), plus a copy in
 //                           public/cv.pdf so the dev server can serve it
-//   npm run cv:private    → private/Matthew_Kay_CV.pdf with the phone number from
-//                           CV_PHONE; for sending directly, never deployed
+//   npm run cv:private    → the same build, then private/Matthew_Kay_CV.pdf with
+//                           the phone number from CV_PHONE: the one to send
+//
+// Vercel runs it on preview deployments only, straight after their build (no
+// --build), so a CV change is checked on its pull request.
 //
 // Fails if the CV runs past one A4 page, so it can't quietly overflow.
+import { execSync } from 'node:child_process'
+import { existsSync, readFileSync } from 'node:fs'
 import { copyFile, mkdir } from 'node:fs/promises'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -15,7 +22,12 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const outDir = join(root, 'out')
 const isPrivate = process.argv.includes('--private')
 const phone = process.env.CV_PHONE?.trim()
-if (isPrivate && !phone) throw new Error('Set CV_PHONE to make the private copy, e.g. CV_PHONE="+44 ..." npm run cv:private')
+if (isPrivate && !phone) throw new Error('Set CV_PHONE to make the private copy, e.g. $env:CV_PHONE="+44 ..."; npm run cv:private')
+
+if (process.argv.includes('--build')) execSync('npx next build', { cwd: root, stdio: 'inherit', env: { ...process.env, CV_BUILD: '1' } })
+// Without the CV, /cv is still built, as the 404 page, so look for the sheet itself.
+const cvHtml = join(outDir, 'cv', 'index.html')
+if (!existsSync(cvHtml) || !readFileSync(cvHtml, 'utf8').includes('cv-sheet')) throw new Error('out/ has no CV: build with CV_BUILD=1 first, or run npm run cv, which does.')
 
 const { origin, close } = await serveOut(outDir)
 
