@@ -298,10 +298,15 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
   webhook answers, it doesn't 404, so `WHATSAPP_ENABLED` is on in production). The rota and briefs
   are frozen in frunt (ADR 0076, 24 Aug 2026): never sell them on the board. Admin console and outreach + analytics are internal: no admin screenshots until they
   can be captured from the demo restaurant, never a real customer's data.
-- **MGKFitness**: Run and Lift are both live on Google Play (Lift since 6 Oct 2026). Their App
-  Store listings show up on the site by themselves once Apple approves them (Run was in review on
-  5 Oct). Lift is the Flutter rebuild of Liftio; its App Store page still carries Liftio 1.4 until
-  Lift 2.0 ships (Liftio's backend stopped working in Aug 2026, so never present Liftio as live). Repo public by 11 Oct 2026. mgkfitness.mgkcodes.com has no tracking.
+- **MGKFitness**: Run and Lift are live on both stores (checked 27 Oct 2026). Run: Google Play
+  5 Oct, App Store 19 Oct (Apple rejected 1.0.0 on 16 Oct; 1.0.1 was approved). Lift: Google Play
+  6 Oct, App Store 8 Oct as Lift 2.0, an update on Liftio's own listing. Lift is the Flutter
+  rebuild of Liftio. The move to one backend (6 Aug 2026) retired Liftio 1.4's backend on purpose,
+  so never present Liftio as live. One account and one backend serve both apps, but **neither app
+  reads the other's training yet**: never say Lift sees your runs or the coach plans your whole
+  week. Run and Lift each have their own subscription. Liftio 1.4 had 266 exercises. The repo has
+  been public since 7 Oct 2026. mgkfitness.mgkcodes.com has no tracking, and its waiting list
+  came down on 7 Oct.
 - **Other work**: Ledger, MSA (client), Red Cross (client), YouTube clone and Netflix clone
   (practice), FootyScores.
 

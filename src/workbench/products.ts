@@ -25,8 +25,8 @@ const appState = (live: boolean) => (live ? 'Live' : 'In development')
 export const MGK_PARTS: Part[] = [
   { name: 'Run', status: appState(run.live), live: run.live, line: 'Running tracker with an AI training coach.', tech: 'Flutter · GPS · shared design system', focus: '3580,2560,580,650' },
   { name: 'Lift', status: appState(lift.live), live: lift.live, line: 'Strength log with a coach of its own. The rebuild of Liftio.', tech: 'Flutter · shared design system', focus: '2800,2560,580,650' },
-  { name: 'Backend + AI coach', status: run.live ? 'Live' : 'Built', live: run.live, line: 'One account across both apps. The coach plans around your whole week.', tech: 'Supabase · Edge Functions · OpenRouter · RevenueCat', focus: 'self' },
-  { name: 'Website', status: 'Live', live: true, line: 'Scroll film, waiting list, support and legal pages. No tracking, by design.', tech: 'Next.js 16 · Replicate clips', focus: '3860,2080,660,470' },
+  { name: 'Backend + AI coach', status: run.live ? 'Live' : 'Built', live: run.live, line: 'One account across both apps. Plain code checks every plan the coach writes before you see it.', tech: 'Supabase · Edge Functions · OpenRouter · RevenueCat', focus: 'self' },
+  { name: 'Website', status: 'Live', live: true, line: 'Scroll film, support and legal pages. No tracking, by design.', tech: 'Next.js 16 · Replicate clips', focus: '3860,2080,660,470' },
   { name: 'Social', status: 'In development', line: "Posts drawn in Remotion from the site's own words, published through the Instagram API.", tech: 'Remotion · Instagram API', focus: 'self' },
   { name: 'Release ops', status: 'In use', line: 'Store listings and submissions run from Claude Code; builds on Codemagic.', tech: 'App Store Connect · Google Play · Codemagic', focus: 'self' },
 ]

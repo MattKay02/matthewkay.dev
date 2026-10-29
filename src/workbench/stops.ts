@@ -99,18 +99,18 @@ export const stops: Stop[] = [
   {
     c: 'mgk', r: [1740, 2080, 1200, 1160], m: [1770, 2530, 820, 620], nav: 'MGKFitness: Liftio',
     title: 'Liftio. My first App Store app.',
-    body: 'A gym tracker in React Native: 330+ exercises, progress charts, personal bests and cloud backup.',
+    body: 'A gym tracker in React Native: 266 exercises, progress charts, personal bests and cloud backup.',
   },
   {
     c: 'mgk', r: [2560, 2520, 1100, 1060], m: [2790, 2530, 830, 1010], nav: 'MGKFitness: the rebuild',
     title: 'Then I rebuilt it as part of something bigger.',
-    body: 'Lift is Liftio rewritten in Flutter, one app in a suite with Run. I kept the old App Store listing instead of starting fresh: its reviews and history were worth more than a tidy app ID.',
+    body: 'Lift is Liftio rewritten in Flutter, one app in a suite with Run. I kept Liftio\'s App Store listing instead of starting fresh, so anyone who had Liftio got Lift as an update.',
   },
   {
     c: 'mgk', r: [2780, 2520, 1880, 1060], m: [3360, 2530, 800, 700], nav: 'MGKFitness: the suite',
     extra: 'mgkApps',
-    title: 'Two apps that know about each other.',
-    body: 'Log a run in Run and Lift sees it, so the coach plans around your whole week.',
+    title: 'Two apps, one account.',
+    body: 'Sign in to Run and Lift with the same account. Each app works on its own, built on one design system and one backend.',
   },
   {
     c: 'mgk', r: [1740, 2070, 2920, 1940], m: [1770, 3540, 1180, 460], nav: 'MGKFitness: the whole system',
