@@ -28,15 +28,16 @@ export async function cvNote(raw, env) {
   const address = mail.from?.address ?? 'an unknown sender'
   const name = mail.from?.name?.trim() || address
   const said = (mail.text ?? '').trim().slice(0, 4000)
-  const cv = await env.CV.get(CV_KEY)
+  const { value: cv, metadata } = await env.CV.getWithMetadata(CV_KEY, 'arrayBuffer')
+  const built = metadata?.built ? ` ${day(new Date(metadata.built))}` : ''
   const text = [
     `${name} (${address}) asked for your CV.`,
     '',
     said ? `What they wrote:\n\n${said}` : 'They wrote nothing else.',
     '',
     cv
-      ? `The latest CV is attached, built ${day(cv.uploaded)}.`
-      : 'The CV is NOT attached: there is no copy in R2. Run the "Private CV" workflow on GitHub (Actions), or npm run cv:private.',
+      ? `The latest CV is attached, built${built}.`
+      : 'The CV is NOT attached: there is no copy in KV. Run the "Private CV" workflow on GitHub (Actions), or npm run cv:private.',
     '',
     'To answer, reply to their own email (it came to hello@matthewkay.dev) and attach the PDF, so it goes from hello@ rather than your personal address.',
   ].join('\n')
@@ -45,6 +46,6 @@ export async function cvNote(raw, env) {
     to: env.FORWARD_TO,
     subject: `CV request from ${name}`,
     text,
-    attachments: cv ? [{ content: toBase64(await cv.arrayBuffer()), filename: CV_KEY, type: 'application/pdf', disposition: 'attachment' }] : [],
+    attachments: cv ? [{ content: toBase64(cv), filename: CV_KEY, type: 'application/pdf', disposition: 'attachment' }] : [],
   }
 }

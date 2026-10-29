@@ -145,7 +145,7 @@ scripts/build-readme.mjs   photographs the README visuals (light + dark, 2x): `n
 scripts/headless.mjs       shared by both: serves out/ and launches headless Chrome
 scripts/vercel-*.sh        Vercel's install and build steps (see vercel.json)
 workers/cv-request/        hello@matthewkay.dev's email worker: forwards all mail, attaches the CV to CV requests
-.github/workflows/cv.yml   prints the private CV into R2 for that worker (cv.ts changes and daily)
+.github/workflows/cv.yml   prints the private CV into that worker's KV store (cv.ts changes and daily)
 vercel.json                also the bios' short links: /ig /th /x /tt /in go to social.mgkcodes.com/go/matt-*,
                            which counts the click for the desk and lands on /connect (or / for LinkedIn)
 public/work/           every image on the board, the Apple frames and the app icons
@@ -197,8 +197,10 @@ pull request. Rules:
   himself: nothing is ever sent to the person asking, so bots and AI tools never get the CV.
   `.github/workflows/cv.yml` keeps that CV current (on a `cv.ts` change and daily, as the
   "Live on" lines follow the stores): it prints `npm run cv:private` with the `CV_PHONE`
-  secret into the private R2 bucket `matthewkay-cv`, never as a workflow artifact (the repo is
-  public). The worker's `FORWARD_TO` (his inbox) is a worker secret, never in this repo.
+  secret into the worker's private Workers KV store, never as a workflow artifact (the repo is
+  public). The worker's `FORWARD_TO` (his inbox) is a worker secret, never in this repo. It
+  runs on Matthew's personal Cloudflare account (`account_id` in its `wrangler.toml`), where
+  the matthewkay.dev zone lives.
   `npm test` in `workers/cv-request` covers the rules; `wrangler dev` runs it locally.
 
 ### Case studies are code

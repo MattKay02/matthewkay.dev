@@ -7,16 +7,22 @@
 #                                          public repo
 # Then in Email Routing, point the hello@matthewkay.dev rule at this worker.
 name = "cv-request"
+# Matthew's personal Cloudflare account, which holds the matthewkay.dev zone (moved off
+# MGKCodes on 29 Oct 2026). Pinned so a deploy can't land in another account.
+account_id = "b3e34bfa1dce30e7409e923c2a71be6b"
 main = "src/index.js"
+# Email only: no public HTTP address.
+workers_dev = false
 compatibility_date = "2026-10-15"
 
 [vars]
 SEND_FROM = "hello@matthewkay.dev"
 
 # The private CV, phone number and all: written by .github/workflows/cv.yml, read only here.
-[[r2_buckets]]
+# Workers KV rather than R2: it needs nothing switched on (or paid for) in the account.
+[[kv_namespaces]]
 binding = "CV"
-bucket_name = "matthewkay-cv"
+id = "288a4d263369449cb5c57ad79af6582e"
 
 # Sends only to verified Email Routing destinations (Matthew's inbox), never to the
 # person asking.

@@ -2,7 +2,7 @@ name: Private CV
 
 # Keeps the CV that hello@matthewkay.dev attaches to CV requests current
 # (workers/cv-request). Prints the private copy, with the phone number from the
-# CV_PHONE secret, and puts it in the private R2 bucket the worker reads.
+# CV_PHONE secret, and puts it in the worker's private KV store.
 # Never as a workflow artifact: this repo is public, and so are its artifacts.
 on:
   push:
@@ -23,14 +23,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CV_PHONE: ${{ secrets.CV_PHONE }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_TOKEN }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_KV_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - name: Check the secrets
         id: ready
         run: |
           if [ -z "$CV_PHONE" ] || [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "::warning::CV_PHONE, CLOUDFLARE_R2_TOKEN or CLOUDFLARE_ACCOUNT_ID is not set, so no private CV was made"
+            echo "::warning::CV_PHONE, CLOUDFLARE_KV_TOKEN or CLOUDFLARE_ACCOUNT_ID is not set, so no private CV was made"
             echo "ok=false" >> "$GITHUB_OUTPUT"
           else
             echo "ok=true" >> "$GITHUB_OUTPUT"
@@ -54,6 +54,9 @@ jobs:
       - name: Print the private CV
         if: steps.ready.outputs.ok == 'true'
         run: npm run cv:private
-      - name: Put it in the private bucket
+      - name: Put it in the worker's KV store
         if: steps.ready.outputs.ok == 'true'
-        run: npx --yes wrangler@4 r2 object put matthewkay-cv/Matthew_Kay_CV.pdf --file private/Matthew_Kay_CV.pdf --content-type application/pdf --remote
+        run: |
+          npx --yes wrangler@4 kv key put Matthew_Kay_CV.pdf --path private/Matthew_Kay_CV.pdf \
+            --namespace-id 288a4d263369449cb5c57ad79af6582e --remote \
+            --metadata "{\"built\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"

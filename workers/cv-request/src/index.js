@@ -1,7 +1,7 @@
 // hello@matthewkay.dev's mail, with one addition. Request CV on the site opens an email
 // to hello@ with the subject "CV request". Every email is forwarded to Matthew as
 // before; a CV request also gets a second email to him with the latest private CV
-// attached (R2, kept current by .github/workflows/cv.yml), ready to send.
+// attached (Workers KV, kept current by .github/workflows/cv.yml), ready to send.
 // Nothing ever goes to the person asking: Matthew answers them himself, so a bot or an
 // AI tool that sends "CV request" never gets the CV or the phone number on it.
 import { cvNote, isCvRequest } from './cv.js'

@@ -1,4 +1,4 @@
-// node --test: the worker's rules, with a fake message, R2 bucket and send binding.
+// node --test: the worker's rules, with a fake message, KV store and send binding.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import worker from '../src/index.js'
@@ -9,7 +9,7 @@ const rawEmail = (subject, body, extra = '') => new TextEncoder().encode(
   `From: "Jane Smith" <jane@acme.example>\r\nTo: hello@matthewkay.dev\r\nSubject: ${subject}\r\nMessage-ID: <1@acme.example>\r\n${extra}Content-Type: text/plain; charset=utf-8\r\n\r\n${body}\r\n`,
 ).buffer
 const pdf = new TextEncoder().encode('%PDF-1.7 fake').buffer
-const bucket = (has) => ({ get: async (k) => (has && k === CV_KEY ? { uploaded: new Date('2026-10-29T06:00:00Z'), arrayBuffer: async () => pdf } : null) })
+const bucket = (has) => ({ getWithMetadata: async (k, type) => (has && k === CV_KEY && type === 'arrayBuffer' ? { value: pdf, metadata: { built: '2026-10-29T06:00:00Z' } } : { value: null, metadata: null }) })
 const env = (has = true, sent = []) => ({ CV: bucket(has), SEND_FROM: 'hello@matthewkay.dev', FORWARD_TO: 'me@inbox.example', NOTIFY: { send: async (m) => { sent.push(m); return { messageId: 'x' } } } })
 
 test('the Request CV subject, and plain variants, count as CV requests', () => {
@@ -40,7 +40,7 @@ test('the note names who asked, quotes them, and attaches the CV to Matthew only
   assert.equal(note.replyTo, undefined) // a reply from this note would go from his personal address
 })
 
-test('with no CV in R2 the note still arrives and says so', async () => {
+test('with no CV in KV the note still arrives and says so', async () => {
   const note = await cvNote(rawEmail('CV request', 'Hi'), env(false))
   assert.equal(note.attachments.length, 0)
   assert.match(note.text, /NOT attached/)
