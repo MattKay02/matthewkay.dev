@@ -3,10 +3,9 @@
 // specific, no em dashes, and statuses never typed by hand (live state comes
 // from stores.json via liveOn(), figures from mgk-stats.json).
 //
-// DRAFT. The Why and the lead lesson are Matthew's (27 Oct 2026); the rest is
-// drafted from the mgk-fitness repo and waits for his read. It publishes only
-// once he approves it AND the coach checks AI consent at the server for both
-// apps (src/case-studies/flags.ts).
+// Approved by Matthew (29 Oct 2026). The Why and the lead lesson are his; the
+// rest is drafted from the mgk-fitness repo. It publishes once the coach checks
+// AI consent at the server for both apps (src/case-studies/flags.ts).
 //
 // Matthew's rules for this one (27 Oct): the story starts at Run, with Liftio as
 // background. Competitors' prices, never their names (checked on the UK App
