@@ -5,6 +5,7 @@
 npm run github || echo "GitHub refresh failed: using the snapshot in src/data/github.json"
 npm run stores || echo "Store check failed: using the snapshot in src/data/stores.json"
 npm run frunt || echo "frunt figures failed: using the snapshot in src/data/frunt-stats.json"
+npm run mgk || echo "MGKFitness figures failed: using the snapshot in src/data/mgk-stats.json"
 npm run screens || echo "Screens feed failed: using the snapshot in src/data/screens.json"
 # 2. Build the static site into out/, then photograph /og/ into out/og.png, the
 #    whole board into out/board-*.jpg (Explore on phones), and the case-study

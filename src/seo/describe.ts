@@ -5,7 +5,7 @@
 //
 // The CV itself never goes here: it's emailed on request (src/cv/flags.ts),
 // and the public line about Matthew is SUMMARY, not the CV's profile.
-import { FRUNT_PUBLISHED } from '@/case-studies/flags'
+import { FRUNT_PUBLISHED, MGK_PUBLISHED } from '@/case-studies/flags'
 import { cv } from '@/data/cv'
 import { appStatus, statusText, type AppKey } from '@/workbench/apps'
 import { FRUNT_PARTS, MGK_PARTS, type Part } from '@/workbench/products'
@@ -96,6 +96,7 @@ export function llmsText(): string {
     '',
     `- CV: on request, by email to ${LINKS.email}`,
     ...(FRUNT_PUBLISHED ? [`- [frunt case study](${SITE}/work/frunt/): why I built it, the decisions, what went wrong and what I learnt`] : []),
+    ...(MGK_PUBLISHED ? [`- [MGKFitness case study](${SITE}/work/mgkfitness/): Run and Lift, from the first decision to both stores`] : []),
     `- [GitHub](${LINKS.github})`,
     `- [LinkedIn](${LINKS.linkedin})`,
     `- [X](${LINKS.x})`,

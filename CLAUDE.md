@@ -105,10 +105,12 @@ src/workbench/
   icons.tsx            link icons and the MGKCodes monogram
   Explore.tsx          Explore the board: the whole-board picture to pinch and drag (touch screens)
 app/cv/page.tsx        the CV page (dev, previews and CV_BUILD=1 only; the 404 on the public site)
-app/work/frunt/page.tsx  the frunt case study as a standalone page (404 until published)
-src/case-studies/      frunt.ts (the case study as data), frunt-board.ts (the board stop's
-                       milestones + decisions), flags.ts (published?), CaseStudySheet,
-                       CaseStudyViewer (viewer over the board + page shell), case-study.css
+app/work/<slug>/page.tsx the case studies as standalone pages: frunt, mgkfitness (404 until published)
+src/case-studies/      types.ts (the CaseStudy shape), frunt.ts + mgkfitness.ts (each case study
+                       as data), boards.ts + frunt-board.ts + mgk-board.ts (each "how it was built"
+                       stop's milestones + decisions), flags.ts (published?), format.ts (dates),
+                       CaseStudySheet, CaseStudyViewer (viewer over the board + page shell),
+                       case-study.css
 src/cv/                CvSheet (the A4 CV), CvPage (the page shell), flags.ts (SHOW_CV),
                        updated.ts (git date of cv.ts), cv.css
 src/seo/describe.ts    JSON-LD and /llms.txt, built from the same data as the page
@@ -120,10 +122,12 @@ src/data/
   apps.json            app facts: names, icons, store ids, websites (edited by hand)
   stores.json          which store listings are live (generated)
   frunt-stats.json     frunt's build figures + latest answer-accuracy run (generated)
+  mgk-stats.json       MGKFitness's build figures + which apps the coach checks consent for (generated)
   screens.json         each product's bare screens, from its /studio.json (generated)
 scripts/fetch-github.mjs   refreshes the graph and skills snapshots: `npm run github`
 scripts/fetch-stores.mjs   checks the App Store and Google Play: `npm run stores`
 scripts/fetch-frunt.mjs    counts frunt's figures from its repo: `npm run frunt`
+scripts/fetch-mgk.mjs      counts MGKFitness's figures from its public repo: `npm run mgk`
 scripts/fetch-screens.mjs  reads the products' screens: `npm run screens`
 scripts/build-cv.mjs       builds with the CV in it and prints /cv to out/cv.pdf: `npm run cv`
 scripts/build-og.mjs       photographs /og/ to out/og.png after a build: `npm run og`
@@ -141,7 +145,8 @@ docs/                  architecture, design system, screens-feed spec, storyboar
 `out/`) · `npm run cv` (build with the CV in it, then print the PDF) · `npm run cv:private` (copy with phone
 number, see below) · `npm run github` (refresh contribution graph + skills snapshot) ·
 `npm run stores` (refresh store statuses) · `npm run frunt` (refresh frunt's figures; says
-which frunt decision records are newer than the case study) · `npm run screens` (refresh the
+which frunt decision records are newer than the case study) · `npm run mgk` (the same for
+MGKFitness) · `npm run screens` (refresh the
 products' screens) · `npm run og` (share image; run
 after build) · `npm run preview`.
 
@@ -213,6 +218,30 @@ site rebuilds (daily, or any deploy). When it goes public, check desktop + 390px
 the `MattKay02/frunt` README at `/work/frunt/`. `/work/frunt/` joins the sitemap by itself
 (`app/sitemap.ts`).
 
+**MGKFitness** (`src/case-studies/mgkfitness.ts`, `/work/mgkfitness`, `/#mgkfitness`, the
+**MGKFitness: how it was built** stop) is the second, in the same format and the same machinery:
+`CaseStudy` (`types.ts`) takes several `apps`, its own `figures`, `shot` and `source`, and every
+study's stop is `extra: 'case'` with a `study` slug into `CASE_BOARDS` (`boards.ts`).
+
+- **A draft until two things are true** (`MGK_PUBLISHED` in `flags.ts`): Matthew approves the copy
+  (`MGK_APPROVED`, false since it was drafted on 27 Oct 2026; the Why and the lead lesson are his,
+  the rest is drafted from the repo), and the coach checks AI consent at the server for **both**
+  apps. Its consent card says so, and Matthew chose to wait for both (27 Oct). `npm run mgk` reads
+  `CONSENT_KEYS` in `supabase/functions/coach/consent.ts` on mgk-fitness's `main`: Run's check went
+  live in production on 27 Oct (coach v37, MGKCodes/mgk-fitness#9) but reaches `main` with the next
+  release; Lift's needs a Lift release (its coach switch was on the phone and on by default).
+- **Matthew's rules for its copy (27 Oct):** the story starts at Run (25 Jul 2026), Liftio is
+  background. Competitors' prices, never their names (re-check them). Never "I wanted one app",
+  never one subscription for the suite (Run and Lift each have their own), and never that one app
+  reads the other's training.
+- **Figures**: `npm run mgk` (every build) counts decision records (Run's and Lift's sets),
+  test files, migrations and Edge Functions on mgk-fitness's `main` into `src/data/mgk-stats.json`.
+  The repo is public, so `GITHUB_TOKEN` (or none) is enough. Keeping it true works as for frunt:
+  `lastAdrRead` is `'Run NNNN and Lift NNNN'`, and `npm run mgk` lists newer records.
+- **Phones:** every case stop's card (title, body, three decisions, the button) must fit at
+  390 x 664 with Back and Next pinned; the decision list is tighter there (`.calls` in the phone
+  block of `globals.css`). Re-measure when the copy changes.
+
 **Adding a stop**: add it to `stops.ts` (cluster, `r`, `m`, `nav`, copy). **Adding a project
 part**: add it to `FRUNT_PARTS` / `MGK_PARTS` in `products.ts`. **Moving things**: everything on the
 board is in board pixels; the world is 4760 × 6310 (`WORLD` in `stops.ts`).
@@ -240,6 +269,7 @@ GPU layer in Safari, and two board-sized SVGs crashed iPhones on 6 Oct 2026. Boa
   (`VERCEL_DEPLOY_HOOK` secret). Only per-day counts are stored.
 - **frunt figures**: `src/data/frunt-stats.json`, refreshed by `npm run frunt` on every Vercel build
   (see "Case studies are code"). Counts of paths only; no code or business data leaves frunt-web.
+  MGKFitness's (`mgk-stats.json`, `npm run mgk`) work the same way, from its public repo.
 - **Product screens update themselves** (`docs/screens-feed.md`). Each product keeps its bare
   screens in its own `public/screens/` and lists them by id in its `/studio.json`;
   `npm run screens` (every build) reads them into `src/data/screens.json` and the board loads each
@@ -325,8 +355,9 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
   `mattkay02.github.io` links are caught by a separate tiny repo, `MattKay02/MattKay02.github.io`,
   whose `index.html` and `404.html` send every path to the same path on matthewkay.dev. GitHub
   Pages on this repo is no longer needed (switching it off is Matthew's to do).
-- **Case studies**: frunt is built and approved, waiting on its eval (see "Case studies are code").
-  MGKFitness next, then How I work, in the same format and the same data-first way.
+- **Case studies**: frunt is built and approved, waiting on its eval. MGKFitness is drafted
+  (27 Oct 2026), waiting on Matthew's read and on Lift's consent release (see "Case studies are
+  code"). How I work next, in the same format and the same data-first way.
 - **How I work** and **About** are first ideas.
 - **CV numbers**: deliberately none for now (Matthew, 5 Oct: "nothing yet worth putting on").
   Don't push for metrics; suggest them only when a real milestone lands (e.g. Run's first month

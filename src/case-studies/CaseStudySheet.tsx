@@ -1,25 +1,17 @@
 // A case study as a readable page on the desk: shared by the viewer over the
-// board (/#frunt) and the standalone page (/work/frunt). Pure render, no state.
-// Live status comes from the store data, figures from frunt-stats.json; nothing
-// here is typed by hand that could go stale.
-import stats from '@/data/frunt-stats.json'
+// board (/#<slug>) and the standalone page (/work/<slug>). Pure render, no state.
+// Live status comes from the store data, figures from each product's counting
+// script (in the study's data); nothing here is typed by hand that could go stale.
 import { AppRow } from '@/workbench/apps'
 import { IMG } from '@/workbench/parts'
-import { fmtShort } from './frunt-board'
-import type { CaseStudy, Row } from './frunt'
+import { fmtLong as fmt, fmtShort } from './format'
+import type { CaseStudy, Row } from './types'
 import './case-study.css'
-
-const fmt = (iso: string) =>
-  new Date(iso.slice(0, 10) + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
 
 export const checkedLabel = (s: CaseStudy) => `Last checked ${fmt(s.checked)}`
 
-/** The latest answer-accuracy run, as one line, when there is one. */
-function evalLine(): string | null {
-  const e = stats.eval as null | { date: string; questions: number; scored: { passed: number; total: number }; safety: { passed: number; total: number } }
-  if (!e) return null
-  return `${e.scored.passed} of ${e.scored.total} scored answers right, safety floor ${e.safety.passed} of ${e.safety.total}, on a fixed set of ${e.questions} questions marked by code (${fmt(e.date)}).`
-}
+/** "ADR 0087" for a single set of records, or the study's own label for several. */
+const adrLabel = (s: CaseStudy) => (/^\d+$/.test(s.lastAdrRead) ? `ADR ${s.lastAdrRead}` : s.lastAdrRead)
 
 function Section({ n, title, children }: { n: string; title: string; children: React.ReactNode }) {
   return (
@@ -36,14 +28,14 @@ function Lead({ row }: { row: Row }) {
 
 export default function CaseStudySheet({ study }: { study: CaseStudy }) {
   const m = study.made
-  const evalText = evalLine()
-  const asOf = fmt(stats.generatedAt)
+  const evalText = study.evalText
+  const asOf = fmt(study.counted.at)
   return (
     <article className="cs-sheet">
       <header className="cs-head">
         <span className="cs-kick">Case study · {study.name}</span>
         <h1 className="cs-ttl">{m.line1}<span>{m.line2}</span></h1>
-        <AppRow app={study.app} className="cs-app" />
+        {study.apps.map((app) => <AppRow key={app} app={app} className="cs-app" />)}
         <dl className="cs-facts">
           <div><dt>Where</dt><dd>{m.surfaces}</dd></div>
           <div><dt>Role</dt><dd>{m.role}</dd></div>
@@ -64,8 +56,8 @@ export default function CaseStudySheet({ study }: { study: CaseStudy }) {
       </aside>
 
       <figure className="cs-shot">
-        <img src={IMG('frunt-ask')} width={1280} height={720} alt="frunt answering a question about peanut allergen controls, citing three of the venue's documents" />
-        <figcaption>Every answer names the documents it came from.</figcaption>
+        <img src={IMG(study.shot.img)} width={study.shot.w} height={study.shot.h} alt={study.shot.alt} />
+        <figcaption>{study.shot.caption}</figcaption>
       </figure>
 
       <Section n="01" title="What I made"><p>{m.body}</p></Section>
@@ -105,13 +97,10 @@ export default function CaseStudySheet({ study }: { study: CaseStudy }) {
 
       <Section n="06" title="Where it landed">
         {study.landed.map((p) => <p key={p.slice(0, 24)}>{p}</p>)}
-        <dl className="cs-figs" aria-label={`Counted from frunt's code on ${asOf}`}>
-          <div><dt>{stats.decisionRecords}</dt><dd>decision records</dd></div>
-          <div><dt>{stats.apiRoutes}</dt><dd>API routes</dd></div>
-          <div><dt>{stats.migrations}</dt><dd>database migrations</dd></div>
-          <div><dt>{stats.testFiles}</dt><dd>test files</dd></div>
+        <dl className="cs-figs" aria-label={`Counted from ${study.counted.from} on ${asOf}`}>
+          {study.figures.map((f) => <div key={f.label}><dt>{f.n}</dt><dd>{f.label}</dd></div>)}
         </dl>
-        <p className="cs-asof">Counted from frunt's code on {asOf}, commit {stats.commit}.</p>
+        <p className="cs-asof">Counted from {study.counted.from} on {asOf}, commit {study.counted.commit}.</p>
       </Section>
 
       <Section n="07" title="How I build it with AI">
@@ -128,7 +117,7 @@ export default function CaseStudySheet({ study }: { study: CaseStudy }) {
       </Section>
 
       <footer className="cs-foot">
-        {checkedLabel(study)}, against frunt's code and decision records (up to ADR {study.lastAdrRead}).
+        {checkedLabel(study)}, against {study.source} and its decision records (up to {adrLabel(study)}).
       </footer>
     </article>
   )

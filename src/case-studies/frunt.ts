@@ -8,44 +8,37 @@
 // frunt's code and decision records, and `lastAdrRead` the last record read.
 // To update: read frunt-web's ADRs after `lastAdrRead` and its commits after
 // `checked`; `npm run frunt` prints how many records are new.
-import type { AppKey } from '@/workbench/apps'
+import stats from '@/data/frunt-stats.json'
+import { fmtLong } from './format'
+import type { CaseStudy } from './types'
 
-export interface Row { label: string; text: string }
-export interface Decision {
-  title: string
-  when: string
-  adr?: string
-  rows: Row[]
-  /** A finding list instead of rows (the September card). */
-  items?: Row[]
-  quote?: string
-  /** Ends with the latest answer-accuracy result, read from frunt-stats.json, never typed. */
-  liveEval?: boolean
-}
-
-export interface CaseStudy {
-  slug: string
-  name: string
-  app: AppKey
-  checked: string
-  lastAdrRead: string
-  tldr: Row[]
-  made: { line1: string; line2: string; surfaces: string; role: string; started: string; live: string; body: string }
-  why: { line1: string; line2: string; paras: string[] }
-  aims: Row[]
-  timeline: { date: string; text: string }[]
-  decisions: Decision[]
-  landed: string[]
-  how: { intro: string; steps: Row[] }
-  learnt: { lead: Row; rest: Row[] }
+/** The latest answer-accuracy run, as one line, when there is one. */
+function evalLine(): string | null {
+  const e = stats.eval as null | { date: string; questions: number; scored: { passed: number; total: number }; safety: { passed: number; total: number } }
+  if (!e) return null
+  return `${e.scored.passed} of ${e.scored.total} scored answers right, safety floor ${e.safety.passed} of ${e.safety.total}, on a fixed set of ${e.questions} questions marked by code (${fmtLong(e.date)}).`
 }
 
 export const FRUNT: CaseStudy = {
   slug: 'frunt',
   name: 'frunt',
-  app: 'frunt',
+  apps: ['frunt'],
   checked: '2026-10-06',
   lastAdrRead: '0087',
+  source: "frunt's code",
+  shot: {
+    img: 'frunt-ask', w: 1280, h: 720,
+    alt: "frunt answering a question about peanut allergen controls, citing three of the venue's documents",
+    caption: 'Every answer names the documents it came from.',
+  },
+  figures: [
+    { n: stats.decisionRecords, label: 'decision records' },
+    { n: stats.apiRoutes, label: 'API routes' },
+    { n: stats.migrations, label: 'database migrations' },
+    { n: stats.testFiles, label: 'test files' },
+  ],
+  counted: { from: "frunt's code", at: stats.generatedAt, commit: stats.commit },
+  evalText: evalLine(),
 
   tldr: [
     { label: 'What I made', text: "frunt turns a restaurant's own documents into cited answers and training for staff. Live on the web, the App Store, Google Play and WhatsApp. Built and run by me, solo." },

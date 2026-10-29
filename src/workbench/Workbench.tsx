@@ -4,8 +4,8 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from 're
 import { FiMail, FiMoon, FiSun } from 'react-icons/fi'
 import { ExploreViewer } from './Explore'
 import { CaseStudyViewer } from '@/case-studies/CaseStudyViewer'
-import { BOARD_DECISIONS } from '@/case-studies/frunt-board'
-import type { CaseStudy } from '@/case-studies/frunt'
+import { CASE_BOARDS } from '@/case-studies/boards'
+import type { CaseStudy } from '@/case-studies/types'
 import Board from './Board'
 import { PART_IDS } from './products'
 import { mountWorkbench, type WorkbenchApi } from './controller'
@@ -22,8 +22,8 @@ const TICK_RUNS = stops.reduce<number[][]>((runs, s, j) => {
   return runs
 }, [])
 
-/** `caseStudy` is passed only while it is visible (published, or a draft in dev), so unpublished copy never reaches the built site. */
-export default function Workbench({ caseStudy = null }: { caseStudy?: CaseStudy | null }) {
+/** `caseStudies` holds only the visible ones (published, or drafts in dev and previews), so unpublished copy never reaches the built site. */
+export default function Workbench({ caseStudies = [] }: { caseStudies?: CaseStudy[] }) {
   const world = useRef<HTMLDivElement>(null)
   const stage = useRef<HTMLDivElement>(null)
   const track = useRef<HTMLDivElement>(null)
@@ -41,9 +41,9 @@ export default function Workbench({ caseStudy = null }: { caseStudy?: CaseStudy 
   const [exploreOpen, setExploreOpen] = useState(false)
   const openExplore = useCallback(() => setExploreOpen(true), [])
   const closeExplore = useCallback(() => setExploreOpen(false), [])
-  const [caseOpen, setCaseOpen] = useState(false)
-  const openCase = useCallback(() => setCaseOpen(true), [])
-  const closeCase = useCallback(() => setCaseOpen(false), [])
+  const [caseOpen, setCaseOpen] = useState<string | null>(null)
+  const openCase = useCallback((slug: string) => setCaseOpen(slug), [])
+  const closeCase = useCallback(() => setCaseOpen(null), [])
 
   useEffect(() => {
     const els = {
@@ -55,7 +55,8 @@ export default function Workbench({ caseStudy = null }: { caseStudy?: CaseStudy 
     api.current = a
     if (document.documentElement.dataset.theme === 'dark') { setDark(true); paintThemeColor(true) }
     if (location.hash === '#cv') a.goCluster('contact') // old links to the CV land where it can be requested
-    if (location.hash === '#frunt' && caseStudy) setCaseOpen(true) // and to the case study
+    const hash = location.hash.slice(1)
+    if (caseStudies.some((s) => s.slug === hash)) setCaseOpen(hash) // /#frunt, /#mgkfitness: straight to a case study
     return () => { a.destroy(); api.current = null }
   }, [])
 
@@ -131,7 +132,7 @@ export default function Workbench({ caseStudy = null }: { caseStudy?: CaseStudy 
       </aside>
 
       <ExploreViewer open={exploreOpen} onClose={closeExplore} />
-      <CaseStudyViewer study={caseStudy} open={caseOpen} onClose={closeCase} />
+      <CaseStudyViewer study={caseStudies.find((s) => s.slug === caseOpen) ?? null} open={caseOpen !== null} onClose={closeCase} />
 
       <div className="mini" aria-hidden="true">
         <div className="mini-map" ref={mini} />
@@ -158,7 +159,7 @@ function Slots({ one }: { one?: boolean }) {
 }
 
 function GuideBody({ stop, onCase, onExplore, onGo, onTile }: {
-  stop: Stop; onCase: () => void; onExplore: () => void; onGo: (c: Stop['c']) => void; onTile: (id: string) => void
+  stop: Stop; onCase: (slug: string) => void; onExplore: () => void; onGo: (c: Stop['c']) => void; onTile: (id: string) => void
 }) {
   const [copied, setCopied] = useState('')
   const copy = (text: string) => {
@@ -191,10 +192,10 @@ function GuideBody({ stop, onCase, onExplore, onGo, onTile }: {
         </>
       )}
       {stop.extra === 'fruntApps' && <div className="apps"><AppRow app="frunt" /></div>}
-      {stop.extra === 'fruntCase' && (
+      {stop.extra === 'case' && stop.study && (
         <>
-          <ol className="calls">{BOARD_DECISIONS.map((d) => <li key={d}>{d}</li>)}</ol>
-          <div className="ctas"><button type="button" className="btn solid" onClick={onCase}>Read the case study</button></div>
+          <ol className="calls">{CASE_BOARDS[stop.study].decisions.map((d) => <li key={d}>{d}</li>)}</ol>
+          <div className="ctas"><button type="button" className="btn solid" onClick={() => onCase(stop.study!)}>Read the case study</button></div>
         </>
       )}
       {stop.extra === 'mgkApps' && <div className="apps"><AppRow app="run" /><AppRow app="lift" /></div>}

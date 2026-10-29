@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-10-27T16:10:07.049Z",
+  "ref": "main",
+  "commit": "8d184a6",
+  "decisionRecords": 52,
+  "latestAdr": {
+    "run": "0049",
+    "lift": "0003"
+  },
+  "testFiles": 328,
+  "migrations": 26,
+  "edgeFunctions": 4,
+  "consent": {
+    "run": false,
+    "lift": false
+  }
+}

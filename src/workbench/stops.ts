@@ -2,11 +2,11 @@
 // frames on a wide screen (r) and on a phone (m), and what the guide panel says.
 // Rects are [x, y, width, height] in board pixels.
 
-import { SHOW_FRUNT } from '@/case-studies/flags'
+import { SHOW_FRUNT, SHOW_MGK } from '@/case-studies/flags'
 
 export type Cluster = 'hero' | 'all' | 'frunt' | 'mgk' | 'other' | 'how' | 'about' | 'contact'
 export type Rect = [number, number, number, number]
-export type Extra = 'heroProof' | 'slots' | 'slotsOne' | 'fruntApps' | 'mgkApps' | 'skills' | 'contact' | 'fruntCase'
+export type Extra = 'heroProof' | 'slots' | 'slotsOne' | 'fruntApps' | 'mgkApps' | 'skills' | 'contact' | 'case'
 
 export interface Stop {
   c: Cluster
@@ -20,6 +20,8 @@ export interface Stop {
   layers?: boolean
   /** Lock a rotating MacBook (by data-lap id) to one screen while this stop is current. */
   lock?: Record<string, number>
+  /** For `extra: 'case'`: which case study (its slug in CASE_BOARDS). */
+  study?: string
 }
 
 export const WORLD = { w: 4760, h: 6310 }
@@ -51,9 +53,17 @@ export const NAV_ITEMS: { c: Cluster; label: string }[] = [
 /** The way into the frunt case study: its dated timeline on the board, three decisions in the panel. */
 const FRUNT_CASE: Stop = {
   c: 'frunt', r: [3590, 1440, 1060, 490], m: [3600, 1450, 1040, 470], nav: 'frunt: how it was built',
-  extra: 'fruntCase',
+  extra: 'case', study: 'frunt',
   title: 'Every big call written down, with the date I made it.',
   body: 'From a demo on 1 May 2026 to both app stores by 13 June. Three of the calls that shaped it:',
+}
+
+/** The way into the MGKFitness case study: the same, under the suite. */
+const MGK_CASE: Stop = {
+  c: 'mgk', r: [3590, 3270, 1060, 490], m: [3600, 3280, 1040, 470], nav: 'MGKFitness: how it was built',
+  extra: 'case', study: 'mgkfitness',
+  title: 'Two apps, from the first decision to both stores.',
+  body: 'Run started on 25 July 2026. Both apps were on both stores by 19 October. Three of the calls that shaped it:',
 }
 
 export const stops: Stop[] = [
@@ -118,6 +128,7 @@ export const stops: Stop[] = [
     title: 'A suite, not two apps.',
     body: 'Two apps on one account and one backend, an AI coach, a website, a social pipeline and the release tooling around them.',
   },
+  ...(SHOW_MGK ? [MGK_CASE] : []),
   {
     c: 'other', r: [100, 1320, 1560, 1440], m: [110, 1730, 1530, 980], nav: 'Other work',
     extra: 'slotsOne',

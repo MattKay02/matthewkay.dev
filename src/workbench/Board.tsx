@@ -12,8 +12,9 @@ import { CV_REQUEST, LINKS, SHOW_SLOTS, type Cluster } from './stops'
 import { AppRow } from './apps'
 import { FRUNT_PARTS, FRUNT_SITE_FOCUS, FRUNT_SITE_Y, MGK_PARTS, type Part } from './products'
 import { FRUNT_SCREENS, MGK_SCREENS, phone, slide } from './screens'
-import { SHOW_FRUNT } from '@/case-studies/flags'
-import { BOARD_MILESTONES, fmtShort } from '@/case-studies/frunt-board'
+import { SHOW_FRUNT, SHOW_MGK } from '@/case-studies/flags'
+import { CASE_BOARDS, type CaseBoard } from '@/case-studies/boards'
+import { fmtShort } from '@/case-studies/format'
 
 const d = (delay: string) => ({ '--d': delay }) as CSSProperties
 
@@ -87,15 +88,17 @@ function Hero() {
   )
 }
 
-// ---------- frunt: how it was built, on a dated ruler ----------
-// Each marker sits at its real date, so the pace shows: the May–June build, the
-// summer away, the second wave. Markers too close to share a row step up a level.
+// ---------- a case study's "how it was built", on a dated ruler ----------
+// Each marker sits at its real date, so the pace shows (frunt: the May–June
+// build, the summer away, the second wave; MGKFitness: the August build, the
+// October launch). Markers too close to share a row step up a level.
 const TL_INSET = 30, TL_AXIS = 940, TL_LEVEL = 32
 const day = (iso: string) => Date.parse(iso + 'T00:00:00Z')
 
-function BuildTimeline() {
-  const first = new Date(day(BOARD_MILESTONES[0].date))
-  const last = new Date(day(BOARD_MILESTONES[BOARD_MILESTONES.length - 1].date))
+function BuildTimeline({ board, c, x, y }: { board: CaseBoard; c: Cluster; x: number; y: number }) {
+  const ms = board.milestones
+  const first = new Date(day(ms[0].date))
+  const last = new Date(day(ms[ms.length - 1].date))
   const start = Date.UTC(first.getUTCFullYear(), first.getUTCMonth(), 1)
   const end = Date.UTC(last.getUTCFullYear(), last.getUTCMonth() + 2, 1)
   const xAt = (t: number) => TL_INSET + ((t - start) / (end - start)) * TL_AXIS
@@ -105,7 +108,7 @@ function BuildTimeline() {
     months.push({ x: xAt(m.getTime()), label: m.toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' }) })
   }
   const lastX: number[] = []
-  const marks = BOARD_MILESTONES.map((m) => {
+  const marks = ms.map((m) => {
     const x = xAt(day(m.date))
     let level = 0
     while (lastX[level] !== undefined && x - lastX[level] < 30) level++
@@ -114,8 +117,8 @@ function BuildTimeline() {
   })
 
   return (
-    <div className="tl" data-c="frunt" style={{ left: 3620, top: 1480, width: 1000, height: 420 }}>
-      <div className="tl-head"><b>How it was built</b><span>Dates from frunt&apos;s git history · {first.getUTCFullYear()}</span></div>
+    <div className="tl" data-c={c} style={{ left: x, top: y, width: 1000, height: 420 }}>
+      <div className="tl-head"><b>How it was built</b><span>Dates from {board.history} · {first.getUTCFullYear()}</span></div>
       <div className="tl-axis" aria-hidden="true">
         <i className="tl-line" />
         {months.map((m) => <span key={m.x} className="tl-month" style={{ left: m.x }}>{m.label}</span>)}
@@ -124,7 +127,7 @@ function BuildTimeline() {
         ))}
       </div>
       <ol className="tl-list">
-        {BOARD_MILESTONES.map((m, i) => (
+        {ms.map((m, i) => (
           <li key={m.date + m.label}><b>{String(i + 1).padStart(2, '0')}</b><time dateTime={m.date}>{fmtShort(m.date)}</time><span>{m.label}</span></li>
         ))}
       </ol>
@@ -166,7 +169,7 @@ function Frunt() {
       <Parts c="frunt" prefix="ft" parts={FRUNT_PARTS} x0={1790} y0={1480} />
       {SHOW_SLOTS && !SHOW_FRUNT && <SlotBox c="frunt" x={3620} y={1480} w={1000} h={200} title="Case study" />}
       {SHOW_SLOTS && !SHOW_FRUNT && <SlotBox c="frunt" x={3620} y={1700} w={1000} h={200} title="What I learnt" />}
-      {SHOW_FRUNT && <BuildTimeline />}
+      {SHOW_FRUNT && <BuildTimeline board={CASE_BOARDS.frunt} c="frunt" x={3620} y={1480} />}
       <img loading="lazy" decoding="async" className="brand-mark" data-c="frunt" src={IMG('frunt-icon')} width={256} height={256} alt="frunt" style={{ left: 1790, top: 110, width: 110, height: 110 }} />
       <AppRow app="frunt" web={false} c="frunt" className="release" style={{ left: 3720, top: 1372 }} />
     </>
@@ -189,8 +192,9 @@ function MgkFitness() {
         quote={'"Retiring a live record to avoid an untidy string is paying a real cost for a cosmetic one."'}>
         Liftio is replaced, not relaunched.
       </Note>
-      {SHOW_SLOTS && <SlotBox c="mgk" x={3650} y={3290} w={470} h={200} title="Case study" />}
-      {SHOW_SLOTS && <SlotBox c="mgk" x={4150} y={3290} w={470} h={200} title="What I learnt" />}
+      {SHOW_SLOTS && !SHOW_MGK && <SlotBox c="mgk" x={3650} y={3290} w={470} h={200} title="Case study" />}
+      {SHOW_SLOTS && !SHOW_MGK && <SlotBox c="mgk" x={4150} y={3290} w={470} h={200} title="What I learnt" />}
+      {SHOW_MGK && <BuildTimeline board={CASE_BOARDS.mgkfitness} c="mgk" x={3620} y={3310} />}
       <img loading="lazy" decoding="async" className="brand-mark" data-c="mgk" src={IMG('mgkfitness-icon')} width={256} height={256} alt="MGKFitness" style={{ left: 2250, top: 2105, width: 110, height: 110 }} />
       <AppRow app="lift" web={false} c="mgk" className="release" style={{ left: 2820, top: 3200 }} />
       <AppRow app="run" web={false} c="mgk" className="release" style={{ left: 3600, top: 3215 }} />
