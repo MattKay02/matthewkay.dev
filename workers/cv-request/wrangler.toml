@@ -1,0 +1,24 @@
+# The email worker behind hello@matthewkay.dev (src/index.js). It must live in the
+# Cloudflare account that holds the matthewkay.dev zone, next to its R2 bucket.
+#
+#   npm run deploy                         deploy
+#   npx wrangler secret put FORWARD_TO     Matthew's inbox (a verified Email Routing
+#                                          destination); a secret, so it isn't in this
+#                                          public repo
+# Then in Email Routing, point the hello@matthewkay.dev rule at this worker.
+name = "cv-request"
+main = "src/index.js"
+compatibility_date = "2026-10-15"
+
+[vars]
+SEND_FROM = "hello@matthewkay.dev"
+
+# The private CV, phone number and all: written by .github/workflows/cv.yml, read only here.
+[[r2_buckets]]
+binding = "CV"
+bucket_name = "matthewkay-cv"
+
+# Sends only to verified Email Routing destinations (Matthew's inbox), never to the
+# person asking.
+[[send_email]]
+name = "NOTIFY"

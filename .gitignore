@@ -20,3 +20,7 @@ private/
 public/og.png
 # The whole-board pictures for Explore on phones: generated (npm run board).
 public/board-*.jpg
+
+# The CV worker: local secrets and wrangler state.
+workers/*/.dev.vars
+workers/*/.wrangler
