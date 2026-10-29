@@ -10,7 +10,6 @@ const SITE = 'https://matthewkay.dev'
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: `${SITE}/`, changeFrequency: 'weekly', priority: 1 },
-    { url: `${SITE}/cv/`, changeFrequency: 'monthly', priority: 0.8 },
     ...(FRUNT_PUBLISHED ? [{ url: `${SITE}/work/frunt/`, changeFrequency: 'monthly' as const, priority: 0.9 }] : []),
   ]
 }

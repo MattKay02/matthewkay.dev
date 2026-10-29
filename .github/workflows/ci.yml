@@ -20,9 +20,13 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Built with the CV in it, which the public site leaves out (src/cv/flags.ts),
+      # so the next step can print it.
       - run: npm run build
+        env:
+          CV_BUILD: '1'
       # Print the CV too: fails the check if it runs past one A4 page.
       - run: npx playwright install --with-deps chromium
-      - run: npm run cv
+      - run: node scripts/build-cv.mjs
       - run: npm run og
       - run: npm run readme

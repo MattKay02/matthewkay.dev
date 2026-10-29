@@ -1,7 +1,10 @@
 // What the site says about itself to machines: structured data (JSON-LD) for
 // search engines, and /llms.txt for AI tools. Both are built from the same data
-// as the page (the tour, the parts, the store statuses, the CV), so they can't
-// drift from what visitors read.
+// as the page (the tour, the parts, the store statuses, the CV's name and
+// skills), so they can't drift from what visitors read.
+//
+// The CV itself never goes here: it's emailed on request (src/cv/flags.ts),
+// and the public line about Matthew is SUMMARY, not the CV's profile.
 import { FRUNT_PUBLISHED } from '@/case-studies/flags'
 import { cv } from '@/data/cv'
 import { appStatus, statusText, type AppKey } from '@/workbench/apps'
@@ -12,6 +15,7 @@ import { SKILLS, skillText } from '@/workbench/skills-data'
 export const SITE = 'https://matthewkay.dev'
 export const TITLE = 'Matthew Kay · Product engineer'
 export const DESCRIPTION = 'I design and build polished apps, end to end: frunt, MGKFitness and the studio behind them, MGKCodes.'
+const SUMMARY = 'Founder of MGKCodes, the studio behind frunt and MGKFitness. I design, build and ship complete products, from the first decision record to the app stores.'
 
 const APPS: AppKey[] = ['frunt', 'run', 'lift']
 const PERSON = `${SITE}/#person`
@@ -26,7 +30,7 @@ export function jsonLd() {
     '@graph': [
       { '@type': 'ProfilePage', '@id': `${SITE}/#page`, url: `${SITE}/`, name: TITLE, description: DESCRIPTION, inLanguage: 'en-GB', mainEntity: { '@id': PERSON } },
       {
-        '@type': 'Person', '@id': PERSON, name: cv.name, jobTitle: cv.headline, description: cv.profile,
+        '@type': 'Person', '@id': PERSON, name: cv.name, jobTitle: cv.headline, description: SUMMARY,
         url: `${SITE}/`, image: `${SITE}/work/headshot.webp`, email: `mailto:${LINKS.email}`,
         address: { '@type': 'PostalAddress', addressLocality: cv.location.split(',')[0], addressCountry: 'GB' },
         sameAs: [LINKS.github, LINKS.linkedin, LINKS.x],
@@ -62,7 +66,7 @@ export function llmsText(): string {
     '',
     `> ${cv.headline} in ${cv.location}. ${DESCRIPTION} This is the text version of ${SITE}, a portfolio built as one board of shipped work.`,
     '',
-    cv.profile,
+    SUMMARY,
     '',
     '## Apps',
     '',
@@ -88,9 +92,9 @@ export function llmsText(): string {
     '',
     ...SKILLS.map((k) => `- ${skillText(k)}`),
     '',
-    '## CV and links',
+    '## Links',
     '',
-    `- [CV](${SITE}/cv/): the full CV as a web page, also as a [PDF](${SITE}/cv.pdf)`,
+    `- CV: on request, by email to ${LINKS.email}`,
     ...(FRUNT_PUBLISHED ? [`- [frunt case study](${SITE}/work/frunt/): why I built it, the decisions, what went wrong and what I learnt`] : []),
     `- [GitHub](${LINKS.github})`,
     `- [LinkedIn](${LINKS.linkedin})`,

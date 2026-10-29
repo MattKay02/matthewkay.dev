@@ -396,7 +396,7 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 .knob .k-moon, :root[data-theme="dark"] .knob .k-sun { display: none; }
 :root[data-theme="dark"] .knob { transform: translateX(28px); }
 :root[data-theme="dark"] .knob .k-moon { display: block; }
-.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 16px; white-space: nowrap; border: 1px solid var(--strong); border-radius: var(--r-btn); transition: background .2s, color .2s; font: 500 calc(12px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 16px; white-space: nowrap; text-decoration: none; border: 1px solid var(--strong); border-radius: var(--r-btn); transition: background .2s, color .2s; font: 500 calc(12px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); }
 .btn.solid { background: var(--strong); color: var(--bg); }
 .btn.solid:hover { background: transparent; color: var(--strong); }
 .btn.ghost { color: var(--strong); }

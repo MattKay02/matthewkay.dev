@@ -51,7 +51,7 @@ filter on screens), `--hm0`–`--hm4` (contribution graph levels), `--colfill` (
 12 columns, **103px wide with 24px gutters**, starting at x 130 (a 127px pitch). The name takes
 columns 1–8, "Kay" starts on column 4, the photo takes 10–12, the contribution graph spans all 12,
 and the icon links sit one per column (a 64px icon with no circle plus a 63px gap is one
-column), followed by the "View CV" button. Guides,
+column), followed by the "Request CV" button. Guides,
 widths and gaps are measured from the rendered type, so the numbers shown are true.
 
 ## Components (`src/workbench/parts.tsx`)

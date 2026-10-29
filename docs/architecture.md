@@ -117,17 +117,27 @@ If the name is ever too wide, it's scaled so at least one column stays clear bef
 ## The CV
 
 `src/data/cv.ts` holds the CV as typed data. `src/cv/CvSheet.tsx` renders it as an A4 sheet
-(`src/cv/cv.css`). It appears in three places: the viewer over the workbench (`CvViewer`, opened by
-every "View CV" button or `/#cv`, with Download PDF in its bar), the standalone `/cv` page (same
-design), and the PDF. The "Updated" date is when `cv.ts` last changed (`src/cv/updated.ts`, server-only, passed
-down from `app/page.tsx`), so it tracks content changes, not daily rebuilds. It comes from
-`git log` when the full history is there, and from GitHub's commits API when the clone is shallow
-(Vercel clones only recent history, and `git log` in a shallow clone reports the wrong commit). While the viewer is open,
-`html.cv-open` locks page scroll and the camera ignores the arrow keys. `scripts/build-cv.mjs` then serves `out/`, opens `/cv/` in headless Chromium (Playwright)
-with print styles, checks the content fits one A4 page, and prints `out/cv.pdf`. Locally it also
-copies the PDF to `public/cv.pdf` (gitignored) so the dev server can serve it. With `--private`
-and `CV_PHONE` set, it fills the hidden phone slot and writes `private/Matthew_Kay_CV.pdf`
-instead; that copy is gitignored and never deployed.
+(`src/cv/cv.css`), on the `/cv` page (`src/cv/CvPage.tsx`, Download PDF in its bar) and in the PDF.
+
+**The public site has no CV** (Matthew, 27 Oct 2026: AI tools looking up frunt were reading it).
+Every CV button is "Request CV", an email with the subject filled in (`CV_REQUEST` in
+`stops.ts`), and Matthew replies with the PDF. Old `/#cv` links land on the Contact stop. `/cv`
+is built only in `npm run dev`, on Vercel previews and with `CV_BUILD=1` (`SHOW_CV` in
+`src/cv/flags.ts`); elsewhere it renders the 404, `noindex`. It's a server component, so the
+CV's text is only ever in `/cv`'s own HTML, never in a script bundle. The search data and
+`/llms.txt` describe Matthew with their own short line (`SUMMARY` in `src/seo/describe.ts`), not
+the CV's profile.
+
+The "Updated" date is when `cv.ts` last changed (`src/cv/updated.ts`, server-only), so it
+tracks content changes, not daily rebuilds. It comes from `git log` when the full history is
+there, and from GitHub's commits API when the clone is shallow (Vercel clones only recent
+history, and `git log` in a shallow clone reports the wrong commit).
+
+`scripts/build-cv.mjs` serves `out/`, opens `/cv/` in headless Chromium (Playwright) with print
+styles, checks the content fits one A4 page, and prints `out/cv.pdf`. `npm run cv` builds the
+site with `CV_BUILD=1` first; locally it also copies the PDF to `public/cv.pdf` (gitignored) so
+the dev server can serve it. `npm run cv:private` with `CV_PHONE` set fills the hidden phone slot
+and writes `private/Matthew_Kay_CV.pdf` instead: the copy to send, gitignored.
 
 ## Build and deploy
 
@@ -138,7 +148,8 @@ instead; that copy is gitignored and never deployed.
   - `scripts/vercel-install.sh`: installs the system libraries headless Chrome needs on Vercel's
     Amazon Linux build image (`dnf`), then `npm ci` and Playwright's headless Chrome.
   - `scripts/vercel-build.sh`: `npm run github` → `npm run stores` (both allowed to fail; the
-    committed snapshots are used) → `npm run build` → `npm run cv` → `npm run og` (photographs
+    committed snapshots are used) → `npm run build` → on previews only, `build-cv.mjs` (prints
+    the CV and checks it fits one page; production has no CV) → `npm run og` (photographs
     `/og/` into `out/og.png`, the link-preview image) → `npm run readme` (photographs
     `/readme/<product>/` into the case-study README images, light and dark).
 - `daily.yml` calls a Vercel deploy hook once a day, so the graph and statuses refresh without a
@@ -147,6 +158,6 @@ instead; that copy is gitignored and never deployed.
   and Vercel issues the certificate. `.dev` only works over HTTPS. The repo is
   `MattKay02/matthewkay.dev` (renamed 6 Oct 2026); old `mattkay02.github.io` links are redirected
   by a separate repo, `MattKay02/MattKay02.github.io`, which sends each path to matthewkay.dev.
-- `ci.yml` builds every pull request into `main` and prints the CV, so an overflowing CV fails
-  the check.
+- `ci.yml` builds every pull request into `main` (with `CV_BUILD=1`) and prints the CV, so an
+  overflowing CV fails the check.
 - **`main` auto-deploys**: do feature work on a branch.

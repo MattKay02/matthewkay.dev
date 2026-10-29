@@ -1,5 +1,5 @@
-// The CV itself: one A4 sheet rendered from src/data/cv.ts. Used by the viewer
-// over the workbench, by the /cv page, and (printed) for /cv.pdf.
+// The CV itself: one A4 sheet rendered from src/data/cv.ts. Used by the /cv
+// page, and printed for the PDF that's emailed on request.
 import { cv } from '@/data/cv'
 import './cv.css'
 
