@@ -12,6 +12,10 @@ export type Step = 'plan' | 'decide' | 'build' | 'check' | 'ship'
 export interface Skill {
   name: string; label: string; description: string; why?: string; stack?: string[]
   step?: Step; summary?: string; flow?: string[]; evidence?: { image: string; dark?: string; caption?: string }
+  /** The problem that made the skill, in one plain sentence (a short `why`). */
+  problem?: string
+  /** 1, 2 or 3: tells this skill's story in How I work, in that order. */
+  featured?: number
 }
 interface Case { name: string; kind: 'trigger' | 'behaviour'; runs: number; with: number | null; without: number | null; date: string }
 export interface Tests { generated?: string; skills: Record<string, { lastRun: string; cases: Case[] }> }
@@ -22,27 +26,44 @@ export const TESTS = testsSnapshot as Tests
 export const STEP_LABEL: Record<Step, string> = { plan: 'Plan', decide: 'Decide', build: 'Build', check: 'Check', ship: 'Ship' }
 
 export const skillId = (name: string) => `sk-${name}`
+export const stepOf = (s: Skill): Step => (s.step && s.step in STEP_LABEL ? s.step : 'check')
 
-/** "Tested · loads right 2/2 · task 0.92 vs 0.88", or null when there are no results. */
-export function testLine(tests: Tests, name: string): string | null {
+/** The (up to) three skills whose stories How I work tells: those marked `featured`, else those with real output. */
+export function featured(skills: Skill[]): Skill[] {
+  const marked = skills.filter((s) => typeof s.featured === 'number').sort((a, b) => a.featured! - b.featured!)
+  return (marked.length ? marked : skills.filter((s) => s.evidence)).slice(0, 3)
+}
+
+/** A skill's eval results in plain numbers, or null when it has none. */
+function results(tests: Tests, name: string) {
   const t = tests.skills[name]
   if (!t) return null
   const triggers = t.cases.filter((c) => c.kind === 'trigger')
-  const passed = triggers.filter((c) => c.with === 1).length
-  const parts = [`loads right ${passed}/${triggers.length}`]
-  for (const c of t.cases.filter((c) => c.kind === 'behaviour' && c.with !== null)) {
-    parts.push(`task ${c.with!.toFixed(2)}${c.without !== null ? ` vs ${c.without.toFixed(2)}` : ''}`)
+  return {
+    passed: triggers.filter((c) => c.with === 1).length, total: triggers.length,
+    scores: t.cases.filter((c) => c.kind === 'behaviour' && c.with !== null).map((c) => ({ with: c.with!, without: c.without })),
   }
+}
+
+/** "Tested · loads when it should, 2 of 2 · scores 0.92 with it, 0.88 without", or null when there are no results. */
+export function testLine(tests: Tests, name: string): string | null {
+  const r = results(tests, name)
+  if (!r) return null
+  const parts = [`loads when it should, ${r.passed} of ${r.total}`]
+  for (const s of r.scores) parts.push(`scores ${s.with.toFixed(2)} with it${s.without !== null ? `, ${s.without.toFixed(2)} without` : ''}`)
   return `Tested · ${parts.join(' · ')}`
 }
 
-/** One skill as a sentence for the text versions: step, what it does, its tests and what its picture shows. */
+/** One skill as a sentence for the text versions: step, what it does, why it exists, its tests and what its picture shows. */
 export function skillText(s: Skill, tests: Tests = TESTS): string {
-  const tested = testLine(tests, s.name)
-    ?.replace(/loads right (\d+)\/(\d+)/, 'loads when asked and stays out otherwise in $1 of $2 cases')
-    .replace(/task ([\d.]+) vs ([\d.]+)/g, 'task score $1 with the skill, $2 without')
+  const r = results(tests, s.name)
+  const tested = r && [
+    `Tested: loads when it's asked for and stays out otherwise in ${r.passed} of ${r.total} cases`,
+    ...r.scores.map((x) => `task score ${x.with.toFixed(2)} with the skill${x.without !== null ? `, ${x.without.toFixed(2)} without` : ''}`),
+  ].join('; ')
   return [
-    `${s.name} (${s.step ? STEP_LABEL[s.step] : s.label}): ${s.summary ?? s.description}`,
+    `${s.name} (${STEP_LABEL[stepOf(s)]}): ${s.summary ?? s.description}`,
+    s.problem && `Why I wrote it: ${s.problem}`,
     tested && `${tested}.`,
     s.evidence?.caption && `Shown: ${s.evidence.caption}`,
   ].filter(Boolean).join(' ')

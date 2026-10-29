@@ -10,6 +10,8 @@
 }
 .cvv-page .cs-sheet { animation: none; }
 .cs-sheet p { margin: 0; }
+/* About 70 characters a line: the sheet stays wide for the figures and cards, the prose doesn't. */
+.cs-sheet p, .cs-card dd, .cs-card ul { max-width: 36em; }
 .cs-sheet p + p { margin-top: 14px; }
 .cs-sheet b { font-weight: 600; color: var(--strong); }
 

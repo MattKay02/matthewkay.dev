@@ -21,7 +21,7 @@ app/globals.css           tokens + all styles
 src/workbench/stops.ts    the tour (14 stops): cluster, camera rects, panel copy
 src/workbench/Board.tsx   the board in board pixels; FRUNT_PARTS / MGK_PARTS data
 src/workbench/parts.tsx   Frame, Title, Note, SlotBox, MacBook, IPhone, Browser, Tile, Shot, …
-src/workbench/Skills.tsx  How I work's skill cards by step (live skills.json + tests.json)
+src/workbench/Skills.tsx  How I work's pipeline and stories (live skills.json + tests.json)
 src/workbench/skills-data.ts  skills snapshots, types and text helpers (server-safe)
 src/workbench/controller.ts  camera, rotation, focus, minimap, measurements, input
 src/workbench/Workbench.tsx  React shell: top bar, guide panel, minimap, stage
@@ -100,11 +100,15 @@ If the name is ever too wide, it's scaled so at least one column stays clear bef
 - **Skills**: `Skills.tsx` fetches the skills repo's `skills.json` and `tests.json` in the
   browser (one shared fetch, `useSkills`) and falls back to the committed snapshots. Adding a
   skill to the skills repo shows it here with no change to this repo; keep that contract.
-  How I work lays the cards out as a pipeline: each skill sits under its `step`, the Build
-  column opens with the library card (install command, how many are tested), and Check is a
-  two-wide grid. A card shows the skill's `evidence` image (light and dark files; only the
-  current look's loads) or, failing that, its `flow`. `TourText` and `/llms.txt` list the
-  same skills from the snapshot, with their test results and what each picture shows.
+  How I work has two columns, each sized so its own stop reads at about half size on a 1440px
+  screen. Left, the pipeline: the five steps down the page, every skill a row under its `step`
+  (two to a line), the Build step opening with the library row (install command, how many are
+  tested). Right, the stories: up to three skills marked `featured` (1 to 3), each told as its
+  `problem`, what it does and its `evidence` image (light and dark files; only the current
+  look's loads), or its `flow` without one. With nothing featured, skills with evidence are told.
+  Pieces that arrive with the live list join the current stop's state (a `MutationObserver` in
+  `controller.ts`), so a new skill is never dimmed. `TourText` and `/llms.txt` list the same
+  skills from the snapshot, with why each exists, their test results and what each picture shows.
 - **App statuses**: `scripts/fetch-stores.mjs` asks Apple's lookup API (by app id, UK store) and
   loads each Google Play listing (a 200 means it's public), then writes `src/data/stores.json`.
   `src/data/apps.json` holds the hand-written facts (names, icons, store ids, websites, and a

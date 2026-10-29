@@ -68,7 +68,8 @@ widths and gaps are measured from the rendered type, so the numbers shown are tr
 | `Shot` | A plain 16:10 screenshot card for smaller projects. |
 | `AppRow` (`apps.tsx`) | One app on one line: its icon (32px in the panel), name, status dot, and logo-only buttons for each live store and the website. `.release` is the same row at board scale (64px icon) under each app's phones. |
 | `SlotBox` | A dashed placeholder for content still to be designed (case studies). |
-| `Step`, `PassionCard`, `Spec` | How I work, About, small annotations. |
+| `Pipeline`, `Stories` (`Skills.tsx`) | How I work: numbered steps on a rule with a row per skill, and three problem-to-proof story cards. |
+| `PassionCard`, `Spec` | About, small annotations. |
 
 ## Devices
 

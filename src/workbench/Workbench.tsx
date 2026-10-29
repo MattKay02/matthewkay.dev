@@ -11,7 +11,8 @@ import { PART_IDS } from './products'
 import { mountWorkbench, type WorkbenchApi } from './controller'
 import { FaGithub, FaLinkedin, IconLinks } from './icons'
 import { AppRow } from './apps'
-import { skillId, useSkills } from './Skills'
+import { skillId, storyId, useSkills } from './Skills'
+import { featured } from './skills-data'
 import { CHAPTERS, CV_REQUEST, LINKS, NAV_ITEMS, SHOW_SLOTS, SKILLS_INSTALL, stops, type Stop } from './stops'
 
 /** The progress bar's buttons: one per run of stops in the same cluster, so each is at least 24px
@@ -166,8 +167,12 @@ function GuideBody({ stop, onCase, onExplore, onGo, onTile }: {
     navigator.clipboard?.writeText(text).then(() => setCopied('Copied'), () => setCopied('Select it above'))
   }
   const { skills } = useSkills()
-  // How I work lists its skills (live from the skills repo); the products list their parts.
-  const parts = stop.layers ? (stop.c === 'how' ? skills.map((s) => ({ id: skillId(s.name), name: s.name })) : PART_IDS[stop.c]) : undefined
+  // How I work's stories (live from the skills repo), or its skills; the products list their parts.
+  const parts = !stop.layers ? undefined
+    : stop.extra === 'stories' ? featured(skills).map((s) => ({ id: storyId(s.name), name: s.label }))
+    : stop.c === 'how' ? skills.map((s) => ({ id: skillId(s.name), name: s.label }))
+    : PART_IDS[stop.c]
+  const kind = stop.extra === 'stories' ? 'stories' : stop.c === 'how' ? 'skills' : 'parts'
   return (
     <>
       {stop.kicker && <span className="kick">{stop.kicker}</span>}
@@ -175,7 +180,7 @@ function GuideBody({ stop, onCase, onExplore, onGo, onTile }: {
       {stop.body && <p>{stop.body}</p>}
       {parts && (
         <div className="layers">
-          <span>{parts.length} {stop.c === 'how' ? 'skills' : 'parts'} · pick one to look closer</span>
+          <span>{parts.length} {kind} · pick one to look closer</span>
           <div>{parts.map((p) => <button key={p.id} type="button" data-tile={p.id} onClick={() => onTile(p.id)}>{p.name}</button>)}</div>
         </div>
       )}

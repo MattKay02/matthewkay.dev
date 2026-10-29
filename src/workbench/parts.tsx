@@ -170,11 +170,3 @@ export function PassionCard({ c, img, ix, label, rot = 0, ...box }: Box & { c: C
     </figure>
   )
 }
-
-export function Step({ c, n, title, text, ev, ...box }: Box & { c: Cluster; n: string; title: string; text: string; ev: string }) {
-  return (
-    <div className="step" data-c={c} style={at(box)}>
-      <span className="n">{n}</span><b>{title}</b><p>{text}</p><span className="ev">{ev}</span>
-    </div>
-  )
-}

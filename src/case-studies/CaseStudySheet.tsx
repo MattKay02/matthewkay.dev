@@ -90,7 +90,7 @@ export default function CaseStudySheet({ study }: { study: CaseStudy }) {
               {d.liveEval && evalText && <div><dt>The test now</dt><dd>{evalText}</dd></div>}
             </dl>
             {d.items && <ul>{d.items.map((r) => <li key={r.label}><b>{r.label}</b> {r.text}</li>)}</ul>}
-            {d.quote && <blockquote>"{d.quote}"</blockquote>}
+            {d.quote && <blockquote>“{d.quote}”</blockquote>}
           </div>
         ))}
       </Section>
