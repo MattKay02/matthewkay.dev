@@ -5,7 +5,7 @@ import { appStatus, statusText, type AppKey } from './apps'
 import { FRUNT_PARTS, MGK_PARTS, type Part } from './products'
 import { CV_REQUEST, LINKS, SKILLS_INSTALL, stops } from './stops'
 import { CASE_BOARDS } from '@/case-studies/boards'
-import { SKILLS, skillText } from './skills-data'
+import { SKILLS, featured, skillText } from './skills-data'
 
 const APPS: AppKey[] = ['frunt', 'run', 'lift']
 
@@ -43,6 +43,9 @@ export default function TourText() {
               <p>Install my skills: <code>{SKILLS_INSTALL}</code> (<a href={LINKS.skills}>MattKay02/skills</a>)</p>
               <ul>{SKILLS.map((k) => <li key={k.name}>{skillText(k)}</li>)}</ul>
             </>
+          )}
+          {s.extra === 'stories' && (
+            <ol>{featured(SKILLS).map((k) => <li key={k.name}>{k.problem ?? k.why} So I wrote {k.name}: {k.summary ?? k.description}{k.evidence?.caption && ` Shown: ${k.evidence.caption}`}</li>)}</ol>
           )}
           {s.extra === 'case' && s.study && (
             <>

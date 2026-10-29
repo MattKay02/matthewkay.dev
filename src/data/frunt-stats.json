@@ -1,12 +1,26 @@
 {
-  "generatedAt": "2026-10-06T17:14:58.715Z",
+  "generatedAt": "2026-10-29T17:34:11.412Z",
   "ref": "main",
-  "commit": "187c4a9",
-  "decisionRecords": 84,
-  "latestAdr": "0087",
-  "apiRoutes": 142,
-  "pages": 65,
-  "migrations": 73,
-  "testFiles": 66,
-  "eval": null
+  "commit": "7bc41fc",
+  "decisionRecords": 96,
+  "latestAdr": "0094",
+  "apiRoutes": 178,
+  "pages": 77,
+  "migrations": 107,
+  "testFiles": 168,
+  "eval": {
+    "ref": "main",
+    "date": "2026-10-14",
+    "commit": "5db870c",
+    "model": "claude-sonnet-5-5",
+    "questions": 40,
+    "scored": {
+      "passed": 38,
+      "total": 38
+    },
+    "safety": {
+      "passed": 13,
+      "total": 13
+    }
+  }
 }

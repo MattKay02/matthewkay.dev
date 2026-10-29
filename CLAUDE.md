@@ -21,7 +21,7 @@ product "part" to zoom to it, drag to look around (springs back), use ← → ke
 
 Order: Hero → the whole board → **frunt** (problem, sourced answers, the whole system) →
 **MGKFitness** (Liftio, the rebuild, the suite, the whole system) → Other work → **How I work** (the
-pipeline, then the checks) → About → Contact. frunt is the main project and leads.
+pipeline, then three problems) → About → Contact. frunt is the main project and leads.
 
 ## Design rules
 
@@ -53,6 +53,12 @@ pipeline, then the checks) → About → Contact. frunt is the main project and 
   own words, what the product does in three numbered steps, and a facts line. The tour zooms to it,
   because board text is only readable when the camera frames it.
 - **Other work** is plain screenshots in equal 16:10 boxes on a three-column grid (no laptops).
+- **Readable where the camera stops.** At 1440 × 900 the board beside the panel is about 770px
+  wide, so a stop framing more than about 1,500 board px across shows its text at under half
+  size. Size what a stop is for to that stop (on the board: display lines 34px and up, body 21px
+  and up, labels 16px and up), and split wide content into parts the camera frames one at a
+  time (How I work's two columns). After a layout change, measure the on-screen text size at
+  each stop, not just the look.
 - **Motion carries meaning**: pin and play, never hijack scroll speed. Reduced motion means cuts,
   no rotation, no cursor animation. Phones get a bottom-sheet guide and framing that favours
   phone screens.
@@ -67,7 +73,9 @@ pipeline, then the checks) → About → Contact. frunt is the main project and 
 - **The phone guide card never needs scrolling** at iPhone 13 Pro size with Safari's bar showing
   (390 x 664): chip lists are one sideways-swipe row, the skills install line and the Intro's link
   icons are hidden on phones, and Back/Next stay pinned to the card's bottom. Re-check all stops at
-  that size when adding copy to a stop.
+  that size when adding copy to a stop. The iPhone SE (375 x 553) still has four stops that scroll
+  (the Intro, frunt's whole system and both case-study stops, 29 Oct 2026); fixing them means
+  cutting copy, so it's Matthew's call.
 - **Copy**: plain, short, specific, from the reader's side. No em dashes in on-page copy, no
   buzzwords, no AI-sounding filler. **Statuses must be true** (see Facts) and go stale, so check
   them before every launch.
@@ -94,8 +102,9 @@ src/workbench/
   products.ts          each flagship's "parts" (tile copy, statuses, focus rects)
   TourText.tsx         the whole tour as hidden text, for screen readers and crawlers
   parts.tsx            building blocks: Frame, Title, Note, MacBook, IPhone, Browser, Tile, Shot…
-  Skills.tsx           How I work's skill cards, laid out under each step; read live from the
-                       skills repo's skills.json and tests.json (useSkills)
+  Skills.tsx           How I work: the pipeline (steps, a row per skill) and three stories (problem,
+                       skill, real output); read live from the skills repo's skills.json and
+                       tests.json (useSkills)
   skills-data.ts       the skills snapshots, types and text helpers (server-safe, used by
                        TourText and /llms.txt as well as the board)
   controller.ts        the camera and everything per-frame (imperative; returns destroy())
@@ -258,11 +267,14 @@ GPU layer in Safari, and two board-sized SVGs crashed iPhones on 6 Oct 2026. Boa
   `https://raw.githubusercontent.com/MattKay02/skills/main/` in the browser. Matthew's
   publishing loop depends on this: adding a skill to the skills repo must show here with no
   change to this repo. Keep the fetch contract and the snapshot fallback. Each skill's `step`
-  (plan, decide, build, check, ship) picks its column under How I work; `evidence`
-  (`{ image, dark?, caption }`) shows real output on its card, drawn at the card's size
-  (404 × 196) in both looks, with the caption as its alt text. Without evidence the card shows
-  `flow` (in, does, out). The test line comes from `tests.json`, which the skills repo
-  generates from its eval results; never type it by hand.
+  (plan, decide, build, check, ship) puts it as a row under that step of How I work's pipeline.
+  `featured` (1 to 3) and `problem` (one plain sentence: the problem that made it) tell its story
+  in the right-hand column, with its `evidence` (`{ image, dark?, caption }`): real output from a
+  real run, drawn at 404 × 196 (rendered 3x) in both looks, with the caption as its alt text and
+  in the text versions. A story without evidence shows `flow` (in, does, out); with nothing
+  featured, the skills with evidence are told. Picking the stories is done in the skills repo,
+  never here. The test line comes from `tests.json`, which the skills repo generates from its
+  eval results; never type it by hand.
 - **GitHub graph**: built from `src/data/github.json`. Every Vercel build refreshes it (needs a
   `GITHUB_TOKEN` env var on Vercel; without one the committed snapshot is used), and
   `.github/workflows/daily.yml` triggers a rebuild each day through a Vercel deploy hook

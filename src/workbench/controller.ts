@@ -49,7 +49,7 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
   const touch = matchMedia('(hover: none) and (pointer: coarse)').matches
   const mq = matchMedia('(prefers-reduced-motion: reduce)')
   const reduced = { get matches() { return mq.matches || touch } }
-  const tagged = Array.from(world.querySelectorAll<HTMLElement>('[data-c]'))
+  let tagged = Array.from(world.querySelectorAll<HTMLElement>('[data-c]'))
   const firstStop: Partial<Record<Cluster, number>> = {}
   stops.forEach((s, i) => { if (firstStop[s.c] === undefined) firstStop[s.c] = i })
 
@@ -152,16 +152,25 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
   // ---------- the current stop ----------
   let shown = -1
   const navTicks = () => Array.from(ticks.querySelectorAll<HTMLElement>('.tick'))
+  const light = (el: HTMLElement, active: Cluster) => el.classList.toggle('on', active === 'all' || el.dataset.c === active)
   function select(i: number) {
     if (i === shown) return
     shown = i
     const s = stops[i], active = s.c
     document.body.classList.toggle('overview', active === 'all')
-    tagged.forEach((el) => el.classList.toggle('on', active === 'all' || el.dataset.c === active))
+    tagged.forEach((el) => light(el, active))
     miniCells.forEach((m) => m.el.classList.toggle('on', active === 'all' || m.c === active))
     if (s.lock) for (const id in s.lock) { const lp = laps.find((l) => l.id === id); if (lp) show(lp, s.lock[id]) }
     onStop(i)
   }
+  // Board pieces that arrive after mount (the skills, once the live list replaces the snapshot) join
+  // the current stop's state; without this a newly published skill sits dimmed until the next rebuild.
+  const arrivals = new MutationObserver(() => {
+    tagged = Array.from(world.querySelectorAll<HTMLElement>('[data-c]'))
+    if (shown >= 0) tagged.forEach((el) => light(el, stops[shown].c))
+  })
+  arrivals.observe(world, { childList: true })
+  cleanups.push(() => arrivals.disconnect())
   function goStop(i: number) {
     i = Math.max(0, Math.min(stops.length - 1, i))
     scrollTo({ top: (i * (HOLD + TRAVEL) + HOLD * 0.35) * vh, behavior: 'auto' })

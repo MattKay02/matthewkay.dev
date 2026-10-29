@@ -5,9 +5,9 @@ import gh from '@/data/github.json'
 import { FiMail } from 'react-icons/fi'
 import { FaGithub, IconLinks } from './icons'
 import {
-  Brief, Browser, Callout, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Step, Tile, Title,
+  Brief, Browser, Callout, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Tile, Title,
 } from './parts'
-import SkillsPipeline, { type Column } from './Skills'
+import { Pipeline, Stories, type HowStep } from './Skills'
 import { CV_REQUEST, LINKS, SHOW_SLOTS, type Cluster } from './stops'
 import { AppRow } from './apps'
 import { FRUNT_PARTS, FRUNT_SITE_FOCUS, FRUNT_SITE_Y, MGK_PARTS, type Part } from './products'
@@ -111,13 +111,13 @@ function BuildTimeline({ board, c, x, y }: { board: CaseBoard; c: Cluster; x: nu
   const marks = ms.map((m) => {
     const x = xAt(day(m.date))
     let level = 0
-    while (lastX[level] !== undefined && x - lastX[level] < 30) level++
+    while (lastX[level] !== undefined && x - lastX[level] < 32) level++
     lastX[level] = x
     return { x, level }
   })
 
   return (
-    <div className="tl" data-c={c} style={{ left: x, top: y, width: 1000, height: 420 }}>
+    <div className="tl" data-c={c} style={{ left: x, top: y, width: 1000, height: 456 }}>
       <div className="tl-head"><b>How it was built</b><span>Dates from {board.history} · {first.getUTCFullYear()}</span></div>
       <div className="tl-axis" aria-hidden="true">
         <i className="tl-line" />
@@ -213,9 +213,9 @@ function OtherWork() {
       <Shot c="other" x={130} y={1770} w={470} img="ledger" iw={1000} ih={621} alt="Ledger finance dashboard" nm="Ledger · web app" ln="Business finance dashboard with AI transaction entry." />
       <Shot c="other" x={645} y={1770} w={470} img="msa" iw={1000} ih={625} alt="MSA architecture portfolio" nm="MSA · client site" ln="Portfolio for an architecture student." />
       <Shot c="other" x={1160} y={1770} w={470} img="redcross" iw={1000} ih={625} alt="Red Cross Reigate pub site" nm="Red Cross · client site" ln="Landing page for a pub in Reigate." />
-      <Shot c="other" x={130} y={2200} w={470} img="youtube" iw={1000} ih={474} alt="YouTube clone home feed" nm="YouTube clone · practice" ln="Full-stack video platform with auth." />
-      <Shot c="other" x={645} y={2200} w={470} img="netflix" iw={800} ih={500} alt="Netflix clone home" nm="Netflix clone · practice" ln="State management, layer by layer." />
-      <IPhone c="other" x={1160} y={2200} w={144} img="footy" iw={400} ih={831} alt="FootyScores app, live Premier League scores"
+      <Shot c="other" x={130} y={2240} w={470} img="youtube" iw={1000} ih={474} alt="YouTube clone home feed" nm="YouTube clone · practice" ln="Full-stack video platform with auth." />
+      <Shot c="other" x={645} y={2240} w={470} img="netflix" iw={800} ih={500} alt="Netflix clone home" nm="Netflix clone · practice" ln="State management, layer by layer." />
+      <IPhone c="other" x={1160} y={2240} w={144} img="footy" iw={400} ih={831} alt="FootyScores app, live Premier League scores"
         below={{ nm: 'FootyScores', ln: 'Live scores, React Native + Node.' }} />
     </>
   )
@@ -239,40 +239,30 @@ function About() {
   )
 }
 
-/** How I work: the five steps as column heads, each skill under the step it serves. */
-export const HOW = { x0: 1790, col: 445, gap: 30, stepY: 4520, stepH: 330, cardY: 4890, cardH: 400 }
-const hx = (i: number) => HOW.x0 + i * (HOW.col + HOW.gap)
+/** How I work, in two columns sized for the camera: a 1440px screen reads about 1,400 board px
+ * across, so the frame's full width is never readable at once. Left, the five steps down the page
+ * with every skill under its step; right, three skills told as the problem that made them. */
+export const HOW = {
+  left: 1790, right: 3230, w: 1380, pipeY: 4480,
+  story: { y: 4250, h: 480, gap: 30 },
+}
+
+const HOW_STEPS: HowStep[] = [
+  { step: 'plan', n: '01', title: 'Plan', text: "Every screen laid out on one board, each with what it's for.", ev: 'e.g. Lift screen board, v11' },
+  { step: 'decide', n: '02', title: 'Decide', text: 'Big calls written down with the reasoning, so they can be checked.', ev: 'e.g. Decision 0001',
+    note: { label: 'Decision records', text: 'What I chose, the obvious alternative, what it costs, and what would change my mind.' } },
+  { step: 'build', n: '03', title: 'Build', text: 'AI does the typing. My own skills library sets how it works.', ev: 'e.g. github.com/MattKay02/skills' },
+  { step: 'check', n: '04', title: 'Check', text: 'Screens checked by eye, design reviews, a build check on every PR, and most of my skills.', ev: 'e.g. 19 findings, 30 Sept review' },
+  { step: 'ship', n: '05', title: 'Ship', text: 'Store submissions with a written record of what went out.', ev: 'e.g. Run 1.0, 2 Oct 2026' },
+]
 
 function HowIWork() {
-  const cols: Column[] = [
-    { step: 'plan', x: hx(0) },
-    { step: 'decide', x: hx(1), after: (x, y) => (
-      <Note c="how" x={x} y={y} w={HOW.col} kicker="Decision records">
-        Every big call written down: what I chose, the obvious alternative, what it costs, and what would change my mind.
-      </Note>
-    ) },
-    { step: 'build', x: hx(2) },
-    { step: 'check', x: hx(3), sub: 2 },
-    { step: 'ship', x: hx(5) },
-  ]
-  const ticks = [hx(0), hx(1), hx(2), hx(3), hx(5), hx(5) + HOW.col]
-  const step = (i: number, w = HOW.col) => ({ x: hx(i), y: HOW.stepY, w, h: HOW.stepH })
   return (
     <>
       <Title c="how" x={1760} y={4185} size={150}>How I</Title>
       <Title c="how" x={2290} y={4250} size={230} outline>Work</Title>
-      <Wire box={[hx(0) - 10, 4466, hx(5) + HOW.col - hx(0) + 20, 48]}>
-        <g data-c="how" className="mute" strokeWidth={2}>
-          <line x1={hx(0)} y1={4490} x2={hx(5) + HOW.col} y2={4490} />
-          {ticks.map((x) => <line key={x} x1={x} y1={4476} x2={x} y2={4504} />)}
-        </g>
-      </Wire>
-      <Step c="how" {...step(0)} n="01" title="Plan" text="Every screen laid out on one board, each with what it's for." ev="e.g. Lift screen board, v11" />
-      <Step c="how" {...step(1)} n="02" title="Decide" text="Big calls written down with the reasoning, so they can be checked." ev="e.g. Decision 0001" />
-      <Step c="how" {...step(2)} n="03" title="Build" text="AI does the typing. My own skills library sets how it works." ev="e.g. github.com/MattKay02/skills" />
-      <Step c="how" {...step(3, HOW.col * 2 + HOW.gap)} n="04" title="Check" text="Screens checked by eye, design reviews, a build check on every PR, and most of my skills." ev="e.g. 19 findings, 30 Sept review" />
-      <Step c="how" {...step(5)} n="05" title="Ship" text="Store submissions with a written record of what went out." ev="e.g. Run 1.0, 2 Oct 2026" />
-      <SkillsPipeline cols={cols} y={HOW.cardY} card={{ w: HOW.col, h: HOW.cardH }} gap={HOW.gap} />
+      <Pipeline steps={HOW_STEPS} x={HOW.left} y={HOW.pipeY} w={HOW.w} />
+      <Stories x={HOW.right} y={HOW.story.y} w={HOW.w} h={HOW.story.h} gap={HOW.story.gap} />
     </>
   )
 }
