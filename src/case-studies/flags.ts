@@ -26,8 +26,8 @@ const DRAFTS = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC
 
 export const SHOW_FRUNT = FRUNT_PUBLISHED || DRAFTS
 
-/** Matthew has read and approved the MGKFitness case study's copy. Not yet: drafted 27 Oct 2026. */
-const MGK_APPROVED = false
+/** Matthew read and approved the MGKFitness case study's copy (29 Oct 2026). */
+const MGK_APPROVED = true
 
 /**
  * Its consent card says the coach checks AI consent at the server for both apps

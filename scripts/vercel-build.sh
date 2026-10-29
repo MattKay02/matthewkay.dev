@@ -13,6 +13,9 @@ npm run screens || echo "Screens feed failed: using the snapshot in src/data/scr
 #    (failing the deploy if it runs past one A4 page); production has no CV,
 #    as it's emailed on request (src/cv/flags.ts).
 set -e
+# Drafts show on previews (src/case-studies/flags.ts reads NEXT_PUBLIC_VERCEL_ENV).
+# Vercel only sets that for a known framework, and vercel.json names none.
+export NEXT_PUBLIC_VERCEL_ENV="$VERCEL_ENV"
 npm run build
 if [ "$VERCEL_ENV" = "preview" ]; then node scripts/build-cv.mjs; fi
 npm run og

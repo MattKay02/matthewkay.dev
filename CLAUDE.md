@@ -224,12 +224,12 @@ the `MattKay02/frunt` README at `/work/frunt/`. `/work/frunt/` joins the sitemap
 study's stop is `extra: 'case'` with a `study` slug into `CASE_BOARDS` (`boards.ts`).
 
 - **A draft until two things are true** (`MGK_PUBLISHED` in `flags.ts`): Matthew approves the copy
-  (`MGK_APPROVED`, false since it was drafted on 27 Oct 2026; the Why and the lead lesson are his,
-  the rest is drafted from the repo), and the coach checks AI consent at the server for **both**
-  apps. Its consent card says so, and Matthew chose to wait for both (27 Oct). `npm run mgk` reads
-  `CONSENT_KEYS` in `supabase/functions/coach/consent.ts` on mgk-fitness's `main`: Run's check went
-  live in production on 27 Oct (coach v37, MGKCodes/mgk-fitness#9) but reaches `main` with the next
-  release; Lift's needs a Lift release (its coach switch was on the phone and on by default).
+  (`MGK_APPROVED`, true: Matthew read and approved it on 29 Oct 2026), and the coach checks AI
+  consent at the server for **both** apps. Its consent card says so, and Matthew chose to wait for
+  both (27 Oct). `npm run mgk` reads `CONSENT_KEYS` in `supabase/functions/coach/consent.ts` on
+  mgk-fitness's `main`: Run's check went live in production on 27 Oct (coach v37,
+  MGKCodes/mgk-fitness#9) but reaches `main` with the next release; Lift's comes with Lift 2.0.1
+  (MGKCodes/mgk-fitness#10). Once both are on `main`, the next build publishes it.
 - **Matthew's rules for its copy (27 Oct):** the story starts at Run (25 Jul 2026), Liftio is
   background. Competitors' prices, never their names (re-check them). Never "I wanted one app",
   never one subscription for the suite (Run and Lift each have their own), and never that one app
@@ -321,9 +321,8 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
 ## Facts (keep true; re-check before launch)
 
 - **frunt**: live SaaS. Manager web app; staff app on the App Store (June 2026) and Google Play.
-  **The staff Ask screen is out of date**: it shows six sources for a Challenge 25 answer, the
-  over-citing fixed on 28 Sep 2026. Recapture it in frunt-web (`public/screens/staff-ask.webp`)
-  before the case study goes public (the case study describes the fix).
+  The staff Ask screen was recaptured from 1.2.0 on 25 Oct 2026 (frunt-web #112), after the
+  over-citing fix of 28 Sep that the case study describes.
   Instagram studio live since 21 Sep 2026. **WhatsApp is live** (Matthew, 6 Oct 2026; the live
   webhook answers, it doesn't 404, so `WHATSAPP_ENABLED` is on in production). The rota and briefs
   are frozen in frunt (ADR 0076, 24 Aug 2026): never sell them on the board. Admin console and outreach + analytics are internal: no admin screenshots until they
@@ -355,9 +354,10 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
   `mattkay02.github.io` links are caught by a separate tiny repo, `MattKay02/MattKay02.github.io`,
   whose `index.html` and `404.html` send every path to the same path on matthewkay.dev. GitHub
   Pages on this repo is no longer needed (switching it off is Matthew's to do).
-- **Case studies**: frunt is built and approved, waiting on its eval. MGKFitness is drafted
-  (27 Oct 2026), waiting on Matthew's read and on Lift's consent release (see "Case studies are
-  code"). How I work next, in the same format and the same data-first way.
+- **Case studies**: frunt is public (its passing eval reached frunt-web's `main` on 14 Oct 2026).
+  Its words were last checked on 6 Oct, and frunt has ADRs 0088 to 0094 since: refresh it.
+  MGKFitness is approved (29 Oct 2026) and waits only on Lift's consent release (see "Case studies
+  are code"). How I work next, in the same format and the same data-first way.
 - **How I work** and **About** are first ideas.
 - **CV numbers**: deliberately none for now (Matthew, 5 Oct: "nothing yet worth putting on").
   Don't push for metrics; suggest them only when a real milestone lands (e.g. Run's first month
