@@ -36,7 +36,8 @@ test('the note names who asked, quotes them, and attaches the CV to Matthew only
   assert.equal(note.attachments.length, 1)
   assert.equal(note.attachments[0].filename, CV_KEY)
   assert.equal(note.attachments[0].type, 'application/pdf')
-  assert.equal(Buffer.from(note.attachments[0].content, 'base64').toString(), '%PDF-1.7 fake')
+  assert.ok(note.attachments[0].content instanceof ArrayBuffer, 'the PDF bytes, not a base64 string')
+  assert.equal(Buffer.from(note.attachments[0].content).toString(), '%PDF-1.7 fake')
   assert.equal(note.replyTo, undefined) // a reply from this note would go from his personal address
 })
 
