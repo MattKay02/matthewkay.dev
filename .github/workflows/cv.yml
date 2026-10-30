@@ -1,0 +1,62 @@
+name: Private CV
+
+# Keeps the CV that hello@matthewkay.dev attaches to CV requests current
+# (workers/cv-request). Prints the private copy, with the phone number from the
+# CV_PHONE secret, and puts it in the worker's private KV store.
+# Never as a workflow artifact: this repo is public, and so are its artifacts.
+on:
+  push:
+    branches: [main]
+    paths: ['src/data/cv.ts', 'src/cv/**', 'scripts/build-cv.mjs']
+  # Daily as well: the CV's "Live on …" lines follow the app stores, not cv.ts.
+  schedule:
+    - cron: '47 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency: private-cv
+
+jobs:
+  cv:
+    runs-on: ubuntu-latest
+    env:
+      CV_PHONE: ${{ secrets.CV_PHONE }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_KV_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Check the secrets
+        id: ready
+        run: |
+          if [ -z "$CV_PHONE" ] || [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::warning::CV_PHONE, CLOUDFLARE_KV_TOKEN or CLOUDFLARE_ACCOUNT_ID is not set, so no private CV was made"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.ready.outputs.ok == 'true'
+        with:
+          fetch-depth: 0 # the CV is stamped with the date cv.ts last changed
+      - uses: actions/setup-node@v4
+        if: steps.ready.outputs.ok == 'true'
+        with:
+          node-version: 22
+          cache: npm
+      - if: steps.ready.outputs.ok == 'true'
+        run: npm ci
+      - name: Current store statuses
+        if: steps.ready.outputs.ok == 'true'
+        run: npm run stores || echo "::warning::Store check failed, using the snapshot in src/data/stores.json"
+      - if: steps.ready.outputs.ok == 'true'
+        run: npx playwright install --with-deps chromium
+      - name: Print the private CV
+        if: steps.ready.outputs.ok == 'true'
+        run: npm run cv:private
+      - name: Put it in the worker's KV store
+        if: steps.ready.outputs.ok == 'true'
+        run: |
+          npx --yes wrangler@4 kv key put Matthew_Kay_CV.pdf --path private/Matthew_Kay_CV.pdf \
+            --namespace-id 288a4d263369449cb5c57ad79af6582e --remote \
+            --metadata "{\"built\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"

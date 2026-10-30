@@ -144,6 +144,8 @@ scripts/build-board.mjs    photographs the whole board to out/board-{light,dark}
 scripts/build-readme.mjs   photographs the README visuals (light + dark, 2x): `npm run readme`
 scripts/headless.mjs       shared by both: serves out/ and launches headless Chrome
 scripts/vercel-*.sh        Vercel's install and build steps (see vercel.json)
+workers/cv-request/        hello@matthewkay.dev's email worker: forwards all mail, attaches the CV to CV requests
+.github/workflows/cv.yml   prints the private CV into that worker's KV store (cv.ts changes and daily)
 vercel.json                also the bios' short links: /ig /th /x /tt /in go to social.mgkcodes.com/go/matt-*,
                            which counts the click for the desk and lands on /connect (or / for LinkedIn)
 public/work/           every image on the board, the Apple frames and the app icons
@@ -188,6 +190,18 @@ pull request. Rules:
   `LINKS` in `stops.ts`, so they can't drift from the site.
 - Old `/#cv` links land on the Contact stop, next to Request CV. The sheet is
   `src/cv/CvSheet.tsx`, shared by the page and the PDF.
+- **A CV request lands in Matthew's inbox with the CV attached.** Request CV emails
+  hello@matthewkay.dev (subject "CV request"). `workers/cv-request`, the email worker on that
+  address, forwards every email as a plain rule would, and for a CV request also sends Matthew
+  a note (who asked, what they wrote) with the latest private CV attached. He answers them
+  himself: nothing is ever sent to the person asking, so bots and AI tools never get the CV.
+  `.github/workflows/cv.yml` keeps that CV current (on a `cv.ts` change and daily, as the
+  "Live on" lines follow the stores): it prints `npm run cv:private` with the `CV_PHONE`
+  secret into the worker's private Workers KV store, never as a workflow artifact (the repo is
+  public). The worker's `FORWARD_TO` (his inbox) is a worker secret, never in this repo. It
+  runs on Matthew's personal Cloudflare account (`account_id` in its `wrangler.toml`), where
+  the matthewkay.dev zone lives.
+  `npm test` in `workers/cv-request` covers the rules; `wrangler dev` runs it locally.
 
 ### Case studies are code
 
