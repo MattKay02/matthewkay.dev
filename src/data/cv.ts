@@ -33,10 +33,10 @@ export const cv = {
   skills: [
     { group: 'Languages', items: 'TypeScript, JavaScript, Dart, Python, SQL, HTML / CSS (C++, academic)' },
     { group: 'Frontend & mobile', items: 'React, Next.js, Flutter, React Native / Expo, Tailwind CSS' },
-    { group: 'Backend & data', items: 'Node.js, Supabase (Postgres, RLS, Edge Functions), pgvector, Inngest, REST APIs' },
+    { group: 'Backend & data', items: 'Node.js, Supabase (Postgres, RLS, Edge Functions), Cloudflare Workers / D1, pgvector, Inngest' },
     { group: 'Payments & ops', items: 'Stripe, RevenueCat, PostHog, Sentry, Vercel, Codemagic, EAS Build, GitHub Actions' },
     { group: 'AI engineering', items: 'RAG with cited sources, Claude API, OpenRouter, MCP servers, Claude Code and agentic workflows' },
-    { group: 'Testing', items: 'Playwright (end to end)' },
+    { group: 'Testing', items: 'Playwright (end to end), Vitest' },
   ],
 
   experience: [
@@ -53,8 +53,8 @@ export const cv = {
             "Turns a restaurant's own documents into staff training and instant answers that cite their source. Live in production with a paying customer.",
             'Designed and built the manager web app end to end: Next.js, TypeScript, Supabase / PostgreSQL, Stripe billing and background jobs on Inngest.',
             "Built retrieval over each restaurant's documents with pgvector and OpenAI embeddings, so every answer names the documents it came from.",
-            'Shipped the Flutter staff app to the App Store and Google Play: sign-in, deep links, biometric login and push notifications.',
-            'Built the tools to run it: an admin console (customers, revenue, AI cost per feature, health checks) and an Instagram studio where Claude proposes posts that I approve, then render, schedule and publish through the Instagram API.',
+            'Shipped the Flutter staff app to the App Store and Google Play: deep links, biometric login, push alerts.',
+            "Built the admin console that runs it: customers and billing, AI spend per feature checked against the providers' bills, an eval run behind every model change, and checks that catch jobs that run green but send nothing.",
           ],
         },
         {
@@ -66,15 +66,21 @@ export const cv = {
             `Run: a running tracker with an AI coach on Supabase Edge Functions and OpenRouter, RevenueCat subscriptions, and releases run from Claude Code and Codemagic.${runLive ? ` Live on ${runLive}.` : ''}`,
           ],
         },
+        {
+          name: 'Social desk',
+          tagline: 'posts and replies for 10 accounts across my brands',
+          bullets: [
+            'A Cloudflare Worker (TypeScript, D1, R2, cron) that publishes approved posts on schedule, retry-safe and read back after each send: Instagram, Threads and X live, LinkedIn and TikTok built in.',
+            'Claude drafts posts and comment replies that I approve from a phone desk, learning from the ones I reject.',
+          ],
+        },
       ],
     },
   ] as CvRole[],
 
   projects: [
     { name: 'skills', line: 'open-source Claude Code skills I build for my own workflow: Playwright UI walkthroughs, Lighthouse audits, emulator checks, CI builds.', link: { label: 'github.com/MattKay02/skills', href: LINKS.skills } },
-    { name: 'This portfolio', line: 'a Next.js site with a scroll-driven camera, live GitHub and skills data, and this CV generated from it.' },
-    { name: 'Video-sharing platform', line: 'Next.js, Prisma, JWT / bcrypt auth, FFmpeg thumbnails, full-text search, infinite scroll.' },
-    { name: 'Ledger', line: 'business finance dashboard: React, Supabase, Google and Apple sign-in, AI transaction entry with Claude.' },
+    { name: 'My portfolio', line: 'a Next.js site with a scroll-driven camera, live GitHub and skills data, and this CV generated from it.' },
   ] as CvItem[],
 
   work: [
