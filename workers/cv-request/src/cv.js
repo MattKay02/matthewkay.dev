@@ -15,13 +15,6 @@ export function isCvRequest(subject, headers) {
 
 const day = (d) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Europe/London' })
 
-function toBase64(buf) {
-  const bytes = new Uint8Array(buf)
-  let s = ''
-  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
-  return btoa(s)
-}
-
 /** The note to Matthew: who asked, what they wrote, and the CV, or loudly why it isn't attached. */
 export async function cvNote(raw, env) {
   const mail = await PostalMime.parse(raw)
@@ -46,6 +39,8 @@ export async function cvNote(raw, env) {
     to: env.FORWARD_TO,
     subject: `CV request from ${name}`,
     text,
-    attachments: cv ? [{ content: toBase64(cv), filename: CV_KEY, type: 'application/pdf', disposition: 'attachment' }] : [],
+    // The bytes themselves: given a base64 string, the deployed binding attached the
+    // base64 text as the file, and the PDF wouldn't open (30 Oct 2026).
+    attachments: cv ? [{ content: cv, filename: CV_KEY, type: 'application/pdf', disposition: 'attachment' }] : [],
   }
 }
