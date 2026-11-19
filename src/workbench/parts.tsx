@@ -161,12 +161,3 @@ export function Shot({ c, img, src, iw, ih, alt, nm, ln, ...box }: Box & { c: Cl
     </figure>
   )
 }
-
-export function PassionCard({ c, img, ix, label, rot = 0, ...box }: Box & { c: Cluster; img: string; ix: string; label: string; rot?: number }) {
-  return (
-    <figure className="pcard" data-c={c} style={at(box, rot ? { transform: `rotate(${rot}deg)` } : undefined)}>
-      <img loading="lazy" decoding="async" src={IMG(img)} width={420} height={560} alt={label} />
-      <figcaption><i>{ix}</i><b>{label}</b></figcaption>
-    </figure>
-  )
-}

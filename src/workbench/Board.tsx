@@ -3,9 +3,9 @@
 import type { CSSProperties, ReactNode } from 'react'
 import gh from '@/data/github.json'
 import { FiMail } from 'react-icons/fi'
-import { FaGithub, IconLinks } from './icons'
+import { FaGithub, IconLinks, MGKIcon } from './icons'
 import {
-  Brief, Browser, Callout, Frame, IMG, IPhone, MacBook, Note, PassionCard, Shot, SlotBox, Spec, Tile, Title,
+  Brief, Browser, Callout, Frame, IMG, IPhone, MacBook, Note, Shot, SlotBox, Tile, Title,
 } from './parts'
 import { Pipeline, Stories, type HowStep } from './Skills'
 import { CV_REQUEST, LINKS, SHOW_SLOTS, type Cluster } from './stops'
@@ -221,20 +221,34 @@ function OtherWork() {
   )
 }
 
+/** The close of the tour: each chapter told as the problem that started it, under the studio it ships from. */
+const THREADS = [
+  { ch: '01 · frunt', problem: "Restaurants write their rules down. Staff don't read them.", answer: 'I saw it working the floor, so I built frunt.' },
+  { ch: '02 · MGKFitness', problem: 'My running apps cost about £25 a month, and felt like games.', answer: 'So I built Run, and rebuilt my gym app as Lift.' },
+  { ch: '04 · How I work', problem: 'AI writes code fast, and it can be confidently wrong.', answer: 'So I built checks for it. Each one is a skill, tested and public.' },
+]
+
 function About() {
   return (
     <>
       <Title c="about" x={120} y={2915} size={170}>About</Title>
       <Title c="about" x={600} y={3010} size={260} outline>Me</Title>
-      <div className="bio" data-c="about" style={{ left: 130, top: 3290, width: 820 }}>
-        <p>Building things has always been how I think. Before I knew what programming was, I was pulling things apart to see how they worked.</p>
-        <p>I run MGKCodes, the studio behind frunt and MGKFitness.</p>
-      </div>
-      <PassionCard c="about" x={1050} y={3010} img="gym" ix="01" label="Gym" rot={-8} />
-      <PassionCard c="about" x={1210} y={2975} img="golf" ix="02" label="Golf" />
-      <PassionCard c="about" x={1370} y={3010} img="gaming" ix="03" label="Gaming" rot={8} />
-      <img loading="lazy" decoding="async" data-c="about" src="/work/mgk-logo.svg" width={1500} height={935} alt="MGKCodes" style={{ position: 'absolute', left: 1060, top: 3420, width: 220, height: 'auto' }} />
-      <Spec c="about" x={1060} y={3580}>MGKCodes · the studio<br />behind frunt + MGKFitness</Spec>
+      {/* The studio in the photo's column, as in the hero and Contact, in ink so it reads in both themes. */}
+      <a className="studio" data-c="about" href={LINKS.mgkcodes} target="_blank" rel="noopener" aria-label="MGKCodes, my software studio" style={{ left: 1273, top: 2935, width: 357 }}>
+        <MGKIcon />
+        <span className="spec">MGKCodes · my studio<br />One person, every layer</span>
+      </a>
+      {THREADS.map((t, k) => (
+        <div key={t.ch} className="thread" data-c="about" style={{ left: 130 + k * 508, top: 3280, width: 484 }}>
+          <span className="k">{t.ch}</span>
+          <b>{t.problem}</b>
+          <p>{t.answer}</p>
+        </div>
+      ))}
+      {/* The sign-off: why any of it gets built. */}
+      <p className="signoff" data-c="about" style={{ left: 130, top: 3640, width: 1500 }}>
+        I love building things. <span>I enjoyed making every part of this site too.</span>
+      </p>
     </>
   )
 }

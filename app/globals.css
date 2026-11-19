@@ -57,9 +57,13 @@ img { max-width: none; }
 .stage {
   position: fixed; inset: 0; overflow: hidden; z-index: 0; cursor: grab;
   background-color: var(--bg);
-  background-image: radial-gradient(circle, var(--dot) 1.3px, transparent 1.6px);
   transition: background-color .4s;
 }
+/* The desk's dot grid, anchored to the board (controller.ts sizes and places it). On touch screens it
+   fades out while the board flies between stops and back in when it lands. */
+.dots { position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(circle, var(--dot) 1.3px, transparent 1.6px); transition: opacity .25s ease; }
+/* Frame labels are sized to the zoom, so they sit out a flight rather than being redrawn every frame. */
+.world.gliding .flabel { visibility: hidden; }
 body.dragging .stage { cursor: grabbing; }
 .world { position: absolute; left: 0; top: 0; width: 4760px; height: 4900px; transform-origin: 0 0; }
 .world.moving { will-change: transform; }
@@ -221,14 +225,17 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 .ln { display: block; margin-top: 8px; font: 400 26px/1.3 var(--body); color: var(--muted); }
 
 /* ---------- about, how I work, contact ---------- */
-.pcard { margin: 0; z-index: 2; width: 210px; overflow: hidden; background: var(--surface); border-radius: var(--r-art); box-shadow: var(--ring), var(--shadow); }
-.pcard img { display: block; width: 100%; height: auto; filter: grayscale(1) brightness(.85); transition: filter .8s; }
-.pcard:hover img { filter: none; }
-.pcard figcaption { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 14px 16px; font: 500 15px/1 var(--mono); letter-spacing: .1em; color: #f5f5f5; text-shadow: 0 1px 8px rgba(0,0,0,.6); }
-.pcard figcaption i { align-self: flex-end; font-style: normal; }
-.pcard figcaption b { font: var(--ttl-weight) 30px/1 var(--display); text-transform: var(--ttl-case); }
-.bio { margin: 0; font: 400 28px/1.45 var(--body); color: var(--text2); }
-.bio p { margin: 0 0 22px; text-wrap: pretty; }
+/* About: the studio in ink (the monogram is currentColor, so it reads in both themes), then the
+   tour's chapters as hairline-ruled columns: the chapter, the problem that started it, what I built. */
+.studio { z-index: 2; display: flex; flex-direction: column; gap: 14px; color: var(--strong); text-decoration: none; }
+.studio svg { display: block; width: 100%; height: auto; }
+.studio .spec { white-space: normal; font-size: calc(22px * var(--ls)); }
+.thread { z-index: 2; display: flex; flex-direction: column; gap: 18px; padding-top: 26px; border-top: 1px solid var(--outline); }
+.thread .k { font: 500 calc(19px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--muted); }
+.thread b { font: var(--ttl-weight) 44px/1.14 var(--display); letter-spacing: -.015em; color: var(--strong); text-wrap: balance; }
+.thread p { margin: 0; font: 400 28px/1.4 var(--body); color: var(--text2); text-wrap: pretty; }
+.signoff { z-index: 2; margin: 0; padding-top: 26px; border-top: 1px solid var(--outline); font: var(--ttl-weight) 44px/1.14 var(--display); letter-spacing: -.015em; color: var(--strong); }
+.signoff span { color: var(--ttl2); }
 .contactline { white-space: nowrap; font: 500 32px/1.4 var(--mono); color: var(--text2); }
 
 /* Apps and where they're live (statuses from the stores, see src/workbench/apps.tsx). */
@@ -469,7 +476,8 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 .mail code { font: 500 14px/1.3 var(--mono); color: var(--strong); user-select: all; overflow-wrap: anywhere; }
 .cap-nav { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; padding: 0 28px; }
 .nav-prev { display: flex; align-items: center; gap: 8px; height: 60px; padding: 0 20px; border: 1px solid var(--line); border-radius: var(--r-btn); font: 500 calc(12px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--text2); }
-.nav-prev:hover { border-color: var(--strong); color: var(--strong); }
+/* Hover only where there's a mouse: a tap leaves a phone "hovering", and Next stayed inverted after every tap. */
+@media (hover: hover) { .nav-prev:hover { border-color: var(--strong); color: var(--strong); } }
 .nav-prev:disabled { opacity: .35; cursor: default; border-color: var(--line); color: var(--text2); }
 .nav-next {
   display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: center; column-gap: 14px; row-gap: 4px;
@@ -479,8 +487,10 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
 .nav-next small { grid-column: 1; opacity: .6; font: 500 calc(11px * var(--ls))/1 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); }
 .nav-next span { grid-column: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: 500 15px/1.2 var(--body); }
 .nav-next i { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 20px; font-style: normal; transition: transform .2s ease; }
-.nav-next:hover { background: transparent; color: var(--strong); }
-.nav-next:hover i { transform: translateX(4px); }
+@media (hover: hover) {
+  .nav-next:hover { background: transparent; color: var(--strong); }
+  .nav-next:hover i { transform: translateX(4px); }
+}
 .cap .hint { margin: 0; padding: 14px 28px 20px; font: 500 calc(11px * var(--ls))/1.4 var(--label); letter-spacing: var(--label-track); text-transform: var(--label-case); color: var(--muted); }
 
 .mini { position: fixed; z-index: 15; right: 20px; bottom: 20px; width: 150px; padding: 10px; background: var(--panel-bg); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border: 1px solid var(--line); border-radius: var(--r-panel); box-shadow: var(--shadow-panel); }
@@ -533,7 +543,14 @@ body:not(.overview) .dev:not(.on) .scr { opacity: .5; }
   .hx { animation: none; }
   .mcursor { display: none; }
   [data-c], .dv .scr img, .card .shot img, .bw-scr img { transition: none; }
+  .cap .hint { display: none; } /* no scrolling or dragging here: Back and Next move the tour */
 }
+/* Touch screens step through the tour with the buttons only (controller.ts adds .stepped): the page
+   never scrolls or rubber-bands, so a stray swipe can't move the tour, and a long guide card scrolls
+   inside itself. A quick double tap on Next is two steps, never a zoom. */
+html.stepped, html.stepped body { overflow: hidden; overscroll-behavior: none; touch-action: manipulation; }
+html.stepped button { touch-action: manipulation; }
+html.stepped .cap { overscroll-behavior: contain; }
 
 /* Phones: the guide card shows everything without scrolling (an iPhone 13 Pro with Safari's bar showing
    gives the page 390 x 664). Chip lists become one row you swipe sideways; the skills install line and
