@@ -15,7 +15,8 @@ Its job is to get Matthew interviews. Winning clients is mgkcodes.com's job, not
 
 ## The concept: the Workbench
 
-One board of real work. Native page scroll moves a camera through 14 stops; a guide panel on the
+One board of real work. Native page scroll moves a camera through the stops (on touch screens only
+Back and Next do, see Design rules); a guide panel on the
 left (a bottom sheet on phones) tells the story. Visitors can click a frame to jump, click a
 product "part" to zoom to it, drag to look around (springs back), use ← → keys, or the minimap.
 
@@ -64,12 +65,29 @@ pipeline, then three problems) → About → Contact. frunt is the main project 
   phone screens.
 - **Touch devices get the light board** (`(hover: none) and (pointer: coarse)`): a board that isn't a
   GPU layer at rest, no frosted-glass blur, no wandering cursor, no fades and light shadows. iPhone
-  Safari stalled and crashed on the full version (6 Oct 2026). Between stops the board glides as one
-  CSS transition (GPU); the first glide is timed, and a phone that can't keep up (or crashed mid-glide,
-  marked by `wb-glide: trying` in localStorage) gets a directional slide instead, for good. **Explore
+  Safari stalled and crashed on the full version (6 Oct 2026). Between stops the board flies the
+  desktop camera's own path (eased, log zoom, pulling back on long moves) as one Web Animation of its
+  transform (GPU), starting only once the guide card has settled, so it never restarts mid-flight; the
+  dot grid (`.dots`) fades out and frame labels hide for the flight. Flights after the first are timed,
+  and a phone that clearly struggles twice (or crashed mid-flight, marked by `wb-glide2: trying` in
+  localStorage) gets a directional slide instead, for good. The images of the stops either side are
+  decoded ahead so none decodes mid-flight. **Explore
   the board** (on the whole-board stop, touch only) opens a pinch-and-drag picture of the whole board,
   photographed on every deploy (`npm run board`). The camera loop writes to the page only when a value
   changes, so a resting page does no work.
+- **Touch screens move only by the buttons** (Matthew, 30 Oct 2026: a stray swipe jumped the tour).
+  There the page doesn't scroll at all (`html.stepped`, set by `controller.ts`): Back, Next, the
+  progress bar and taps on the board change the stop, and a long guide card scrolls inside itself.
+  The stop is kept in sessionStorage (`wb-stop`) so a reload lands back on it. Desktop keeps the
+  scroll-driven camera at every width. Button hover styles are mouse-only (`@media (hover: hover)`),
+  or a tapped Next stays inverted. Copy on any stop must not tell phone visitors to scroll.
+- **A phone's camera frames a whole subject, never part of one** (Matthew, 19 Nov 2026: content was
+  cut). Each stop's `m` holds its subject whole (the brief with its logo, a phone with its callout, all
+  six parts, every story card), and on touch screens the light follows the camera: what `m` frames
+  stays lit and the rest of the board, its own project included, dims. The board is too dense for
+  neighbours never to show at a phone's edges, so they show dimmed. After changing `m` or the board,
+  step through every stop at 390 x 780 and 390 x 664 and list what a stop cuts through: lit items cut
+  must be zero.
 - **The phone guide card never needs scrolling** at iPhone 13 Pro size with Safari's bar showing
   (390 x 664): chip lists are one sideways-swipe row, the skills install line and the Intro's link
   icons are hidden on phones, and Back/Next stay pinned to the card's bottom. Re-check all stops at
@@ -384,7 +402,10 @@ with a hover title and an `aria-label`. The dashed case-study placeholders are h
   Its words were last checked on 6 Oct, and frunt has ADRs 0088 to 0094 since: refresh it.
   MGKFitness is approved (29 Oct 2026) and waits only on Lift's consent release (see "Case studies
   are code"). How I work next, in the same format and the same data-first way.
-- **How I work** and **About** are first ideas.
+- **How I work** is a first idea. **About** was rewritten on 19 Nov 2026 as the tour's close, from
+  Matthew's answers: building is his passion (this site included), each chapter as the problem that
+  started it, MGKCodes as one person doing every layer, no hobby photos, nothing about job-hunting
+  (Contact asks). The copy is drafted, not yet approved word for word.
 - **CV numbers**: deliberately none for now (Matthew, 5 Oct: "nothing yet worth putting on").
   Don't push for metrics; suggest them only when a real milestone lands (e.g. Run's first month
   in the stores, several restaurants on frunt), as totals only.

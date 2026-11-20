@@ -7,6 +7,8 @@ import { WORLD, type Cluster, type Rect, type Stop } from './stops'
 export interface WorkbenchEls {
   world: HTMLElement
   stage: HTMLElement
+  /** The desk's dot grid, under the board. */
+  dots: HTMLElement
   track: HTMLElement
   bar: HTMLElement
   cap: HTMLElement
@@ -40,7 +42,7 @@ const mix = (a: number, b: number, e: number) => a + (b - a) * e
 const clamp = (v: number, max: number) => Math.max(0, Math.min(max, v))
 
 export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: number) => void): WorkbenchApi {
-  const { world, stage, track, bar, cap, ticks, mini, zoomRead, xyRead, you } = els
+  const { world, stage, dots, track, bar, cap, ticks, mini, zoomRead, xyRead, you } = els
   const { w: W, h: H } = WORLD
   const MS = MINI_W / W, MINI_H = Math.round(H * MS)
   // Touch devices (phones, tablets) get the reduced-motion camera, which cuts between stops, on a board
@@ -49,6 +51,15 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
   const touch = matchMedia('(hover: none) and (pointer: coarse)').matches
   const mq = matchMedia('(prefers-reduced-motion: reduce)')
   const reduced = { get matches() { return mq.matches || touch } }
+  // Touch screens move between stops only by Back, Next, the progress bar and taps on the board. The
+  // page itself doesn't scroll there: a stray swipe used to scroll it and jump the tour (Matthew, 30 Oct
+  // 2026). `at` is the stop on screen, kept for the tab's session so a reload lands back on it.
+  const stepped = touch
+  let at = 0
+  if (stepped) {
+    document.documentElement.classList.add('stepped')
+    try { at = Math.max(0, Math.min(stops.length - 1, Number(sessionStorage.getItem('wb-stop')) || 0)) } catch { /* no storage: the Intro */ }
+  }
   let tagged = Array.from(world.querySelectorAll<HTMLElement>('[data-c]'))
   const firstStop: Partial<Record<Cluster, number>> = {}
   stops.forEach((s, i) => { if (firstStop[s.c] === undefined) firstStop[s.c] = i })
@@ -66,7 +77,7 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
     vw = innerWidth; vh = innerHeight
     narrow = matchMedia(`(max-width: ${SHEET_MAX}px)`).matches
     miniShown = !!mini.parentElement && getComputedStyle(mini.parentElement).display !== 'none'
-    track.style.height = ((stops.length * HOLD + (stops.length - 1) * TRAVEL) * vh + vh) + 'px'
+    track.style.height = stepped ? '0px' : ((stops.length * HOLD + (stops.length - 1) * TRAVEL) * vh + vh) + 'px'
   }
   function area() {
     const top = bar.getBoundingClientRect().bottom
@@ -152,27 +163,70 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
   // ---------- the current stop ----------
   let shown = -1
   const navTicks = () => Array.from(ticks.querySelectorAll<HTMLElement>('.tick'))
-  const light = (el: HTMLElement, active: Cluster) => el.classList.toggle('on', active === 'all' || el.dataset.c === active)
+  /** Where an element sits on the board, in board pixels (it never moves, so measured once). */
+  const boxes = new WeakMap<Element, Rect>()
+  function boardBox(el: Element): Rect {
+    let r = boxes.get(el)
+    if (!r) {
+      const wb = world.getBoundingClientRect(), s = wb.width / W, b = el.getBoundingClientRect()
+      r = [(b.left - wb.left) / s, (b.top - wb.top) / s, b.width / s, b.height / s]
+      boxes.set(el, r)
+    }
+    return r
+  }
+  /** How much of an element lies inside a board rect, 0 to 1. */
+  function share(el: Element, [x, y, w, h]: Rect) {
+    const [ex, ey, ew, eh] = boardBox(el)
+    if (!ew || !eh) return 1
+    const ix = Math.max(0, Math.min(ex + ew, x + w) - Math.max(ex, x)), iy = Math.max(0, Math.min(ey + eh, y + h) - Math.max(ey, y))
+    return (ix * iy) / (ew * eh)
+  }
+  // Phones: the light follows the camera. What a stop frames stays lit and the rest of its project dims
+  // with everything else, so whatever the edges of a small screen cut through reads as background.
+  const subject = (s: Stop): Rect | null => (stepped && s.c !== 'all' ? (narrow && s.m) || s.r : null)
+  function light(el: HTMLElement, s: Stop) {
+    let on = s.c === 'all' || el.dataset.c === s.c
+    const sub = subject(s)
+    if (on && sub && !el.classList.contains('frame')) on = share(el, sub) >= 0.5
+    el.classList.toggle('on', on)
+  }
   function select(i: number) {
     if (i === shown) return
     shown = i
     const s = stops[i], active = s.c
     document.body.classList.toggle('overview', active === 'all')
-    tagged.forEach((el) => light(el, active))
+    tagged.forEach((el) => light(el, s))
     miniCells.forEach((m) => m.el.classList.toggle('on', active === 'all' || m.c === active))
     if (s.lock) for (const id in s.lock) { const lp = laps.find((l) => l.id === id); if (lp) show(lp, s.lock[id]) }
+    if (stepped) { warm(i + 1); warm(i - 1) }
     onStop(i)
+  }
+  // Phones: decode the images of the stops either side ahead of time, so none decodes mid-flight.
+  function warm(j: number) {
+    if (j < 0 || j >= stops.length) return
+    const c = fit(j), view: Rect = [c.cx - c.ax / c.z, c.cy - c.ay / c.z, vw / c.z, vh / c.z]
+    world.querySelectorAll<HTMLImageElement>('img').forEach((img) => {
+      if (share(img, view) === 0) return
+      if (img.loading === 'lazy') img.loading = 'eager'
+      img.decode?.().catch(() => { /* not loaded yet or not an image: it loads as usual */ })
+    })
   }
   // Board pieces that arrive after mount (the skills, once the live list replaces the snapshot) join
   // the current stop's state; without this a newly published skill sits dimmed until the next rebuild.
   const arrivals = new MutationObserver(() => {
     tagged = Array.from(world.querySelectorAll<HTMLElement>('[data-c]'))
-    if (shown >= 0) tagged.forEach((el) => light(el, stops[shown].c))
+    if (shown >= 0) tagged.forEach((el) => light(el, stops[shown]))
   })
   arrivals.observe(world, { childList: true })
   cleanups.push(() => arrivals.disconnect())
   function goStop(i: number) {
     i = Math.max(0, Math.min(stops.length - 1, i))
+    if (stepped) {
+      // Straight to the stop, so a quick second tap on Next counts from the new one.
+      at = i; clearFocus(); select(i)
+      try { sessionStorage.setItem('wb-stop', String(i)) } catch { /* fine */ }
+      return
+    }
     scrollTo({ top: (i * (HOLD + TRAVEL) + HOLD * 0.35) * vh, behavior: 'auto' })
   }
   const goCluster = (c: Cluster) => { const i = firstStop[c]; if (i !== undefined) goStop(i) }
@@ -217,6 +271,7 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
   function clearFocus() {
     if (!focus) return
     focus.el.classList.remove('hl')
+    if (shown >= 0) light(focus.el, stops[shown])
     document.querySelectorAll('[data-tile]').forEach((b) => b.classList.remove('is-on'))
     focus = null
   }
@@ -227,7 +282,7 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
       ? [el.offsetLeft - 40, el.offsetTop - 40, el.offsetWidth + 80, el.offsetHeight + 80]
       : (spec.split(',').map(Number) as Rect)
     focus = { rect, y: scrollY, c: el.dataset.c || '', el }
-    el.classList.add('hl')
+    el.classList.add('hl', 'on') // lit even where a phone's stop had dimmed it
     document.querySelectorAll<HTMLElement>('[data-tile]').forEach((b) => b.classList.toggle('is-on', b.dataset.tile === el.id))
   }
   const focusTile = (id: string) => { const t = document.getElementById(id); if (t) setFocus(t) }
@@ -307,67 +362,132 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
   const wrote: Record<string, string> = {}
   const put = (key: string, v: string, apply: (v: string) => void) => { if (wrote[key] !== v) { wrote[key] = v; apply(v) } }
 
+  /** The dot grid, frame labels' size and the board at one pose. The grid is anchored to the board. */
+  type Pose = { tx: number; ty: number; z: number }
+  function paintDesk(p: Pose) {
+    let g = 48 * p.z
+    while (g < 14) g *= 4
+    put('bgs', `${g}px ${g}px`, (v) => { dots.style.backgroundSize = v })
+    put('bgp', `${p.tx}px ${p.ty}px`, (v) => { dots.style.backgroundPosition = v })
+    put('inv', (1 / p.z).toFixed(4), (v) => world.style.setProperty('--inv', v))
+  }
+
   // ---------- the camera on touch screens ----------
   // The camera itself cuts (see `reduced`); what the visitor sees between stops is one of two moves:
-  // - 'gpu': the board glides to the new view as a single CSS transition, which Safari runs on the GPU
-  //   without redrawing the board. Its first glide is timed; if the phone can't keep up it switches to
-  //   'slide' for good. It is marked 'trying' before that first glide, so if Safari crashes mid-glide
-  //   the next visit starts on 'slide' instead of crashing again.
+  // - 'gpu': the board flies the camera's own path to the new view, eased, and pulling back mid-flight on
+  //   long moves as it does on desktop, as one Web Animation of the board's transform, which Safari runs on
+  //   the GPU without redrawing the board. The grid fades out for the flight and the frame labels hide:
+  //   both are sized to the zoom, and redrawing them every frame would cost the smoothness.
+  //   The first flights are timed, and a phone that can't keep up switches to 'slide' for good. Each timed
+  //   flight is marked 'trying' first, so if Safari crashes mid-flight the next visit starts on 'slide'.
   // - 'slide': the new view slides in from the direction of travel. One redraw, then a viewport-sized move.
-  const GLIDE_MS = 620
-  let glide: 'gpu' | 'slide' = 'gpu', glideChecked = false
+  // A move starts once the guide card has settled for two frames: a new stop's card changes the room the
+  // camera has, and a move that restarts mid-flight is what made the old glide stutter.
+  const GLIDE_KEY = 'wb-glide2' // v2, the camera-path flight (19 Nov 2026): v1's verdicts don't carry over
+  let glide: 'gpu' | 'slide' = 'gpu', verified = false, timing = false, checks = 0, bad = 0
   try {
-    const saved = localStorage.getItem('wb-glide')
-    if (saved === 'slide' || saved === 'trying') { glide = 'slide'; localStorage.setItem('wb-glide', 'slide') }
-    else if (saved === 'gpu') glideChecked = true
+    const saved = localStorage.getItem(GLIDE_KEY)
+    if (saved === 'slide' || saved === 'trying') { glide = 'slide'; localStorage.setItem(GLIDE_KEY, 'slide') }
+    else if (saved === 'gpu') verified = true
   } catch { /* no storage: glide, unchecked */ }
-  const remember = (v: string) => { try { localStorage.setItem('wb-glide', v) } catch { /* fine */ } }
-  let shown2d: { tx: number; ty: number; z: number } | null = null, glideEnd = 0
-  const flat = (c: { tx: number; ty: number; z: number }) => `translate(${c.tx}px, ${c.ty}px) scale(${c.z})`
-  function moveTouch(next: { tx: number; ty: number; z: number }) {
-    const prev = shown2d
-    const key = flat(next)
-    if (prev && flat(prev) === key) return
-    shown2d = next
-    if (!prev || mq.matches) { world.style.transition = ''; world.style.transform = key; return } // first view, or real reduced motion: cut
-    clearTimeout(glideEnd)
-    if (glide === 'gpu') {
-      // Start from wherever the board is now (mid-glide included), on its own layer, and transition once.
-      const from = getComputedStyle(world).transform
-      world.style.transition = 'none'
-      world.style.transform = from === 'none' ? flat(prev) : from
-      world.style.willChange = 'transform'
-      void world.offsetWidth
-      world.style.transition = `transform ${GLIDE_MS}ms cubic-bezier(.3, .7, .2, 1)`
-      world.style.transform = `translate3d(${next.tx}px, ${next.ty}px, 0) scale(${next.z})`
-      if (!glideChecked) {
-        glideChecked = true; remember('trying')
-        let frames = 0, worst = 0, last = performance.now(); const t0 = last
-        const watch = (t: number) => {
-          frames++; worst = Math.max(worst, t - last); last = t
-          if (t - t0 < GLIDE_MS) { requestAnimationFrame(watch); return }
-          const ok = worst < 120 && frames >= (GLIDE_MS / 1000) * 24
-          glide = ok ? 'gpu' : 'slide'; remember(glide)
-        }
-        requestAnimationFrame(watch)
-      }
-      // At rest the board goes back to a plain 2D transform, off its own layer.
-      glideEnd = window.setTimeout(() => { world.style.transition = ''; world.style.willChange = ''; world.style.transform = key }, GLIDE_MS + 40)
-    } else {
-      world.style.transition = ''; world.style.willChange = ''; world.style.transform = key
-      // The new view comes in from the side it lies on: the direction the camera travelled, on screen.
-      const dx = (prev.tx - next.tx) / Math.max(prev.z, next.z), dy = (prev.ty - next.ty) / Math.max(prev.z, next.z)
-      const len = Math.hypot(dx, dy) || 1
-      stage.animate([
-        { transform: `translate(${(dx / len) * 36}px, ${(dy / len) * 36}px)`, opacity: 0.35 },
-        { transform: 'none', opacity: 1 },
-      ], { duration: 320, easing: 'cubic-bezier(.2, .8, .2, 1)' })
-    }
+  const remember = (v: string | null) => {
+    try { if (v) localStorage.setItem(GLIDE_KEY, v); else localStorage.removeItem(GLIDE_KEY) } catch { /* fine */ }
   }
+  const flat = (p: Pose) => `translate(${p.tx}px, ${p.ty}px) scale(${p.z})`
+  const flat3d = (p: Pose) => `translate3d(${p.tx}px, ${p.ty}px, 0) scale(${p.z})`
+  /** A quick start that settles gently: the flight answers the tap at once. */
+  const easeFlight = (t: number) => 1 - Math.pow(1 - t, 2.6) * (1 - 0.35 * t)
+  let shownPose: Pose | null = null, shownCam: Cam | null = null, waiting = '', settled = 0, flight: Animation | null = null
+
+  /** At rest: a plain 2D transform, off its own layer, so text is drawn sharp; grid and labels back. */
+  function rest(p: Pose) {
+    world.style.transform = flat(p)
+    world.style.willChange = ''
+    world.classList.remove('gliding')
+    paintDesk(p)
+    dots.style.opacity = ''
+  }
+  function moveTouch(cam: Cam, next: Pose) {
+    const key = flat(next)
+    if (shownPose && flat(shownPose) === key) { waiting = ''; return }
+    if (key !== waiting) { waiting = key; settled = 0 }
+    if (shownPose && ++settled < 2) return
+    waiting = ''
+    const from = shownPose, fromCam = shownCam
+    shownPose = next; shownCam = cam
+    if (!from || !fromCam || mq.matches) { if (flight) { flight.cancel(); flight = null } rest(next); return } // first view, or real reduced motion: cut
+    if (glide === 'gpu') fly(fromCam, from, cam, next)
+    else { if (flight) { flight.cancel(); flight = null } rest(next); slideIn(from, next) }
+  }
+  function fly(a: Cam, aPose: Pose, b: Cam, bPose: Pose) {
+    if (flight) {
+      // A second tap before the first move ended: fly on from wherever the board is now.
+      const m = new DOMMatrix(getComputedStyle(world).transform)
+      flight.cancel(); flight = null
+      if (m.a > 0) { aPose = { tx: m.e, ty: m.f, z: m.a }; a = { ax: b.ax, ay: b.ay, z: m.a, cx: (b.ax - m.e) / m.a, cy: (b.ay - m.f) / m.a } }
+    }
+    // The same path as the desktop camera: centre and zoom eased together, zoom on a log scale, and a
+    // pull-back on long moves so you can see where you're going.
+    const reach = (Math.hypot(b.cx - a.cx, b.cy - a.cy) * Math.min(a.z, b.z)) / Math.max(vw, vh)
+    const dip = Math.min(0.5, reach * 0.4)
+    const duration = Math.round(Math.min(1000, 540 + 300 * Math.min(1, reach) + 110 * Math.abs(Math.log(b.z / a.z))))
+    const frames: Keyframe[] = []
+    const N = 32
+    for (let k = 0; k <= N; k++) {
+      const e = easeFlight(k / N)
+      const z = Math.exp(mix(Math.log(a.z), Math.log(b.z), e)) * (1 - dip * Math.sin(Math.PI * e))
+      const cx = mix(a.cx, b.cx, e), cy = mix(a.cy, b.cy, e), ax = mix(a.ax, b.ax, e), ay = mix(a.ay, b.ay, e)
+      frames.push({ transform: flat3d({ tx: ax - cx * z, ty: ay - cy * z, z }) })
+    }
+    world.classList.add('gliding')
+    dots.style.opacity = '0'
+    world.style.willChange = 'transform'
+    world.style.transform = flat3d(aPose)
+    const mine = world.animate(frames, { duration, easing: 'linear', fill: 'forwards' })
+    flight = mine
+    // The first flight isn't timed: it's when the whole board's images arrive, which says nothing about
+    // how this phone flies.
+    if (!verified && !timing && flown > 0) time(duration)
+    mine.finished.then(() => {
+      if (flight !== mine) return
+      flight = null
+      flown++
+      rest(bPose)
+      mine.cancel()
+    }, () => { /* cancelled by a newer move */ })
+  }
+  let flown = 0
+  /** Demotes to 'slide' only on two clearly struggling flights: long stalls or under 20 frames a second. */
+  function time(duration: number) {
+    timing = true
+    remember('trying')
+    let frames = 0, worst = 0, last = performance.now()
+    const t0 = last
+    const watch = (t: number) => {
+      frames++; worst = Math.max(worst, t - last); last = t
+      if (t - t0 < duration) { requestAnimationFrame(watch); return }
+      timing = false; checks++
+      if (worst > 200 || frames < (duration / 1000) * 20) bad++
+      if (bad >= 2) { glide = 'slide'; remember('slide') }
+      else if (checks - bad >= 2) { verified = true; remember('gpu') }
+      else remember(null)
+    }
+    requestAnimationFrame(watch)
+  }
+  function slideIn(prev: Pose, next: Pose) {
+    // The new view comes in from the side it lies on: the direction the camera travelled, on screen.
+    const dx = (prev.tx - next.tx) / Math.max(prev.z, next.z), dy = (prev.ty - next.ty) / Math.max(prev.z, next.z)
+    const len = Math.hypot(dx, dy) || 1
+    stage.animate([
+      { transform: `translate(${(dx / len) * 36}px, ${(dy / len) * 36}px)`, opacity: 0.35 },
+      { transform: 'none', opacity: 1 },
+    ], { duration: 320, easing: 'cubic-bezier(.2, .8, .2, 1)' })
+  }
+  cleanups.push(() => { flight?.cancel() })
   const tickVals: number[] = []
   function frame(now: number) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now
-    const p = pose(scrollY)
+    const p = stepped ? { i: at, f: 0 } : pose(scrollY)
     let target = camAt(p)
     if (focus) {
       if (Math.abs(scrollY - focus.y) > 30 || (shown >= 0 && stops[shown].c !== focus.c)) clearFocus()
@@ -390,17 +510,14 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
     delta += Math.abs(look.x) + Math.abs(look.y) > 0.5 ? 1 : 0
 
     const z = cur.z, tx = cur.ax - cur.cx * z + look.x, ty = cur.ay - cur.cy * z + look.y
-    if (touch) moveTouch({ tx, ty, z })
-    else put('tf', `translate3d(${tx}px, ${ty}px, 0) scale(${z})`, (v) => { world.style.transform = v })
-    put('inv', (1 / z).toFixed(4), (v) => world.style.setProperty('--inv', v))
+    if (touch) moveTouch({ ...cur }, { tx, ty, z })
+    else {
+      put('tf', `translate3d(${tx}px, ${ty}px, 0) scale(${z})`, (v) => { world.style.transform = v })
+      paintDesk({ tx, ty, z })
+    }
     // Promote the board to its own layer only while it moves, so text re-rasterises sharp at rest.
     still = delta > 0.05 ? 0 : still + 1
     put('moving', String(still < 8 && !touch), (v) => world.classList.toggle('moving', v === 'true'))
-
-    let g = 48 * z
-    while (g < 14) g *= 4
-    put('bgs', `${g}px ${g}px`, (v) => { stage.style.backgroundSize = v })
-    put('bgp', `${tx}px ${ty}px`, (v) => { stage.style.backgroundPosition = v })
 
     const vx = -tx / z, vy = -ty / z
     const x0 = clamp(vx * MS, MINI_W), x1 = clamp((vx + vw / z) * MS, MINI_W)
@@ -417,7 +534,7 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
 
   layout()
   listen(window, 'resize', layout)
-  const p0 = pose(scrollY)
+  const p0 = stepped ? { i: at, f: 0 } : pose(scrollY)
   select(p0.f < 0.5 ? p0.i : p0.i + 1)
   measureHero()
   raf = requestAnimationFrame(frame)
@@ -428,6 +545,7 @@ export function mountWorkbench(els: WorkbenchEls, stops: Stop[], onStop: (i: num
     destroy() {
       cleanups.splice(0).forEach((fn) => fn())
       document.body.classList.remove('overview', 'dragging')
+      document.documentElement.classList.remove('stepped')
     },
   }
 }

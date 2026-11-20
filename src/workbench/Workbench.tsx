@@ -27,6 +27,7 @@ const TICK_RUNS = stops.reduce<number[][]>((runs, s, j) => {
 export default function Workbench({ caseStudies = [] }: { caseStudies?: CaseStudy[] }) {
   const world = useRef<HTMLDivElement>(null)
   const stage = useRef<HTMLDivElement>(null)
+  const dots = useRef<HTMLDivElement>(null)
   const track = useRef<HTMLDivElement>(null)
   const bar = useRef<HTMLElement>(null)
   const cap = useRef<HTMLElement>(null)
@@ -48,7 +49,7 @@ export default function Workbench({ caseStudies = [] }: { caseStudies?: CaseStud
 
   useEffect(() => {
     const els = {
-      world: world.current, stage: stage.current, track: track.current, bar: bar.current, cap: cap.current,
+      world: world.current, stage: stage.current, dots: dots.current, track: track.current, bar: bar.current, cap: cap.current,
       ticks: ticks.current, mini: mini.current, zoomRead: zoomRead.current, xyRead: xyRead.current, you: you.current,
     }
     if (Object.values(els).some((el) => !el)) return
@@ -75,6 +76,7 @@ export default function Workbench({ caseStudies = [] }: { caseStudies?: CaseStud
     <>
       <div id="track" ref={track} aria-hidden="true" />
       <div className="stage" ref={stage}>
+        <div className="dots" ref={dots} aria-hidden="true" />
         <div className="world" ref={world}>
           <Board />
         </div>

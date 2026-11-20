@@ -26,7 +26,7 @@ try {
   await page.addStyleTag({ content: `
     .bar, .cap, .mini, .mcursor, .you { display: none !important; }
     .world { transform: scale(${s}) !important; transition: none !important; }
-    .stage { background-size: ${48 * s}px ${48 * s}px !important; background-position: 0 0 !important; }
+    .dots { background-size: ${48 * s}px ${48 * s}px !important; background-position: 0 0 !important; opacity: 1 !important; }
     *, *::before, *::after { animation: none !important; transition: none !important; }` })
   for (const theme of ['light', 'dark']) {
     await page.evaluate((t) => { document.documentElement.dataset.theme = t }, theme)

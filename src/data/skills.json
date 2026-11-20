@@ -4,6 +4,7 @@
       "name": "codemagic-build",
       "label": "Mobile CI",
       "step": "ship",
+      "hat": "studio",
       "summary": "Starts a CI build from the terminal and reports back when it lands.",
       "description": "Starts a Codemagic build from the terminal, polls it to completion, and reports the result with artifact download links, so \"ship a build and tell me when it lands\" doesn't mean sitting on a browser tab for twenty minutes. Reads the API token from the environment only, never the repo, and treats starting a build as a gated action because minutes are metered and a green build can upload straight to real testers.",
       "why": "Kicking off a TestFlight build meant leaving the terminal, clicking through a UI, and coming back later to find out. The safety rails are the interesting half: a CI token is personal tooling, not project config, and it does not belong in the repo.",
@@ -22,6 +23,7 @@
       "name": "ui-walk",
       "label": "UI Evidence",
       "step": "check",
+      "hat": "personal",
       "summary": "Screenshots every state of a feature, in order, ready to flip through.",
       "description": "Drives the running app with Playwright through every surface and state of a feature (empty, mid-flow, success, collapsed/expanded), saving an ordered, numbered screenshot folder that reads like a story. Idempotent: it cleans up everything it creates, so re-running after fixes regenerates the same sequence for comparison.",
       "why": "I kept hand-writing the same walk script before every UI review: ordered captures of every state, then feed the folder to page-audit. Third time was the skill.",
@@ -37,13 +39,14 @@
       "evidence": {
         "image": "evidence.jpg",
         "dark": "evidence-dark.jpg",
-        "caption": "A real walk of the CV viewer on matthewkay.dev, 6 Oct 2026: six numbered screenshots (opened, scrolled to the end, dark theme, a phone opening the /#cv link first, the standalone page) and the one finding, a heavy focus ring on the phone close button."
+        "caption": "A real walk of the frunt case study on matthewkay.dev, 29 Oct 2026: six numbered screenshots (the board stop that opens it, the study over the board, its decisions, dark theme, a phone following the /#frunt link, the standalone page) and the one finding: a quote that opens with a closing mark."
       }
     },
     {
       "name": "page-audit",
       "label": "UI Review",
       "step": "check",
+      "hat": "personal",
       "summary": "Reviews a page on seven axes and returns a ranked punch list.",
       "description": "Audits a UI surface across seven axes and returns a prioritized P1/P2/P3 punch list, verifying every finding against the actual code (file:line citations) before reporting it. A review, not a redesign.",
       "why": "I kept doing the same manual UI pass by eye. This makes it systematic and evidence-backed.",
@@ -61,8 +64,9 @@
       "name": "emulator-verify",
       "label": "Mobile QA",
       "step": "check",
+      "hat": "personal",
       "summary": "Checks a Flutter change on the Android emulator by reading the screen back.",
-      "description": "Lets an agent confirm a Flutter app's UI on the Android emulator by driving it with adb input, capturing screenshots over adb, and reading them back with vision, so it checks its own work between turns instead of asking me to look. Shell-aware: the byte-safe screencap command differs between PowerShell and bash, and getting it wrong yields a corrupt PNG that looks fine on disk.",
+      "description": "Lets an agent confirm a Flutter app's UI on the Android emulator by driving it with adb input, capturing screenshots over adb, and reading them back with vision, so it checks its own work between turns instead of asking me to look. Shell-aware: the byte-safe screencap command differs between PowerShell and bash, and getting it wrong yields a corrupt PNG that looks fine on disk. It reads only a downscaled copy of each capture, and can shoot a before/after set of every screen by deep link for a design pass.",
       "why": "Closing the loop on mobile UI changes without a human in the middle every time.",
       "stack": [
         "Claude Code",
@@ -79,8 +83,9 @@
       "name": "lighthouse-audit",
       "label": "Web Perf",
       "step": "check",
+      "hat": "studio",
       "summary": "Measures a production build on mobile and says what to fix first.",
-      "description": "Runs Lighthouse against a production build, takes the median of several mobile runs (single runs are noisy), and turns the result into an actionable punch list (category scores, Core Web Vitals, the exact failing audits and the LCP phase breakdown), with before/after support.",
+      "description": "Runs Lighthouse against a production build, takes the median of several mobile runs (single runs are noisy), and turns the result into an actionable punch list (category scores, Core Web Vitals, the exact failing audits and the LCP phase breakdown), with before/after support. It also checks the simulated numbers against a real throttled load and flags scripts the hosting injects, so a fix targets something real.",
       "why": "I kept hand-running the same spin-up-preview → run-Lighthouse → diff-before/after loop on every perf pass. This makes it one repeatable, median-stable step.",
       "stack": [
         "Claude Code",
@@ -99,28 +104,58 @@
       }
     },
     {
-      "name": "screen-board",
-      "label": "Product Map",
-      "step": "plan",
-      "summary": "Lays every screen of an app on one board, each with what it's for.",
-      "description": "Builds a pan-and-zoom board of every screen in an app: full-page captures laid out in reading order, each paired with what that screen is FOR and what good looks like, published as one design canvas that updates in place. Records the commit each screen was captured at, so it can tell you which descriptions have gone out of date rather than just re-taking the pictures.",
-      "why": "I kept rebuilding the same board and it kept going quietly wrong: two frames were screenshots of a 404 for four days, and a panel described a feature three tools out of date. The screenshots were never the problem; the writing beside them was.",
+      "name": "phone-fit",
+      "label": "Mobile Fit",
+      "step": "check",
+      "hat": "personal",
+      "summary": "Checks every step at real iPhone sizes: nothing scrolls, Next stays on screen, the page rests.",
+      "problem": "My portfolio crashed on iPhones and hid its Next button, while every desktop check passed.",
+      "featured": 1,
+      "description": "Steps through every state of a page or flow at the sizes phones actually give it (Safari's address bar takes part of the screen) and measures what desktop checks miss: a sheet or card that has to scroll, a Next or Submit button off screen, labels landing on other content, and a page that keeps writing to the DOM every frame, the usual reason iPhone Safari lags or reloads. Reports per size and per step, saves a screenshot strip of the worst cases, and re-measures after fixes.",
+      "why": "On 6 Oct 2026 my portfolio crash-looped in iPhone Safari and its guide card hid the Next button on an iPhone 13 Pro, while every desktop check passed. I ran the same phone measurements four times that day before turning them into a skill.",
       "stack": [
         "Claude Code",
         "Playwright",
-        "Claude Design"
+        "WebKit"
       ],
       "flow": [
-        "the running app",
-        "every screen, in reading order",
-        "one board that updates in place"
+        "a page or step-by-step flow",
+        "every step at real phone sizes, plus an idle check",
+        "what scrolls, hides, overlaps or never rests"
+      ],
+      "evidence": {
+        "image": "evidence.png",
+        "dark": "evidence-dark.png",
+        "caption": "phone-fit on matthewkay.dev, 29 Oct 2026: its 18 tour stops at four phone sizes. At 390 x 664 (an iPhone 13 Pro with Safari's bar showing) 16 of 18 fit before the fix and all 18 after; the two case-study cards had to scroll 5px. At 375 x 553 (iPhone SE) 4 stops still scroll. At 430 x 740 and 360 x 740 all fit. The page makes no changes at rest."
+      }
+    },
+    {
+      "name": "screen-board",
+      "label": "Product Map",
+      "step": "plan",
+      "hat": "personal",
+      "summary": "Every screen and state of an app on one page, each with what it's for.",
+      "description": "Builds a board of every screen and state in an app (errors, empty, offline, dialogs and sheets, not just routes) as one page read top to bottom: a pinned code per screen, what each is FOR and what good looks like, a large view with previous and next, two tables, and what isn't on it and why. Records the commit each screen was captured at, so it can tell you which descriptions have gone out of date rather than just re-taking the pictures. For Flutter apps it draws the real widget tree in a test, as a phone, with no device.",
+      "why": "I kept rebuilding the same board and it kept going quietly wrong: two frames were screenshots of a 404 for four days, and a panel described a feature three tools out of date. The screenshots were never the problem; the writing beside them was. The canvas version was hard to get around, so it became a page; drawing every state instead of photographing the happy path found four real bugs in an afternoon.",
+      "stack": [
+        "Claude Code",
+        "Playwright",
+        "Flutter"
+      ],
+      "flow": [
+        "the running app, or its widget tree",
+        "every screen and state, in reading order",
+        "one page that updates in place"
       ]
     },
     {
       "name": "silent-failure-sweep",
       "label": "Reliability",
       "step": "check",
+      "hat": "studio",
       "summary": "Finds failures nobody is told about, ranked by who they hurt.",
+      "problem": "A live app kept only the first 17 pages of a 40-page document, and nobody was told.",
+      "featured": 2,
       "description": "Hunts a codebase for failures that happen without anyone being told: capped AI calls whose stop reason is never checked, errors turned into empty results, background jobs with no failure handler that leave records stuck mid-state, counts that report the same problem every run without escalating, and limits applied quietly. Produces a ranked punch list with file:line and the loud alternative, and proves the worst with a cheap live probe rather than asserting it.",
       "why": "In one day on a production app, the same shape turned up five times: a document pipeline that silently kept only the first 17 pages of a 40-page file, background jobs that hung forever and made the UI blame the wrong thing, a usage meter counting every document as one page, and a weekly check reporting the same three failures for two months without naming them. Each was honest in its logs and silent to the person who needed to know.",
       "stack": [
@@ -143,6 +178,7 @@
       "name": "motion-sketchbook",
       "label": "Motion Design",
       "step": "decide",
+      "hat": "both",
       "summary": "Sketches design options as films and stills, so the choice is made by watching.",
       "description": "Sketches a design as rendered films and stills before anything is built: several distinct options for a launch animation, store pictures or a run of social posts, drawn in Remotion from the product's real screens, type and marks, and shown side by side on one page to pick by watching. Checks every render on a contact sheet with the platform's covered areas ruled in, and leaves the Remotion API itself to Remotion's official skills.",
       "why": "Third time building the same thing: a launch animation, then store screenshots, then a set of social posts, each with its own fonts, phone frame, render script and contact sheet. My first try at the animation drew its letters by hand and looked home-made; four options rendered as video got picked on the first look. The part worth keeping was never the React. It was the checks: a render that fails quietly, or succeeds and shows you last hour's picture.",
@@ -156,6 +192,34 @@
         "options rendered in Remotion",
         "side by side on one page"
       ]
+    },
+    {
+      "name": "mobile-store-release",
+      "label": "Store Release",
+      "step": "ship",
+      "hat": "studio",
+      "summary": "Takes an app through the App Store and Google Play from the terminal, and checks what review would reject first.",
+      "problem": "Each store rule cost me a rejection to learn, and I kept re-explaining them to every project.",
+      "featured": 3,
+      "description": "Connects an app to App Store Connect and Google Play with its own dedicated API keys, checks the store pictures, uploads the listing, screenshots and creative assets, and runs a read-only pre-flight that lists what App Review or Play would block or reject before anything is submitted. Then it submits, watches the review, works a rejection through to a resubmission in the same submission, and once a version is approved, proves it is public and updates everywhere the project records where the app stands. Nothing changes without a plan shown and a yes, and a project's tooling can only touch the apps its own config names.",
+      "why": "A release meant two web consoles and a head full of rules that each cost a rejection to learn: no \"Free\" in a screenshot, no name asked after Sign in with Apple, never cancel a stuck submission, never touch Play while CI is uploading. I was re-explaining them to every project. Now each lesson is a check that runs before the next submission.",
+      "stack": [
+        "Claude Code",
+        "App Store Connect API",
+        "Google Play Developer API",
+        "Python"
+      ],
+      "flow": [
+        "a build on TestFlight and Play internal",
+        "pictures checked, listing uploaded, pre-flight cleared",
+        "submitted, and resubmitted if review says no",
+        "approved: checked live, and recorded everywhere"
+      ],
+      "evidence": {
+        "image": "evidence.png",
+        "dark": "evidence-dark.png",
+        "caption": "mobile-store-release's status and links for Run and Lift, read from the App Store's and Google Play's APIs on 29 Oct 2026: Run 1.0.1 on sale on the App Store and live on Google Play (1.0.1, build 31, production); Lift 2.0.0 on sale on the App Store and live on Google Play (build 46, production)."
+      }
     }
   ]
 }

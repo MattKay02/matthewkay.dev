@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-06",
+  "generated": "2026-10-16",
   "skills": {
     "codemagic-build": {
       "lastRun": "2026-10-06",
@@ -106,6 +106,27 @@
         }
       ]
     },
+    "phone-fit": {
+      "lastRun": "2026-10-06",
+      "cases": [
+        {
+          "name": "fires-on-a-plain-request",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": 0,
+          "date": "2026-10-06"
+        },
+        {
+          "name": "stays-out-of-a-near-miss",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": 1,
+          "date": "2026-10-06"
+        }
+      ]
+    },
     "screen-board": {
       "lastRun": "2026-10-06",
       "cases": [
@@ -174,6 +195,51 @@
           "with": 1,
           "without": null,
           "date": "2026-10-06"
+        }
+      ]
+    },
+    "mobile-store-release": {
+      "lastRun": "2026-10-16",
+      "cases": [
+        {
+          "name": "fires-on-a-plain-request",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": 0,
+          "date": "2026-10-16"
+        },
+        {
+          "name": "fires-on-a-rejection",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": 0,
+          "date": "2026-10-16"
+        },
+        {
+          "name": "fires-on-connecting-a-new-app",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": 0,
+          "date": "2026-10-16"
+        },
+        {
+          "name": "stays-out-of-a-ci-build",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": 1,
+          "date": "2026-10-16"
+        },
+        {
+          "name": "stays-out-of-designing-pictures",
+          "kind": "trigger",
+          "runs": 3,
+          "with": 1,
+          "without": 1,
+          "date": "2026-10-16"
         }
       ]
     }
